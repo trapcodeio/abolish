@@ -1,0 +1,22 @@
+{
+  "name": "abolish",
+  "version": "0.0.1",
+  "description": "A javascript object validator.",
+  "main": "js/index.js",
+  "repository": "https://github.com/trapcodeio/abolish",
+  "author": "trapcodeio",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "ts-node-dev play/index.ts"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.9.1",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
+  }
+}
