@@ -1,7 +1,6 @@
-import get from "lodash/get";
-import set from "lodash/set";
-import has from "lodash/has";
-import unset from "lodash/unset";
+import {Set, Get} from "./Functions";
+import has from "lodash.has";
+import unset from "lodash.unset";
 
 /**
  * ObjectOnValidation
@@ -25,7 +24,7 @@ class ObjectModifier {
      * @return {*}
      */
     get(path: any, $default = undefined) {
-        return get(this.data, path, $default);
+        return Get(this.data, path, $default);
     }
 
     /**
@@ -46,7 +45,7 @@ class ObjectModifier {
      * @return {object}
      */
     set(path: string, value: any) {
-        return set(this.data, path, value);
+        return Set(this.data, path, value);
     }
 
     /**

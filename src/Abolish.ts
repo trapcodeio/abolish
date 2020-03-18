@@ -1,10 +1,9 @@
 import {Validator, ValidationResult, ObjectType} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {UpperFirst} from "./Functions";
+import {UpperFirst, Pick} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
-import pick from "lodash/pick";
 
 /**
  * Abolish Class
@@ -319,7 +318,7 @@ class Abolish {
         }
 
         // Pick only keys in rules
-        validated = pick(validated, keysToBeValidated);
+        validated = Pick(validated, keysToBeValidated);
 
         return {
             error: false,
@@ -345,6 +344,11 @@ class Abolish {
          * Destruct values in async data
          */
         const {validated, jobs} = asyncData;
+
+        /**
+         * Get Keys to be validated
+         */
+        const keysToBeValidated = Object.keys(rules);
 
         /**
          * Return a promise
@@ -433,7 +437,7 @@ class Abolish {
 
             return resolve({
                 error: false,
-                validated
+                validated: Pick(validated, keysToBeValidated)
             })
         });
     }

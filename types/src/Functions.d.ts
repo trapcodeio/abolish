@@ -15,3 +15,6 @@ export declare function UpperFirst(str: string): string;
  * @constructor
  */
 export declare function Rule(rules: any[]): any;
+export declare function Pick(object: any, keys: string[]): any;
+export declare function Set(object: any, path: any, value: any): any;
+export declare function Get(obj: any, path: string, defaultValue: any): any;
