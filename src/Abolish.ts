@@ -193,6 +193,21 @@ class Abolish {
                     ruleData = StringToRules(ruleData);
 
                 /**
+                 * if ruleData has property of $name then set to name
+                 */
+                let $name: string | false = false;
+                if (ruleData.hasOwnProperty('$name')) {
+                    $name = ruleData['$name'];
+                    delete ruleData['$name'];
+
+                    if (typeof $name !== 'string') {
+                        throw new Error(`$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`);
+                    }
+                }
+
+                console.log(ruleData);
+
+                /**
                  * Append internal Wildcard data
                  */
                 ruleData = {...internalWildcardRules, ...ruleData};
@@ -235,7 +250,7 @@ class Abolish {
                      * If is async push needed data to asyncData
                      */
                     if (isAsync) {
-                        asyncData.jobs.push({rule, validator, validatorName, validatorOption})
+                        asyncData.jobs.push({$name, rule, validator, validatorName, validatorOption})
                     } else {
                         /**
                          * Try running validator
@@ -292,7 +307,7 @@ class Abolish {
                              * Replace :param with rule converted to upperCase
                              * and if option is stringable, replace :option with validatorOption
                              */
-                            let message = validator.error!.replace(':param', UpperFirst(rule));
+                            let message = validator.error!.replace(':param', $name ? $name : UpperFirst(rule));
                             if (optionIsStringable)
                                 message = message.replace(':option', validatorOption);
 
@@ -359,7 +374,7 @@ class Abolish {
              * Loop through jobs and run their validators
              */
             for (const job of jobs) {
-                const {rule, validator, validatorName, validatorOption} = job;
+                const {$name, rule, validator, validatorName, validatorOption} = job;
 
                 /**
                  * Value of key being validated in object
@@ -418,7 +433,7 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    let message = validator.error!.replace(':param', UpperFirst(rule));
+                    let message = validator.error!.replace(':param', $name ? $name : UpperFirst(rule));
                     if (optionIsStringable)
                         message = message.replace(':option', validatorOption);
 
