@@ -29,10 +29,16 @@ const GlobalValidators: any = {
     },
 
 
-    typeOf: {
-        name: 'typeOf',
+    typeof: {
+        name: 'typeof',
         error: ':param is not typeOf :option',
-        validator: (value: any, option: string): boolean => {
+        validator: (value: any, option: string | false): boolean => {
+
+            /**
+             * If typeof is false then we don't validate this
+             */
+            if (option === false) return true;
+
             option = option.toLowerCase();
             if (option === 'array')
                 return Array.isArray(value);

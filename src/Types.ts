@@ -1,20 +1,28 @@
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
+
+/**
+ * ValidationError
+ * @description
+ * Result returned by the validate object
+ */
+export type ValidationError = {
+    key: string
+    type: 'internal' | 'validator'
+    message: string
+    validator: string
+    data: any
+};
+
 /**
  * ValidationResult
  * @description
  * Result returned by the validate object
  */
 export type ValidationResult = {
-    error: null | {
-        key: string
-        type: 'internal' | 'validator'
-        message: string
-        validator: string
-        data: any
-    },
-    validated?: object
+    error: ValidationError | false,
+    validated?: any
 }
 
 export type ValidatorFunction = (
@@ -24,7 +32,7 @@ export type ValidatorFunction = (
         error: (message: string, data?: any) => AbolishError,
         modifier: ObjectModifier
     }
-) => boolean | AbolishError
+) => boolean | AbolishError | Promise<boolean | AbolishError>
 
 /**
  * Validator

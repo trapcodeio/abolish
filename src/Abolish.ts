@@ -1,7 +1,7 @@
 import {Validator, ValidationResult, ObjectType} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {upperFirst} from "./Functions";
+import {UpperFirst} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import pick from "lodash/pick";
@@ -96,7 +96,36 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    validate(object: ObjectType, rules: ObjectType): ValidationResult {
+    static validate(object: ObjectType, rules: ObjectType): ValidationResult {
+        return (new this).validate(object, rules);
+    }
+
+    /**
+     * Validate Async
+     *
+     * Waits for all validation defined
+     * @param object
+     * @param rules
+     * @return {Promise<ValidationResult>}
+     */
+    static validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult> {
+        return (new this).validateAsync(object, rules)
+    }
+
+    /**
+     * Validate
+     * @description
+     * Validates given object with rules defined on Abolish instance
+     * @param {object} object
+     * @param {object} rules
+     * @param {boolean} isAsync
+     */
+    validate(object: ObjectType, rules: ObjectType, isAsync = false): ValidationResult {
+
+        let asyncData = {
+            validated: {} as any,
+            jobs: [] as any
+        };
 
         /**
          * Check for wildcard rules (*, **)
@@ -135,59 +164,211 @@ class Abolish {
              */
             if (ruleData === '*') ruleData = {};
 
-
             /**
-             * Convert ruleData to object if string
-             * Using StringToRules function
+             * if ruleData has property of $skip then check
              */
-            if (typeof ruleData === "string")
-                ruleData = StringToRules(ruleData);
+            let $skip: any = false;
 
-            /**
-             * Append internal Wildcard data
-             */
-            ruleData = {...internalWildcardRules, ...ruleData};
+            if (ruleData.hasOwnProperty('$skip')) {
+                $skip = ruleData['$skip'];
 
-
-            /**
-             * Loop through ruleData to check if validators defined exists
-             */
-            for (const validatorName of Object.keys(ruleData)) {
-
-                /**
-                 * Throw Error if validator is not defined in global or local validators
-                 */
-                if (!this.validators.hasOwnProperty(validatorName) && !GlobalValidators.hasOwnProperty(validatorName)) {
-                    throw new Error(`Validator: {${validatorName}} does not exists but defined in rules`)
+                if (typeof $skip === 'function') {
+                    $skip = $skip(validated[rule])
                 }
 
+                if (typeof $skip !== 'boolean') {
+                    throw new Error(`$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`);
+                }
+
+            }
+
+            /**
+             * Run validation if not $skip
+             */
+            if (!$skip) {
                 /**
-                 * The value of the validator set in rules
-                 * e.g {must: true}
-                 * where "true" is validationOption
+                 * Convert ruleData to object if string
+                 * Using StringToRules function
                  */
-                const validatorOption = ruleData[validatorName];
+                if (typeof ruleData === "string")
+                    ruleData = StringToRules(ruleData);
+
+                /**
+                 * Append internal Wildcard data
+                 */
+                ruleData = {...internalWildcardRules, ...ruleData};
+
+
+                /**
+                 * Loop through ruleData to check if validators defined exists
+                 */
+                for (const validatorName of Object.keys(ruleData)) {
+
+                    /**
+                     * Throw Error if validator is not defined in global or local validators
+                     */
+                    if (!this.validators.hasOwnProperty(validatorName) && !GlobalValidators.hasOwnProperty(validatorName)) {
+                        throw new Error(`Validator: {${validatorName}} does not exists but defined in rules`)
+                    }
+
+                    /**
+                     * Validator of rule defined in rules.
+                     */
+                    const validator = (this.validators[validatorName] || GlobalValidators[validatorName]) as Validator;
+
+                    if (!isAsync && validator.isAsync) {
+                        throw new Error(`Validator: {${validatorName}} is async, use validateAsync method instead.`)
+                    }
+
+                    /**
+                     * The value of the validator set in rules
+                     * e.g {must: true}
+                     * where "true" is validationOption
+                     */
+                    const validatorOption = ruleData[validatorName];
+
+                    /**
+                     * Value of key being validated in object
+                     */
+                    const objectValue = validated[rule];
+
+                    /**
+                     * If is async push needed data to asyncData
+                     */
+                    if (isAsync) {
+                        asyncData.jobs.push({rule, validator, validatorName, validatorOption})
+                    } else {
+                        /**
+                         * Try running validator
+                         */
+                        let validationResult: any = false;
+                        try {
+                            /**
+                             * Run Validation
+                             * Passing required helpers
+                             */
+                            validationResult = validator.validator(objectValue, validatorOption, {
+                                error: (message: string, data?: any) => new AbolishError(message, data),
+                                modifier: new ObjectModifier(validated, rule)
+                            });
+
+                        } catch (e) {
+                            /**
+                             * If error when running defined function
+                             * Send error as validationResult with type as 'internal'
+                             */
+                            return {
+                                error: {
+                                    key: rule,
+                                    type: 'internal',
+                                    validator: validatorName,
+                                    message: e.message,
+                                    data: e.stack
+                                }
+                            }
+                        }
+
+
+                        if (validationResult instanceof AbolishError) {
+                            return {
+                                error: {
+                                    key: rule,
+                                    type: 'validator',
+                                    validator: validatorName,
+                                    message: validationResult.message,
+                                    data: validationResult.data
+                                }
+                            }
+                        } else if (!validationResult) {
+                            /**
+                             * Check if option is stringable
+                             * This is required because a rule option could an array or an object
+                             * and these cannot be converted to string
+                             *
+                             * Only strings and numbers can be parsed as :option
+                             */
+                            const optionIsStringable = typeof validatorOption === "string" || typeof validatorOption === "number";
+
+                            /**
+                             * Replace :param with rule converted to upperCase
+                             * and if option is stringable, replace :option with validatorOption
+                             */
+                            let message = validator.error!.replace(':param', UpperFirst(rule));
+                            if (optionIsStringable)
+                                message = message.replace(':option', validatorOption);
+
+                            // Return Error using the ValidationResult format
+                            return {
+                                error: {
+                                    key: rule,
+                                    type: 'validator',
+                                    validator: validatorName,
+                                    message,
+                                    data: null
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isAsync) {
+            asyncData.validated = validated;
+            return asyncData as any;
+        }
+
+        // Pick only keys in rules
+        validated = pick(validated, keysToBeValidated);
+
+        return {
+            error: false,
+            validated
+        }
+    }
+
+    /**
+     * Validate Async
+     *
+     * Waits for all validation defined
+     * @param object
+     * @param rules
+     * @return {Promise<ValidationResult>}
+     */
+    validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult> {
+        /**
+         * Get asyncData
+         */
+        const asyncData: any = this.validate(object, rules, true);
+
+        /**
+         * Destruct values in async data
+         */
+        const {validated, jobs} = asyncData;
+
+        /**
+         * Return a promise
+         */
+        return new Promise<ValidationResult>(async (resolve) => {
+
+            /**
+             * Loop through jobs and run their validators
+             */
+            for (const job of jobs) {
+                const {rule, validator, validatorName, validatorOption} = job;
 
                 /**
                  * Value of key being validated in object
                  */
-                const objectValue = object[rule];
+                const objectValue = validated[rule];
 
-                /**
-                 * Validator of rule defined in rules.
-                 */
-                const validator = (this.validators[validatorName] || GlobalValidators[validatorName]) as Validator;
-
-                /**
-                 * Try running
-                 */
                 let validationResult: any = false;
                 try {
                     /**
                      * Run Validation
                      * Passing required helpers
                      */
-                    validationResult = validator.validator(objectValue, validatorOption, {
+                    validationResult = await validator.validator(objectValue, validatorOption, {
                         error: (message: string, data?: any) => new AbolishError(message, data),
                         modifier: new ObjectModifier(validated, rule)
                     });
@@ -197,7 +378,7 @@ class Abolish {
                      * If error when running defined function
                      * Send error as validationResult with type as 'internal'
                      */
-                    return {
+                    return resolve({
                         error: {
                             key: rule,
                             type: 'internal',
@@ -205,12 +386,12 @@ class Abolish {
                             message: e.message,
                             data: e.stack
                         }
-                    }
+                    })
                 }
 
 
                 if (validationResult instanceof AbolishError) {
-                    return {
+                    return resolve({
                         error: {
                             key: rule,
                             type: 'validator',
@@ -218,7 +399,7 @@ class Abolish {
                             message: validationResult.message,
                             data: validationResult.data
                         }
-                    }
+                    })
                 } else if (!validationResult) {
                     /**
                      * Check if option is stringable
@@ -233,12 +414,12 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    let message = validator.error!.replace(':param', upperFirst(rule));
+                    let message = validator.error!.replace(':param', UpperFirst(rule));
                     if (optionIsStringable)
                         message = message.replace(':option', validatorOption);
 
                     // Return Error using the ValidationResult format
-                    return {
+                    return resolve({
                         error: {
                             key: rule,
                             type: 'validator',
@@ -246,18 +427,15 @@ class Abolish {
                             message,
                             data: null
                         }
-                    }
+                    })
                 }
             }
-        }
 
-        // Pick only keys in rules
-        validated = pick(validated, keysToBeValidated);
-
-        return {
-            error: null,
-            validated
-        }
+            return resolve({
+                error: false,
+                validated
+            })
+        });
     }
 }
 

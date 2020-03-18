@@ -1,3 +1,5 @@
 import Abolish from "./src/Abolish";
+import {Rule} from "./src/Functions";
 
-export {Abolish}
+// Export Abolish and Rule generator
+export {Abolish, Rule}
