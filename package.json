@@ -1,6 +1,6 @@
 {
   "name": "abolish",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A javascript object validator.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
