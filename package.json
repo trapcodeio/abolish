@@ -9,7 +9,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "prepublish": "tsc"
+    "prepare": "tsc"
   },
   "dependencies": {
     "lodash": "^4.17.15"
