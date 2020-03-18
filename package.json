@@ -19,5 +19,12 @@
     "axios": "^0.19.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
-  }
+  },
+  "keywords": [
+    "abolish",
+    "object-validator-pro",
+    "object-validation",
+    "object-validator",
+    "async-object-validator"
+  ]
 }
