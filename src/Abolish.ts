@@ -205,8 +205,6 @@ class Abolish {
                     }
                 }
 
-                console.log(ruleData);
-
                 /**
                  * Append internal Wildcard data
                  */
