@@ -1,7 +1,7 @@
 import {Validator, ValidationResult, ObjectType} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {UpperFirst, Pick} from "./Functions";
+import {StartCase, Pick} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -306,7 +306,7 @@ class Abolish {
                              * Replace :param with rule converted to upperCase
                              * and if option is stringable, replace :option with validatorOption
                              */
-                            let message = validator.error!.replace(':param', $name ? $name : UpperFirst(rule));
+                            let message = validator.error!.replace(':param', $name ? $name : StartCase(rule));
                             if (optionIsStringable)
                                 message = message.replace(':option', validatorOption);
 
@@ -432,7 +432,7 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    let message = validator.error!.replace(':param', $name ? $name : UpperFirst(rule));
+                    let message = validator.error!.replace(':param', $name ? $name : StartCase(rule));
                     if (optionIsStringable)
                         message = message.replace(':option', validatorOption);
 

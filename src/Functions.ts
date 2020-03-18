@@ -10,6 +10,18 @@ export function UpperFirst(str: string): string {
 }
 
 /**
+ * StartCase
+ * @param str
+ * @constructor
+ */
+export function StartCase(str: string): string {
+    if(str.indexOf('_') >= 0) str = str.replace('_', ' ');
+    if(str.indexOf('-') >= 0) str = str.replace('-', ' ');
+
+    return str.split(' ').map(word => UpperFirst(word)).join(' ');
+}
+
+/**
  * Converts an array of rules (string | object)[] to one object rule
  * @example
  * const rule = Rule(['must', {min: 10, max: 20}, '!exact'])

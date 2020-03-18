@@ -5,6 +5,12 @@
  */
 export declare function UpperFirst(str: string): string;
 /**
+ * StartCase
+ * @param str
+ * @constructor
+ */
+export declare function StartCase(str: string): string;
+/**
  * Converts an array of rules (string | object)[] to one object rule
  * @example
  * const rule = Rule(['must', {min: 10, max: 20}, '!exact'])
