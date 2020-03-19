@@ -183,12 +183,9 @@ class Abolish {
                     $skip = $skip(validated[rule])
                 }
 
-                console.log($skip);
-
                 if (typeof $skip !== 'boolean') {
                     throw new Error(`$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`);
                 }
-
             }
 
             /**
