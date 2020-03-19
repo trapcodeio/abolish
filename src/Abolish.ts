@@ -164,6 +164,13 @@ class Abolish {
             if (ruleData === '*') ruleData = {};
 
             /**
+             * Convert ruleData to object if string
+             * Using StringToRules function
+             */
+            if (typeof ruleData === "string")
+                ruleData = StringToRules(ruleData);
+
+            /**
              * if ruleData has property of $skip then check
              */
             let $skip: any = false;
@@ -176,6 +183,8 @@ class Abolish {
                     $skip = $skip(validated[rule])
                 }
 
+                console.log($skip);
+
                 if (typeof $skip !== 'boolean') {
                     throw new Error(`$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`);
                 }
@@ -186,12 +195,6 @@ class Abolish {
              * Run validation if not $skip
              */
             if (!$skip) {
-                /**
-                 * Convert ruleData to object if string
-                 * Using StringToRules function
-                 */
-                if (typeof ruleData === "string")
-                    ruleData = StringToRules(ruleData);
 
                 /**
                  * if ruleData has property of $name then set to name
@@ -203,6 +206,19 @@ class Abolish {
 
                     if (typeof $name !== 'string') {
                         throw new Error(`$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`);
+                    }
+                }
+
+                /**
+                 * check if rules has custom error: $error
+                 */
+                let $error: any = false;
+                if (ruleData.hasOwnProperty('$error')) {
+                    $error = ruleData['$error'];
+                    delete ruleData['$error'];
+
+                    if (!$error || typeof $error !== 'string') {
+                        throw new Error(`$error value must be a STRING in RuleFor: (${rule})`);
                     }
                 }
 
@@ -249,7 +265,7 @@ class Abolish {
                      * If is async push needed data to asyncData
                      */
                     if (isAsync) {
-                        asyncData.jobs.push({$name, rule, validator, validatorName, validatorOption})
+                        asyncData.jobs.push({$name, rule, validator, validatorName, validatorOption, $error})
                     } else {
                         /**
                          * Try running validator
@@ -288,11 +304,11 @@ class Abolish {
                                     key: rule,
                                     type: 'validator',
                                     validator: validatorName,
-                                    message: validationResult.message,
+                                    message: $error ? $error : validationResult.message,
                                     data: validationResult.data
                                 }
                             }
-                        } else if (!validationResult) {
+                        } else if (validationResult === false) {
                             /**
                              * Check if option is stringable
                              * This is required because a rule option could an array or an object
@@ -306,7 +322,7 @@ class Abolish {
                              * Replace :param with rule converted to upperCase
                              * and if option is stringable, replace :option with validatorOption
                              */
-                            let message = validator.error!.replace(':param', $name ? $name : StartCase(rule));
+                            let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule));
                             if (optionIsStringable)
                                 message = message.replace(':option', validatorOption);
 
@@ -373,7 +389,7 @@ class Abolish {
              * Loop through jobs and run their validators
              */
             for (const job of jobs) {
-                const {$name, rule, validator, validatorName, validatorOption} = job;
+                const {$name, rule, validator, validatorName, validatorOption, $error} = job;
 
                 /**
                  * Value of key being validated in object
@@ -414,7 +430,7 @@ class Abolish {
                             key: rule,
                             type: 'validator',
                             validator: validatorName,
-                            message: validationResult.message,
+                            message: $error ? $error : validationResult.message,
                             data: validationResult.data
                         }
                     })
@@ -432,7 +448,7 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    let message = validator.error!.replace(':param', $name ? $name : StartCase(rule));
+                    let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule));
                     if (optionIsStringable)
                         message = message.replace(':option', validatorOption);
 
