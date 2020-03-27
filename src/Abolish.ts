@@ -431,7 +431,7 @@ class Abolish {
                             data: validationResult.data
                         }
                     })
-                } else if (!validationResult) {
+                } else if (validationResult !== false) {
                     /**
                      * Check if option is stringable
                      * This is required because a rule option could an array or an object

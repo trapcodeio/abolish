@@ -51,7 +51,8 @@ const GlobalValidators: any = {
         name: 'exact',
         validator: (value: any, option: any): boolean => {
             return value === option;
-        }
+        },
+        error: ':param failed exact validator'
     },
 
 
