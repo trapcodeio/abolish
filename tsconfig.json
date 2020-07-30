@@ -79,6 +79,7 @@
   },
   "exclude": [
     "play.ts",
-    "types"
+    "types",
+    "validators"
   ]
 }
