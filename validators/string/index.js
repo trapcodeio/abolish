@@ -4,6 +4,7 @@ module.exports = [
     require('./email'),
     require('./ipAddress'),
     require('./json'),
+    require('./jsonDecode'),
     require('./number'),
     require('./regex'),
     require('./url')
