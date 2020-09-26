@@ -147,6 +147,9 @@ const GlobalValidators: any = {
 /**
  * Set an alias for `must` as `required
  */
-GlobalValidators.required = {...GlobalValidators.must};
+GlobalValidators.required = {
+    ...GlobalValidators.must,
+    name: 'required'
+};
 
 export = GlobalValidators;
