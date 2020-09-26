@@ -8,7 +8,6 @@ function trimIfString(value: string | any): string | any {
 }
 
 const GlobalValidators: any = {
-
     must: {
         name: 'must',
         error: ':param is required.',
@@ -27,7 +26,6 @@ const GlobalValidators: any = {
             return true;
         },
     },
-
 
     typeof: {
         name: 'typeof',
@@ -146,5 +144,9 @@ const GlobalValidators: any = {
     },
 };
 
+/**
+ * Set an alias for `must` as `required
+ */
+GlobalValidators.required = {...GlobalValidators.must};
 
 export = GlobalValidators;
