@@ -10,11 +10,12 @@ module.exports = {
      */
     validator: (number, option, {modifier}) => {
         const isNumber = !isNaN(number);
-        // Cast to number
-        if (isNumber && modifier) {
+
+        // Cast to number if not number
+        if (modifier && isNumber && typeof number !== "number") {
             modifier.setThis(Number(number));
         }
-        // return function
-        return isNumber
+
+        return isNumber;
     }
 }
