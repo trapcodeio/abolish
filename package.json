@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "abolish",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A javascript object validator.",
   "main": "js/index.js",
   "types": "types/index.d.ts",
