@@ -1,6 +1,7 @@
-module.exports = [
+export = [
     require('./alphaNumeric'),
     require('./boolean'),
+    require('./date'),
     require('./email'),
     require('./ipAddress'),
     require('./json'),

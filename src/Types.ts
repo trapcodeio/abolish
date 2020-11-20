@@ -25,9 +25,17 @@ export type ValidationResult = {
     validated?: any
 }
 
-export type ValidatorFunction = (
+export type AbolishValidatorFunction = (
     value: any,
     option: any,
+    helpers: {
+        error: (message: string, data?: any) => AbolishError,
+        modifier: ObjectModifier
+    }
+) => boolean | AbolishError | Promise<boolean | AbolishError>
+
+export type AbolishInlineValidator = (
+    value: any,
     helpers: {
         error: (message: string, data?: any) => AbolishError,
         modifier: ObjectModifier
@@ -39,14 +47,9 @@ export type ValidatorFunction = (
  * @description
  * A new validator type
  */
-export type Validator = {
+export type AbolishValidator = {
     name: string,
-    validator: ValidatorFunction,
+    validator: AbolishValidatorFunction,
     error?: string,
     isAsync?: boolean
 }
-
-/**
- * Default javascript object
- */
-export type ObjectType = { [key: string]: any }

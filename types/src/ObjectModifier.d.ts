@@ -49,5 +49,9 @@ declare class ObjectModifier {
      * @return {boolean}
      */
     unsetThis(): boolean;
+    /**
+     * Get current path but with StartCase
+     */
+    getPath(): string;
 }
 export = ObjectModifier;

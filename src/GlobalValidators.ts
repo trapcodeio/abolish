@@ -3,11 +3,13 @@
  * @return {string}
  * @private
  */
+import {AbolishInlineValidator, AbolishValidator} from "./Types";
+
 function trimIfString(value: string | any): string | any {
     return typeof value === 'string' ? value.trim() : value
 }
 
-const GlobalValidators: any = {
+const GlobalValidators: Record<string, AbolishValidator> = {
     must: {
         name: 'must',
         error: ':param is required.',
@@ -57,7 +59,7 @@ const GlobalValidators: any = {
     min: {
         name: 'min',
         error: ':param is too small. (Min. :option)',
-        validator: (value: any, option: number | string): boolean => {
+        validator: (value: any, option: number | string, helpers): boolean => {
             const isNotNumber = isNaN(value);
 
             /**
@@ -66,7 +68,7 @@ const GlobalValidators: any = {
              * we pass the validation to `minLength`
              */
             if ((typeof value === "string" && isNotNumber) || Array.isArray(value))
-                return GlobalValidators.minLength.validator(value, option);
+                return GlobalValidators.minLength.validator(value, option, helpers) as boolean;
 
             // return false if this is not a number
             if (isNotNumber)
@@ -81,7 +83,7 @@ const GlobalValidators: any = {
     max: {
         name: 'max',
         error: ':param is too big. (Max. :option)',
-        validator: (value: any, option: number | string): boolean => {
+        validator: (value: any, option: number | string, helpers): boolean => {
             const isNotNumber = isNaN(value);
 
             /**
@@ -90,7 +92,7 @@ const GlobalValidators: any = {
              * we pass the validation to `minLength`
              */
             if ((typeof value === "string" && isNotNumber) || Array.isArray(value))
-                return GlobalValidators.maxLength.validator(value, option);
+                return GlobalValidators.maxLength.validator(value, option, helpers) as boolean;
 
             // return false if this is not a number
             if (isNotNumber)
@@ -129,8 +131,8 @@ const GlobalValidators: any = {
     selectMin: {
         name: 'selectMin',
         error: 'Select at-least :option :param.',
-        validator: (value: any, option: number | string): boolean => {
-            return GlobalValidators.minLength.validator(value, option)
+        validator: (value: any, option: number | string, helpers): boolean => {
+            return GlobalValidators.minLength.validator(value, option, helpers) as boolean
         }
     },
 
@@ -138,10 +140,18 @@ const GlobalValidators: any = {
     selectMax: {
         name: 'selectMax',
         error: 'Select at-most :option :param.',
-        validator: (value: any, option: number | string): boolean => {
-            return GlobalValidators.maxLength.validator(value, option)
+        validator: (value: any, option: number | string, helpers): boolean => {
+            return GlobalValidators.maxLength.validator(value, option, helpers) as boolean
         }
     },
+
+    $inline: {
+        name: '$custom',
+        error: ':param failed inline validation.',
+        validator: (v: any, o: AbolishInlineValidator, helpers) => {
+            return o(v, helpers);
+        }
+    }
 };
 
 /**

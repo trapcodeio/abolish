@@ -1,36 +1,36 @@
-import { Validator, ValidationResult, ObjectType } from "./Types";
+import { AbolishValidator, ValidationResult } from "./Types";
 /**
  * Abolish Class
  * @class
  */
 declare class Abolish {
     validators: {
-        [key: string]: Validator;
+        [key: string]: AbolishValidator;
     };
     /**
      * Add single global validator
      * @param validator
      */
-    static addGlobalValidator(validator: Validator): void;
+    static addGlobalValidator(validator: AbolishValidator): void;
     /**
      * Add multiple global validators
      * @param validators
      */
-    static addGlobalValidators(validators: Validator[]): void;
+    static addGlobalValidators(validators: AbolishValidator[]): void;
     /**
      * addValidator
      * @description
      * Add validator or array of validators
      * @param validator
      */
-    addValidator(validator: Validator): this;
+    addValidator(validator: AbolishValidator): this;
     /**
      * addValidators
      * @description
      * Add validator or array of validators
      * @param validators
      */
-    addValidators(validators: Validator[]): this;
+    addValidators(validators: AbolishValidator[]): this;
     /**
      * Validate
      * @description
@@ -38,7 +38,7 @@ declare class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate(object: ObjectType, rules: ObjectType): ValidationResult;
+    static validate(object: Record<string, any>, rules: Record<string, any>): ValidationResult;
     /**
      * Validate Async
      *
@@ -47,7 +47,7 @@ declare class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    static validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult>;
+    static validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult>;
     /**
      * Validate
      * @description
@@ -56,7 +56,7 @@ declare class Abolish {
      * @param {object} rules
      * @param {boolean} isAsync
      */
-    validate(object: ObjectType, rules: ObjectType, isAsync?: boolean): ValidationResult;
+    validate(object: Record<string, any>, rules: Record<string, any>, isAsync?: boolean): ValidationResult;
     /**
      * Validate Async
      *
@@ -65,6 +65,6 @@ declare class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult>;
+    validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult>;
 }
 export = Abolish;

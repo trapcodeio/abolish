@@ -1,0 +1,3 @@
+export = [
+    require('./any')
+]

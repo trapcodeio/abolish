@@ -1,4 +1,6 @@
-module.exports = {
+import {AbolishValidator} from "../../src/Types";
+
+export = <AbolishValidator>{
     name: 'boolean',
     error: ':param is not a boolean',
     /**

@@ -1,4 +1,6 @@
-module.exports = {
+import {AbolishValidator} from "../../src/Types";
+
+export = <AbolishValidator>{
     name: 'regex',
     error: ':param failed Regex test.',
     validator: (str, regex) => {

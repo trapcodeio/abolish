@@ -1,4 +1,4 @@
-import {Validator, ValidationResult, ObjectType} from "./Types"
+import {AbolishValidator, ValidationResult} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
 import {StartCase, Pick} from "./Functions";
@@ -12,14 +12,14 @@ import ObjectModifier from "./ObjectModifier";
 class Abolish {
 
     validators: {
-        [key: string]: Validator
+        [key: string]: AbolishValidator
     } = {};
 
     /**
      * Add single global validator
      * @param validator
      */
-    static addGlobalValidator(validator: Validator) {
+    static addGlobalValidator(validator: AbolishValidator) {
         if (typeof validator === "object" && !Array.isArray(validator)) {
 
             // If no error defined set default error
@@ -37,7 +37,7 @@ class Abolish {
      * Add multiple global validators
      * @param validators
      */
-    static addGlobalValidators(validators: Validator[]) {
+    static addGlobalValidators(validators: AbolishValidator[]) {
         if (Array.isArray(validators)) {
             for (const value of validators) {
                 Abolish.addGlobalValidator(value)
@@ -53,7 +53,7 @@ class Abolish {
      * Add validator or array of validators
      * @param validator
      */
-    addValidator(validator: Validator): this {
+    addValidator(validator: AbolishValidator): this {
 
         if (typeof validator === "object" && !Array.isArray(validator)) {
 
@@ -76,7 +76,7 @@ class Abolish {
      * Add validator or array of validators
      * @param validators
      */
-    addValidators(validators: Validator[]): this {
+    addValidators(validators: AbolishValidator[]): this {
         if (Array.isArray(validators)) {
             for (const value of validators) {
                 this.addValidator(value)
@@ -95,7 +95,7 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate(object: ObjectType, rules: ObjectType): ValidationResult {
+    static validate(object: Record<string, any>, rules: Record<string, any>): ValidationResult {
         return (new this).validate(object, rules);
     }
 
@@ -107,7 +107,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    static validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult> {
+    static validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult> {
         return (new this).validateAsync(object, rules)
     }
 
@@ -119,7 +119,7 @@ class Abolish {
      * @param {object} rules
      * @param {boolean} isAsync
      */
-    validate(object: ObjectType, rules: ObjectType, isAsync = false): ValidationResult {
+    validate(object: Record<string, any>, rules: Record<string, any>, isAsync = false): ValidationResult {
 
         let asyncData = {
             validated: {} as any,
@@ -145,7 +145,7 @@ class Abolish {
         /**
          * Validated clones original object to prevent modifying values in original object
          */
-        let validated: ObjectType = {...object};
+        let validated: Record<string, any> = {...object};
 
         /**
          * Get Keys to be validated
@@ -240,7 +240,7 @@ class Abolish {
                     /**
                      * Validator of rule defined in rules.
                      */
-                    const validator = (this.validators[validatorName] || GlobalValidators[validatorName]) as Validator;
+                    const validator = (this.validators[validatorName] || GlobalValidators[validatorName]) as AbolishValidator;
 
                     if (!isAsync && validator.isAsync) {
                         throw new Error(`Validator: {${validatorName}} is async, use validateAsync method instead.`)
@@ -313,7 +313,9 @@ class Abolish {
                              *
                              * Only strings and numbers can be parsed as :option
                              */
-                            const optionIsStringable = typeof validatorOption === "string" || typeof validatorOption === "number";
+                            const optionIsStringable = typeof validatorOption === "string"
+                                || typeof validatorOption === "number"
+                                || Array.isArray(validatorOption);
 
                             /**
                              * Replace :param with rule converted to upperCase
@@ -361,7 +363,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    validateAsync(object: ObjectType, rules: ObjectType): Promise<ValidationResult> {
+    validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult> {
         /**
          * Get asyncData
          */

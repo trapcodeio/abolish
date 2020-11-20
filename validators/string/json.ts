@@ -1,4 +1,6 @@
-module.exports = {
+import {AbolishValidator} from "../../src/Types";
+
+export = <AbolishValidator>{
     name: 'json',
     error: ':param is not a valid JSON string',
     validator: (str) => {

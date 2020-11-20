@@ -1,4 +1,4 @@
-import {Set, Get} from "./Functions";
+import {Set, Get, StartCase} from "./Functions";
 import has from "lodash.has";
 import unset from "lodash.unset";
 
@@ -76,6 +76,13 @@ class ObjectModifier {
      */
     unsetThis() {
         return unset(this.data, this.path);
+    }
+
+    /**
+     * Get current path but with StartCase
+     */
+    getPath(): string {
+        return StartCase(this.path);
     }
 }
 

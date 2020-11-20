@@ -1,4 +1,6 @@
-module.exports = {
+import {AbolishValidator} from "../../src/Types";
+
+export = <AbolishValidator>{
     name: 'email',
     error: ':param is not a valid email.',
     validator: (email) => {
