@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "abolish",
   "version": "1.0.1",
   "description": "A javascript object validator.",
