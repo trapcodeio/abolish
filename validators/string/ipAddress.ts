@@ -1,4 +1,4 @@
-import {AbolishValidator} from "../../src/Types";
+import type {AbolishValidator} from "../../src/Types";
 export = <AbolishValidator>{
     name: 'ipAddress',
     error: ':param is not a valid IP address.',

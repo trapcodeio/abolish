@@ -1,4 +1,5 @@
-import {AbolishValidator} from "../../src/Types";
+import type {AbolishValidator} from "../../src/Types";
+
 export = <AbolishValidator>{
     name: 'any',
     validator: (v: any, o: any[]) => {
