@@ -1,6 +1,6 @@
 import {AbolishValidator} from "../../src/Types";
 
-export = <AbolishValidator> {
+export default <AbolishValidator> {
     name: 'url',
     error: ':param is not a valid URL',
     validator: (str) => {
