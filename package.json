@@ -1,8 +1,8 @@
 {
   "name": "abolish",
-  "version": "0.0.22",
+  "version": "1.0.0",
   "description": "A javascript object validator.",
-  "main": "dist/index.js",
+  "main": "js/index.js",
   "types": "types/index.d.ts",
   "repository": "https://github.com/trapcodeio/abolish",
   "author": "trapcodeio",
