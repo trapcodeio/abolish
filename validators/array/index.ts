@@ -1,3 +1,5 @@
-export = [
-    require('./any')
-]
+import any = require("./any");
+
+export = {
+    any
+}

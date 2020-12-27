@@ -20,10 +20,10 @@ export type ValidationError = {
  * @description
  * Result returned by the validate object
  */
-export type ValidationResult = {
+export type ValidationResult<T=any> = [
     error: ValidationError | false,
-    validated?: any
-}
+    validated: T
+]
 
 export type AbolishValidatorFunction = (
     value: any,

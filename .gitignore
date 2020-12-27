@@ -2,5 +2,6 @@
 .idea
 node_modules
 js
+types
 play.ts
 yarn.lock

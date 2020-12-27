@@ -37,13 +37,17 @@ class Abolish {
      * Add multiple global validators
      * @param validators
      */
-    static addGlobalValidators(validators: AbolishValidator[]) {
+    static addGlobalValidators(validators: AbolishValidator[] | Record<string, AbolishValidator>) {
+        if (typeof validators === "object") {
+            validators = Object.values(validators);
+        }
+
         if (Array.isArray(validators)) {
             for (const value of validators) {
                 Abolish.addGlobalValidator(value)
             }
         } else {
-            throw new TypeError("addGlobalValidators argument must be an array")
+            throw new TypeError("addGlobalValidators argument must be an array or an object")
         }
     }
 
@@ -76,13 +80,17 @@ class Abolish {
      * Add validator or array of validators
      * @param validators
      */
-    addValidators(validators: AbolishValidator[]): this {
+    addValidators(validators: AbolishValidator[] | Record<string, AbolishValidator>): this {
+        if (typeof validators === "object") {
+            validators = Object.values(validators);
+        }
+
         if (Array.isArray(validators)) {
             for (const value of validators) {
                 this.addValidator(value)
             }
         } else {
-            throw new TypeError("addValidators argument must be an array")
+            throw new TypeError("addValidators argument must be an array or an object")
         }
 
         return this
@@ -95,7 +103,7 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate(object: Record<string, any>, rules: Record<string, any>): ValidationResult {
+    static validate<R = Record<string, any>>(object: Record<string, any>, rules: Record<keyof R | string, any>): ValidationResult<R> {
         return (new this).validate(object, rules);
     }
 
@@ -107,7 +115,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    static validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult> {
+    static validateAsync<R = Record<string, any>>(object: Record<string, any>, rules: Record<keyof R | string, any>): Promise<ValidationResult<R>> {
         return (new this).validateAsync(object, rules)
     }
 
@@ -119,7 +127,7 @@ class Abolish {
      * @param {object} rules
      * @param {boolean} isAsync
      */
-    validate(object: Record<string, any>, rules: Record<string, any>, isAsync = false): ValidationResult {
+    validate<R = Record<string, any>>(object: Record<string, any>, rules: Record<keyof R | string, any>, isAsync = false): ValidationResult<R> {
 
         let asyncData = {
             validated: {} as any,
@@ -283,28 +291,28 @@ class Abolish {
                              * If error when running defined function
                              * Send error as validationResult with type as 'internal'
                              */
-                            return {
-                                error: {
+                            return [
+                                {
                                     key: rule,
                                     type: 'internal',
                                     validator: validatorName,
                                     message: e.message,
                                     data: e.stack
-                                }
-                            }
+                                }, {} as R
+                            ]
                         }
 
 
                         if (validationResult instanceof AbolishError) {
-                            return {
-                                error: {
+                            return [
+                                {
                                     key: rule,
                                     type: 'validator',
                                     validator: validatorName,
                                     message: $error ? $error : validationResult.message,
                                     data: validationResult.data
-                                }
-                            }
+                                }, {} as R
+                            ]
                         } else if (validationResult === false) {
                             /**
                              * Check if option is stringable
@@ -326,15 +334,15 @@ class Abolish {
                                 message = message.replace(':option', validatorOption);
 
                             // Return Error using the ValidationResult format
-                            return {
-                                error: {
+                            return [
+                                {
                                     key: rule,
                                     type: 'validator',
                                     validator: validatorName,
                                     message,
                                     data: null
-                                }
-                            }
+                                }, {} as R
+                            ]
                         }
                     }
                 }
@@ -349,10 +357,10 @@ class Abolish {
         // Pick only keys in rules
         validated = Pick(validated, keysToBeValidated);
 
-        return {
-            error: false,
-            validated
-        }
+        return [
+            false,
+            validated as R
+        ]
     }
 
     /**
@@ -363,7 +371,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    validateAsync(object: Record<string, any>, rules: Record<string, any>): Promise<ValidationResult> {
+    validateAsync<R = Record<string, any>>(object: Record<string, any>, rules: Record<keyof R | string, any>): Promise<ValidationResult<R>> {
         /**
          * Get asyncData
          */
@@ -411,28 +419,24 @@ class Abolish {
                      * If error when running defined function
                      * Send error as validationResult with type as 'internal'
                      */
-                    return resolve({
-                        error: {
-                            key: rule,
-                            type: 'internal',
-                            validator: validatorName,
-                            message: e.message,
-                            data: e.stack
-                        }
-                    })
+                    return resolve([{
+                        key: rule,
+                        type: 'internal',
+                        validator: validatorName,
+                        message: e.message,
+                        data: e.stack
+                    }, {}])
                 }
 
 
                 if (validationResult instanceof AbolishError) {
-                    return resolve({
-                        error: {
-                            key: rule,
-                            type: 'validator',
-                            validator: validatorName,
-                            message: $error ? $error : validationResult.message,
-                            data: validationResult.data
-                        }
-                    })
+                    return resolve([{
+                        key: rule,
+                        type: 'validator',
+                        validator: validatorName,
+                        message: $error ? $error : validationResult.message,
+                        data: validationResult.data
+                    }, {}])
                 } else if (validationResult === false) {
                     /**
                      * Check if option is stringable
@@ -452,22 +456,17 @@ class Abolish {
                         message = message.replace(':option', validatorOption);
 
                     // Return Error using the ValidationResult format
-                    return resolve({
-                        error: {
-                            key: rule,
-                            type: 'validator',
-                            validator: validatorName,
-                            message,
-                            data: null
-                        }
-                    })
+                    return resolve([{
+                        key: rule,
+                        type: 'validator',
+                        validator: validatorName,
+                        message,
+                        data: null
+                    }, {}])
                 }
             }
 
-            return resolve({
-                error: false,
-                validated: Pick(validated, keysToBeValidated)
-            })
+            return resolve([false, Pick(validated, keysToBeValidated)])
         });
     }
 }

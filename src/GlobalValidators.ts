@@ -146,7 +146,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     },
 
     $inline: {
-        name: '$custom',
+        name: '$inline',
         error: ':param failed inline validation.',
         validator: (v: any, o: AbolishInlineValidator, helpers) => {
             return o(v, helpers);
