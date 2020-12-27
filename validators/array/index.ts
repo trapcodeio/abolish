@@ -1,5 +1,5 @@
 import any = require("./any");
 
-export = {
+export {
     any
 }

@@ -46,7 +46,7 @@ const form = {
     url: 'wildstream.ng'
 };
 
-const validation = aboy.validate(form, {
+const [error, validated] = aboy.validate(form, {
     '*': 'must|typeOf:string',
     email: 'isEmail',
     username: '*',
@@ -54,7 +54,7 @@ const validation = aboy.validate(form, {
     url: 'addProtocol:http'
 });
 
-console.log({form, validation});
+console.log({form, validation: {error, validated}});
 ```
 
 #### Result
