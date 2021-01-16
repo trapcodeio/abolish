@@ -103,7 +103,7 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate<R = Record<string, any>>(object: Record<string, any>, rules: Record<keyof R | string, any>): ValidationResult<R> {
+    static validate<R = Record<string, any> | any>(object: Record<string, any>, rules: Record<keyof R | string, any>): ValidationResult<R> {
         return (new this).validate(object, rules);
     }
 

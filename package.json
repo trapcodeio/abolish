@@ -9,8 +9,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "build": "cd js && ls",
     "watch": "tsc --watch",
-    "play": "ts-node-dev --respawn --transpile-only play.ts"
+    "play": "ts-node-dev --respawn play.ts"
   },
   "dependencies": {
     "@types/lodash.has": "^4.5.6",
