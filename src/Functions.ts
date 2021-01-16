@@ -1,4 +1,5 @@
 import StringToRules from "./StringToRules";
+import startCase from "lodash.startcase"
 
 /**
  * Change to string to upperFirst
@@ -15,10 +16,7 @@ export function UpperFirst(str: string): string {
  * @constructor
  */
 export function StartCase(str: string): string {
-    if(str.indexOf('_') >= 0) str = str.replace('_', ' ');
-    if(str.indexOf('-') >= 0) str = str.replace('-', ' ');
-
-    return str.split(' ').map(word => UpperFirst(word)).join(' ');
+    return startCase(str);
 }
 
 /**
