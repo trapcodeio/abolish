@@ -16,7 +16,7 @@ class Abolish {
     } = {};
 
 
-    config: {useStartCaseInErrors: boolean} = {useStartCaseInErrors: true}
+    config: { useStartCaseInErrors: boolean } = {useStartCaseInErrors: true}
 
     /**
      * Add single global validator
@@ -52,6 +52,12 @@ class Abolish {
         } else {
             throw new TypeError("addGlobalValidators argument must be an array or an object")
         }
+    }
+
+
+    useStartCaseInErrors(value = true) {
+        this.config.useStartCaseInErrors = value;
+        return this;
     }
 
     /**
