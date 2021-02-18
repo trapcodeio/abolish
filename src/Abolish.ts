@@ -15,6 +15,9 @@ class Abolish {
         [key: string]: AbolishValidator
     } = {};
 
+
+    config: {useStartCaseInErrors: boolean} = {useStartCaseInErrors: true}
+
     /**
      * Add single global validator
      * @param validator
@@ -329,7 +332,7 @@ class Abolish {
                              * Replace :param with rule converted to upperCase
                              * and if option is stringable, replace :option with validatorOption
                              */
-                            let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule));
+                            let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule, this));
                             if (optionIsStringable)
                                 message = message.replace(':option', validatorOption);
 
@@ -451,7 +454,7 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule));
+                    let message = ($error ? $error : validator.error!).replace(':param', $name ? $name : StartCase(rule, this));
                     if (optionIsStringable)
                         message = message.replace(':option', validatorOption);
 

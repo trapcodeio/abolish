@@ -1,5 +1,6 @@
 import StringToRules from "./StringToRules";
 import startCase from "lodash.startcase"
+import Abolish from "./Abolish";
 
 /**
  * Change to string to upperFirst
@@ -13,10 +14,11 @@ export function UpperFirst(str: string): string {
 /**
  * StartCase
  * @param str
+ * @param abolishInstance
  * @constructor
  */
-export function StartCase(str: string): string {
-    return startCase(str);
+export function StartCase(str: string, abolishInstance?: Abolish): string {
+    return abolishInstance ? (abolishInstance.config.useStartCaseInErrors ? startCase(str) : str) : startCase(str);
 }
 
 /**
