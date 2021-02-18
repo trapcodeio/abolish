@@ -55,7 +55,11 @@ class Abolish {
     }
 
 
-    useStartCaseInErrors(value = true) {
+    /**
+     * Toggle start case in error.
+     * @param value
+     */
+    useStartCaseInErrors(value: boolean = true) {
         this.config.useStartCaseInErrors = value;
         return this;
     }
