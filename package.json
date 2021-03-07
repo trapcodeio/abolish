@@ -9,7 +9,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "bp": "tsc && ts-node build && cd js && npm publish",
+    "bp": "tsc && ts-node build && npm publish js",
     "watch": "tsc --watch",
     "play": "ts-node-dev --respawn play.ts"
   },
