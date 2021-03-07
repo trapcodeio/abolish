@@ -1,7 +1,7 @@
 import {AbolishValidator, ValidationResult} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {StartCase, Pick} from "./Functions";
+import {StartCase, Pick, Get} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -277,7 +277,7 @@ class Abolish {
                     /**
                      * Value of key being validated in object
                      */
-                    const objectValue = validated[rule];
+                    const objectValue = Get(validated, rule);
 
                     /**
                      * If is async push needed data to asyncData
@@ -414,7 +414,7 @@ class Abolish {
                 /**
                  * Value of key being validated in object
                  */
-                const objectValue = validated[rule];
+                const objectValue = Get(validated, rule);
 
                 let validationResult: any = false;
                 try {

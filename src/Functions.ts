@@ -87,12 +87,17 @@ export function Set(object: any, path: any, value: any) {
     return object; // Return the top-level object to allow chaining
 }
 
-export function Get(obj: any, path: string, defaultValue: any) {
-    const travel = (regexp: any) =>
-        String.prototype.split
-            .call(path, regexp)
-            .filter(Boolean)
-            .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
-    const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
-    return result === undefined || result === obj ? defaultValue : result;
+export function Get(obj: any, path: string, defaultValue?: any) {
+    if (path.indexOf('.') >= 0) {
+        const travel = (regexp: any) =>
+            String.prototype.split
+                .call(path, regexp)
+                .filter(Boolean)
+                .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
+        const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
+        return result === undefined || result === obj ? defaultValue : result;
+    } else {
+        return obj[path];
+    }
+
 }
