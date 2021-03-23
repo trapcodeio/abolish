@@ -1,7 +1,7 @@
 import {AbolishValidator, ValidationResult} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {StartCase, Pick, Get} from "./Functions";
+import {StartCase, Pick, Get, ParseRules} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -188,8 +188,11 @@ class Abolish {
              * Convert ruleData to object if string
              * Using StringToRules function
              */
-            if (typeof ruleData === "string")
+            if (typeof ruleData === "string"){
                 ruleData = StringToRules(ruleData);
+            } else if (Array.isArray(ruleData)){
+                ruleData = ParseRules(ruleData);
+            }
 
             /**
              * if ruleData has property of $skip then check

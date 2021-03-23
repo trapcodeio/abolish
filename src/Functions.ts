@@ -101,3 +101,30 @@ export function Get(obj: any, path: string, defaultValue?: any) {
     }
 
 }
+
+export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {
+    /**
+     * Stores generated rules
+     */
+    let generatedRule: any = {};
+
+    /**
+     * Loop Through each rule
+     *
+     * 1. convert to object if string
+     * 2. add rule to generatedRule object
+     */
+    for (let key of Object.keys(rules)) {
+        let rule = rules[key];
+
+        if (typeof rule as string === "string") {
+            rule = StringToRules(rule);
+        } else if (Array.isArray(rule)) {
+            rule = Rule(rule);
+        }
+
+        generatedRule[key] = rule;
+    }
+
+    return generatedRule as Rules;
+}
