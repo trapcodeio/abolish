@@ -1,7 +1,7 @@
 import {AbolishValidator, ValidationResult} from "./Types"
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import {StartCase, Pick, Get, ParseRules} from "./Functions";
+import {StartCase, Pick, Get, ParseRules, Rule} from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -191,7 +191,7 @@ class Abolish {
             if (typeof ruleData === "string"){
                 ruleData = StringToRules(ruleData);
             } else if (Array.isArray(ruleData)){
-                ruleData = ParseRules(ruleData);
+                ruleData = Rule(ruleData);
             }
 
             /**
