@@ -24,40 +24,39 @@ yarn add abolish
 ```javascript
 const {Abolish} = require('abolish');
 
-const aboy = new Abolish();
+const abolish = new Abolish();
 
-aboy.addValidator({
-    name: 'isEmail',
-    validator: (str) => {
-        return str.includes('@')
-    },
-});
+// Use abolish email validator
+const EmailValidator = require('abolish/validators/string/email');
+abolish.addValidator(EmailValidator);
 
-aboy.addValidator({
-    name: 'addProtocol',
-    validator: (url, option, {modifier}) => {
-        if (url.substr(0, option.length) !== option) {
-            // add protocol
-            modifier.setThis(`${option}://${url}`)
-        }
-        return true
+// Add Custom Validtor
+abolish.addValidator({
+  name: 'addProtocol',
+  validator: (url, option, {modifier}) => {
+    // Check if url does not have required protocol
+    if (url.substr(0, option.length) !== option) {
+      // Add protocol
+      modifier.setThis(`${option}://${url}`)
     }
+    return true
+  }
 });
 
 // Object to validate
 const form = {
-    email: 'appdeveloper@sky.com',
-    username: 'john_doe',
-    age: 18,
-    url: 'wildstream.ng'
+  email: 'appdeveloper@sky.com',
+  username: 'john_doe',
+  age: 18,
+  url: 'wildstream.ng'
 };
 
-const [error, validated] = aboy.validate(form, {
-    '*': 'must|typeOf:string',
-    email: 'isEmail',
-    username: '*',
-    age: 'typeOf:number|max:20',
-    url: 'addProtocol:http'
+const [error, validated] = abolish.validate(form, {
+  $: 'required|typeOf:string', // $ or '*' is considered as wildcard
+  email: 'isEmail',
+  username: '*',
+  age: 'typeOf:number|max:20',
+  url: 'addProtocol:http'
 });
 
 console.log({form, validation: {error, validated}});
