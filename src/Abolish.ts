@@ -149,12 +149,14 @@ class Abolish {
         };
 
         /**
-         * Check for wildcard rules (*, **)
+         * Check for wildcard rules (*, $)
          */
         let internalWildcardRules: any = {};
-        if (rules.hasOwnProperty("*")) {
-            internalWildcardRules = rules["*"];
+        if (rules.hasOwnProperty("*") || rules.hasOwnProperty("$")) {
+            internalWildcardRules = rules["*"] || rules["$"];
+
             delete rules["*"];
+            delete rules["$"];
 
             /**
              * Convert rules[*] to object if string
@@ -181,7 +183,7 @@ class Abolish {
             /**
              * If ruleData is wildcard change rule data to empty object
              */
-            if (ruleData === "*") ruleData = {};
+            if (["*", "$"].includes(ruleData)) ruleData = {};
 
             /**
              * Convert ruleData to object if string
