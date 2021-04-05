@@ -1,5 +1,3 @@
 import any = require("./any");
 
-export {
-    any
-}
+export { any };

@@ -3,9 +3,8 @@
  */
 import fs = require("fs");
 
-
 async function main() {
-    const PackageDotJson = require('./package.json');
+    const PackageDotJson = require("./package.json");
 
     // Modify Package.json
     PackageDotJson.main = "index.js";
@@ -17,4 +16,4 @@ async function main() {
     fs.copyFileSync(`${__dirname}/readme.md`, `${__dirname}/js/readme.md`);
 }
 
-main().then(() => process.exit())
+main().then(() => process.exit());

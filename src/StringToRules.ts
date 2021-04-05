@@ -36,18 +36,22 @@ const keyColumnValStringGraveAccent = new RegExp(/([a-zA-Z_*0-9]+:`[^`]+`)/g);
  * @constructor
  */
 const StringToRules = (str: string): { [key: string]: any } => {
-    let s = str.split('|');
+    let s = str.split("|");
 
     const keyColumnValObj: {
-        [key: string]: string | boolean | number
+        [key: string]: string | boolean | number;
     } = {};
 
     for (let i = 0; i < s.length; i++) {
         const pair: string = s[i];
 
-        if (pair.match(keyColumnValStringSingleQuotes) || pair.match(keyColumnValStringDoubleQuotes) || pair.match(keyColumnValStringGraveAccent)) {
+        if (
+            pair.match(keyColumnValStringSingleQuotes) ||
+            pair.match(keyColumnValStringDoubleQuotes) ||
+            pair.match(keyColumnValStringGraveAccent)
+        ) {
             const [key, ...value] = pair.split(":");
-            let valueToString: string = value.join(':');
+            let valueToString: string = value.join(":");
 
             valueToString = valueToString.substr(1);
             valueToString = valueToString.substr(0, value.length - 1);
@@ -70,17 +74,16 @@ const StringToRules = (str: string): { [key: string]: any } => {
             let value = true;
 
             // if !key set value to false
-            if (key.substr(0, 1) === '!') {
+            if (key.substr(0, 1) === "!") {
                 key = key.substr(1);
                 value = false;
             }
 
             keyColumnValObj[key] = value;
         }
-
     }
 
     return keyColumnValObj;
 };
 
-export = StringToRules
+export = StringToRules;

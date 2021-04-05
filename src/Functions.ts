@@ -1,5 +1,5 @@
 import StringToRules from "./StringToRules";
-import startCase from "lodash.startcase"
+import startCase from "lodash.startcase";
 import Abolish from "./Abolish";
 
 /**
@@ -8,7 +8,7 @@ import Abolish from "./Abolish";
  * @constructor
  */
 export function UpperFirst(str: string): string {
-    return str[0].toUpperCase() + str.substr(1)
+    return str[0].toUpperCase() + str.substr(1);
 }
 
 /**
@@ -18,7 +18,11 @@ export function UpperFirst(str: string): string {
  * @constructor
  */
 export function StartCase(str: string, abolishInstance?: Abolish): string {
-    return abolishInstance ? (abolishInstance.config.useStartCaseInErrors ? startCase(str) : str) : startCase(str);
+    return abolishInstance
+        ? abolishInstance.config.useStartCaseInErrors
+            ? startCase(str)
+            : str
+        : startCase(str);
 }
 
 /**
@@ -51,16 +55,13 @@ export function Rule(rules: any[]): any {
      * 2. add rule to generatedRule object
      */
     for (let rule of rules) {
+        if ((typeof rule as string) === "string") rule = StringToRules(rule);
 
-        if (typeof rule as string === "string")
-            rule = StringToRules(rule);
-
-        generatedRule = {...generatedRule, ...rule}
+        generatedRule = { ...generatedRule, ...rule };
     }
 
     return generatedRule;
 }
-
 
 export function Pick(object: any, keys: string[]) {
     return keys.reduce((obj: any, key: string) => {
@@ -75,20 +76,27 @@ export function Set(object: any, path: any, value: any) {
     if (Object(object) !== object) return object; // When object is not an object
     // If not yet an array, get the keys from the string-path
     if (!Array.isArray(path)) path = path.toString().match(/[^.[\]]+/g) || [];
-    path.slice(0, -1).reduce((a: any, c: any, i: number) => // Iterate all of them except the last one
+    path.slice(0, -1).reduce(
+        (
+            a: any,
+            c: any,
+            i: number // Iterate all of them except the last one
+        ) =>
             Object(a[c]) === a[c] // Does the key exist and is its value an object?
-                // Yes: then follow that path
-                ? a[c]
-                // No: create the key. Is the next key a potential array-index?
-                : a[c] = Math.abs(path[i + 1]) >> 0 === +path[i + 1]
-                ? [] // Yes: assign a new array object
-                : {}, // No: assign a new plain object
-        object)[path[path.length - 1]] = value; // Finally assign the value to the last key
+                ? // Yes: then follow that path
+                  a[c]
+                : // No: create the key. Is the next key a potential array-index?
+                  (a[c] =
+                      Math.abs(path[i + 1]) >> 0 === +path[i + 1]
+                          ? [] // Yes: assign a new array object
+                          : {}), // No: assign a new plain object
+        object
+    )[path[path.length - 1]] = value; // Finally assign the value to the last key
     return object; // Return the top-level object to allow chaining
 }
 
 export function Get(obj: any, path: string, defaultValue?: any) {
-    if (path.indexOf('.') >= 0) {
+    if (path.indexOf(".") >= 0) {
         const travel = (regexp: any) =>
             String.prototype.split
                 .call(path, regexp)
@@ -99,7 +107,6 @@ export function Get(obj: any, path: string, defaultValue?: any) {
     } else {
         return obj[path];
     }
-
 }
 
 export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {
@@ -117,7 +124,7 @@ export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rule
     for (let key of Object.keys(rules)) {
         let rule = rules[key];
 
-        if (typeof rule as string === "string") {
+        if ((typeof rule as string) === "string") {
             rule = StringToRules(rule);
         } else if (Array.isArray(rule)) {
             rule = Rule(rule);

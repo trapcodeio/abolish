@@ -1,4 +1,4 @@
-import {Set, Get, StartCase} from "./Functions";
+import { Set, Get, StartCase } from "./Functions";
 import has from "lodash.has";
 import unset from "lodash.unset";
 
@@ -68,7 +68,6 @@ class ObjectModifier {
         return unset(this.data, path);
     }
 
-
     /**
      * Unset this path in object
      * @method
@@ -86,4 +85,4 @@ class ObjectModifier {
     }
 }
 
-export = ObjectModifier
+export = ObjectModifier;

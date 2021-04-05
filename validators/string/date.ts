@@ -1,18 +1,18 @@
-import type {AbolishValidator} from "../../src/Types";
+import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
-    name: 'date',
-    validator: (v: any, o: any, {modifier}) => {
+    name: "date",
+    validator: (v: any, o: any, { modifier }) => {
         if (v instanceof Date) {
-            return true
+            return true;
         } else if (typeof v === "string") {
             const date = new Date(v);
-            const isDate = !isNaN(date.getTime())
+            const isDate = !isNaN(date.getTime());
             if (isDate && o?.cast) modifier.setThis(date);
-            return isDate
+            return isDate;
         } else {
-            return false
+            return false;
         }
     },
     error: `:param is not a valid Date!`
-}
+};

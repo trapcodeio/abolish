@@ -1,8 +1,8 @@
-import type {AbolishValidator} from "../../src/Types";
+import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
-    name: 'regex',
-    error: ':param failed Regex test.',
+    name: "regex",
+    error: ":param failed Regex test.",
     validator: (str, regex) => {
         const isRegex = regex instanceof RegExp;
         if (typeof str !== "string" && !isRegex) return false;
@@ -13,4 +13,4 @@ export = <AbolishValidator>{
             return RegExp(regex).test(str);
         }
     }
-}
+};

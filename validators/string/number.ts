@@ -1,8 +1,8 @@
-import type {AbolishValidator} from "../../src/Types";
+import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
-    name: 'number',
-    error: ':param is not a valid number',
+    name: "number",
+    error: ":param is not a valid number",
     /**
      *
      * @param number
@@ -10,7 +10,7 @@ export = <AbolishValidator>{
      * @param {ObjectModifier} modifier
      * @return {boolean}
      */
-    validator: (number, option, {modifier}) => {
+    validator: (number, option, { modifier }) => {
         const isNumber = !isNaN(number);
 
         // Cast to number if not number
@@ -20,4 +20,4 @@ export = <AbolishValidator>{
 
         return isNumber;
     }
-}
+};

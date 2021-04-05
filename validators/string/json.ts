@@ -1,8 +1,8 @@
-import type {AbolishValidator} from "../../src/Types";
+import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
-    name: 'json',
-    error: ':param is not a valid JSON string',
+    name: "json",
+    error: ":param is not a valid JSON string",
     validator: (str) => {
         if (typeof str !== "string") return false;
         try {
@@ -12,4 +12,4 @@ export = <AbolishValidator>{
             return false;
         }
     }
-}
+};

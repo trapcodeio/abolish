@@ -11,18 +11,18 @@ class AbolishError {
         this.message = message;
 
         if (data) {
-            this.data = data
+            this.data = data;
         } else {
-            this.data = {}
+            this.data = {};
         }
 
-        return this
+        return this;
     }
 
     setData(data: any) {
         this.data = data;
-        return data
+        return data;
     }
 }
 
-export = AbolishError
+export = AbolishError;

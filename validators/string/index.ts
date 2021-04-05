@@ -9,15 +9,4 @@ import number = require("./number");
 import regex = require("./regex");
 import url = require("./url");
 
-export {
-    alphaNumeric,
-    boolean,
-    date,
-    email,
-    ipAddress,
-    json,
-    jsonDecode,
-    number,
-    regex,
-    url
-}
+export { alphaNumeric, boolean, date, email, ipAddress, json, jsonDecode, number, regex, url };

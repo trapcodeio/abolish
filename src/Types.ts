@@ -1,18 +1,17 @@
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
-
 /**
  * ValidationError
  * @description
  * Result returned by the validate object
  */
 export type ValidationError = {
-    key: string
-    type: 'internal' | 'validator'
-    message: string
-    validator: string
-    data: any
+    key: string;
+    type: "internal" | "validator";
+    message: string;
+    validator: string;
+    data: any;
 };
 
 /**
@@ -20,27 +19,24 @@ export type ValidationError = {
  * @description
  * Result returned by the validate object
  */
-export type ValidationResult<T=any> = [
-    error: ValidationError | false,
-    validated: T
-]
+export type ValidationResult<T = any> = [error: ValidationError | false, validated: T];
 
 export type AbolishValidatorFunction = (
     value: any,
     option: any,
     helpers: {
-        error: (message: string, data?: any) => AbolishError,
-        modifier: ObjectModifier
+        error: (message: string, data?: any) => AbolishError;
+        modifier: ObjectModifier;
     }
-) => boolean | AbolishError | Promise<boolean | AbolishError>
+) => boolean | AbolishError | Promise<boolean | AbolishError>;
 
 export type AbolishInlineValidator = (
     value: any,
     helpers: {
-        error: (message: string, data?: any) => AbolishError,
-        modifier: ObjectModifier
+        error: (message: string, data?: any) => AbolishError;
+        modifier: ObjectModifier;
     }
-) => boolean | AbolishError | Promise<boolean | AbolishError>
+) => boolean | AbolishError | Promise<boolean | AbolishError>;
 
 /**
  * Validator
@@ -48,8 +44,8 @@ export type AbolishInlineValidator = (
  * A new validator type
  */
 export type AbolishValidator = {
-    name: string,
-    validator: AbolishValidatorFunction,
-    error?: string,
-    isAsync?: boolean
-}
+    name: string;
+    validator: AbolishValidatorFunction;
+    error?: string;
+    isAsync?: boolean;
+};
