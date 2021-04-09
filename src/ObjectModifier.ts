@@ -28,6 +28,14 @@ class ObjectModifier {
     }
 
     /**
+     * Get path of current key being validated
+     * @method
+     */
+    getThis() {
+        return this.get(this.path);
+    }
+
+    /**
      * Has path in object
      * @method
      * @param path

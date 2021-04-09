@@ -7,6 +7,19 @@ import json = require("./json");
 import jsonDecode = require("./jsonDecode");
 import number = require("./number");
 import regex = require("./regex");
+import string = require("./string");
 import url = require("./url");
 
-export { alphaNumeric, boolean, date, email, ipAddress, json, jsonDecode, number, regex, url };
+export {
+    alphaNumeric,
+    boolean,
+    date,
+    email,
+    ipAddress,
+    json,
+    jsonDecode,
+    number,
+    regex,
+    url,
+    string
+};
