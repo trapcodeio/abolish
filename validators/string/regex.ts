@@ -2,7 +2,7 @@ import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
     name: "regex",
-    error: ":param failed Regex test.",
+    error: ":param failed Regex tests.",
     validator: (str, regex) => {
         const isRegex = regex instanceof RegExp;
         if (typeof str !== "string" && !isRegex) return false;

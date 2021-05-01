@@ -76,7 +76,7 @@
     /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": [
-    "play.ts",
+    "tests",
     "build.ts",
     "js"
   ]

@@ -1,9 +1,10 @@
 import { AbolishValidator, ValidationResult } from "./Types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { StartCase, Pick, Get, ParseRules, Rule } from "./Functions";
+import { StartCase, Pick, Get, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
+import type Joi from "joi";
 
 /**
  * Abolish Class
@@ -30,6 +31,8 @@ class Abolish {
         } else {
             throw new TypeError("addGlobalValidator argument must be an object.");
         }
+
+        return this;
     }
 
     /**
@@ -48,6 +51,8 @@ class Abolish {
         } else {
             throw new TypeError("addGlobalValidators argument must be an array or an object");
         }
+
+        return this;
     }
 
     /**
@@ -515,6 +520,48 @@ class Abolish {
             }
 
             return resolve([false, Pick(validated, keysToBeValidated)]);
+        });
+    }
+
+    static useJoi(joi?: Joi.Root) {
+        if (!joi) {
+            try {
+                joi = require("joi") as Joi.Root;
+            } catch (e) {
+                throw new Error(`Joi not found! Install Joi`);
+            }
+        }
+
+        /**
+         * Add Validator Joi
+         */
+        return Abolish.addGlobalValidator({
+            name: "$joi",
+            validator(value, joiSchema: Joi.Schema, { error, modifier }) {
+                /**
+                 * Check if schema is Joi Schema
+                 */
+                if (!joi!.isSchema(joiSchema)) {
+                    return error(`Invalid JOI schema provided for :param`);
+                }
+
+                /**
+                 * Validate value against joiSchema Passed
+                 */
+                let validated: any;
+                try {
+                    validated = joi!.attempt(value, joiSchema);
+                } catch (e) {
+                    return error(e.message);
+                }
+
+                /**
+                 * Set Value for abolish
+                 */
+                modifier.setThis(validated);
+
+                return true;
+            }
         });
     }
 }

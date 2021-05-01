@@ -1,6 +1,8 @@
 import StringToRules from "./StringToRules";
 import startCase from "lodash.startcase";
 import Abolish from "./Abolish";
+import { AbolishInlineValidator, ValidationError } from "./Types";
+import AbolishError from "./AbolishError";
 
 /**
  * Change to string to upperFirst
@@ -33,6 +35,7 @@ export function StartCase(str: string, abolishInstance?: Abolish): string {
  * { must: true, min: 10, max: 20, exact: false }
  *
  * @param rules
+ * @param options
  * @constructor
  */
 export function Rule(rules: any[]): any {
@@ -135,3 +138,92 @@ export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rule
 
     return generatedRule as Rules;
 }
+
+/**
+ * Validates a variable
+ * @param variable
+ * @param rules
+ * @param abolish
+ */
+export const attempt = <V = any>(
+    variable: V,
+    rules: Record<string, any> | string,
+    abolish?: typeof Abolish
+): V => {
+    const [e, v] = (abolish ? abolish : Abolish).validate<{ variable: V }>(
+        { variable },
+        { variable: rules }
+    );
+
+    if (e) throw new Error(e.message);
+
+    return v.variable;
+};
+
+/**
+ * Validates a variable Asynchronously, Throws error
+ * @param variable
+ * @param rules
+ * @param abolish
+ */
+export const attemptAsync = async <V = any>(
+    variable: V,
+    rules: Record<string, any> | string | string[],
+    abolish?: typeof Abolish
+): Promise<V> => {
+    const [e, v] = await (abolish ? abolish : Abolish).validateAsync<{ variable: V }>(
+        { variable },
+        { variable: rules }
+    );
+
+    if (e) throw new Error(e.message);
+
+    return v.variable;
+};
+
+/**
+ * check a variable does not throw error
+ * @param variable
+ * @param rules
+ * @param abolish
+ */
+export const check = <V = any>(
+    variable: V,
+    rules: Record<string, any> | string,
+    abolish?: typeof Abolish
+): [ValidationError | false, V] => {
+    const [e, v] = (abolish ? abolish : Abolish).validate<{ variable: V }>(
+        { variable },
+        { variable: rules }
+    );
+
+    return [e, v?.variable];
+};
+
+/**
+ * Checks a variable Asynchronously
+ * @param variable
+ * @param rules
+ * @param abolish
+ */
+export const checkAsync = async <V = any>(
+    variable: V,
+    rules: Record<string, any> | string | string[],
+    abolish?: typeof Abolish
+): Promise<[ValidationError | false, V]> => {
+    const [e, v] = await (abolish ? abolish : Abolish).validateAsync<{ variable: V }>(
+        { variable },
+        { variable: rules }
+    );
+
+    return [e, v?.variable];
+};
+
+/**
+ * $inLine object generator
+ * @param fn
+ * @param $error
+ */
+export const $inline = (fn: AbolishInlineValidator, $error?: string) => {
+    return $error ? { $inline: fn, $error } : { $inline: fn };
+};
