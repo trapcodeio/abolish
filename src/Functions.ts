@@ -2,7 +2,6 @@ import StringToRules from "./StringToRules";
 import startCase from "lodash.startcase";
 import Abolish from "./Abolish";
 import { AbolishInlineValidator, ValidationError } from "./Types";
-import AbolishError from "./AbolishError";
 
 /**
  * Change to string to upperFirst

@@ -5,6 +5,7 @@ import { StartCase, Pick, Get, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import type Joi from "joi";
+import cloneDeep from "lodash.clonedeep";
 
 /**
  * Abolish Class
@@ -152,6 +153,9 @@ class Abolish {
             validated: {} as any,
             jobs: [] as any
         };
+
+        // clone rules
+        rules = cloneDeep(rules);
 
         /**
          * Check for wildcard rules (*, $)
@@ -535,7 +539,7 @@ class Abolish {
         /**
          * Add Validator Joi
          */
-        return Abolish.addGlobalValidator({
+        return this.addGlobalValidator({
             name: "$joi",
             validator(value, joiSchema: Joi.Schema, { error, modifier }) {
                 /**
