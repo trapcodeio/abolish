@@ -183,7 +183,7 @@ class Abolish {
         /**
          * Get Keys to be validated
          */
-        const keysToBeValidated = Object.keys(rules);
+        let keysToBeValidated = Object.keys(rules);
 
         // Loop through defined rules
         for (const rule of keysToBeValidated) {
@@ -227,7 +227,9 @@ class Abolish {
             /**
              * Run validation if not $skip
              */
-            if (!$skip) {
+            if ($skip) {
+                keysToBeValidated = keysToBeValidated.filter((v) => v !== rule);
+            } else {
                 /**
                  * if ruleData has property of $name then set to name
                  */
