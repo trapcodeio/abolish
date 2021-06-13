@@ -151,7 +151,8 @@ class Abolish {
     ): ValidationResult<R> {
         let asyncData = {
             validated: {} as any,
-            jobs: [] as any
+            jobs: [] as any,
+            keysToBeValidated: [] as string[]
         };
 
         // clone rules
@@ -401,6 +402,8 @@ class Abolish {
 
         if (isAsync) {
             asyncData.validated = validated;
+            asyncData.keysToBeValidated = keysToBeValidated;
+
             return asyncData as any;
         }
 
@@ -430,12 +433,7 @@ class Abolish {
         /**
          * Destruct values in async data
          */
-        const { validated, jobs } = asyncData;
-
-        /**
-         * Get Keys to be validated
-         */
-        const keysToBeValidated = Object.keys(rules);
+        const { validated, jobs, keysToBeValidated } = asyncData;
 
         /**
          * Return a promise
