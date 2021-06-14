@@ -20,7 +20,7 @@ export = <AbolishValidator>{
 };
 
 function runThis(option: any, modifier: ObjectModifier) {
-    // Get current string from state.
+    // abolish_Get current string from state.
     const str = modifier.getThis();
 
     // @ts-ignore

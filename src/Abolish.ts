@@ -1,7 +1,7 @@
-import { AbolishValidator, ValidationResult } from "./Types";
+import { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { StartCase, Pick, Get, Rule } from "./Functions";
+import { abolish_StartCase, abolish_Pick, abolish_Get, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import type Joi from "joi";
@@ -182,7 +182,7 @@ class Abolish {
         let validated: Record<string, any> = { ...object };
 
         /**
-         * Get Keys to be validated
+         * abolish_Get Keys to be validated
          */
         let keysToBeValidated = Object.keys(rules);
 
@@ -302,7 +302,7 @@ class Abolish {
                     /**
                      * Value of key being validated in object
                      */
-                    const objectValue = Get(validated, rule);
+                    const objectValue = abolish_Get(validated, rule);
 
                     /**
                      * If is async push needed data to asyncData
@@ -378,7 +378,7 @@ class Abolish {
                              */
                             let message = ($error ? $error : validator.error!).replace(
                                 ":param",
-                                $name ? $name : StartCase(rule, this)
+                                $name ? $name : abolish_StartCase(rule, this)
                             );
                             if (optionIsStringable)
                                 message = message.replace(":option", validatorOption);
@@ -407,8 +407,8 @@ class Abolish {
             return asyncData as any;
         }
 
-        // Pick only keys in rules
-        validated = Pick(validated, keysToBeValidated);
+        // abolish_Pick only keys in rules
+        validated = abolish_Pick(validated, keysToBeValidated);
 
         return [false, validated as R];
     }
@@ -426,7 +426,7 @@ class Abolish {
         rules: Record<keyof R | string, any>
     ): Promise<ValidationResult<R>> {
         /**
-         * Get asyncData
+         * abolish_Get asyncData
          */
         const asyncData: any = this.validate(object, rules, true);
 
@@ -448,7 +448,7 @@ class Abolish {
                 /**
                  * Value of key being validated in object
                  */
-                const objectValue = Get(validated, rule);
+                const objectValue = abolish_Get(validated, rule);
 
                 let validationResult: any = false;
                 try {
@@ -505,7 +505,7 @@ class Abolish {
                      */
                     let message = ($error ? $error : validator.error!).replace(
                         ":param",
-                        $name ? $name : StartCase(rule, this)
+                        $name ? $name : abolish_StartCase(rule, this)
                     );
                     if (optionIsStringable) message = message.replace(":option", validatorOption);
 
@@ -523,10 +523,14 @@ class Abolish {
                 }
             }
 
-            return resolve([false, Pick(validated, keysToBeValidated)]);
+            return resolve([false, abolish_Pick(validated, keysToBeValidated)]);
         });
     }
 
+    /**
+     * Enables the use of $joi validator
+     * @param joi
+     */
     static useJoi(joi?: Joi.Root) {
         if (!joi) {
             try {
@@ -560,13 +564,108 @@ class Abolish {
                 }
 
                 /**
-                 * Set Value for abolish
+                 * abolish_Set Value for abolish
                  */
                 modifier.setThis(validated);
 
                 return true;
             }
         });
+    }
+
+    /**
+     * check a variable does not throw error
+     * @param variable
+     * @param rules
+     */
+    check<V = any>(variable: V, rules: AbolishRule): [ValidationError | false, V] {
+        const [e, v] = this.validate<{ variable: V }>({ variable }, { variable: rules });
+        return [e, v?.variable];
+    }
+
+    /**
+     * Static Check
+     * @param variable
+     * @param rules
+     */
+    static check<V = any>(variable: V, rules: AbolishRule): [ValidationError | false, V] {
+        return new this().check(variable, rules);
+    }
+
+    /**
+     * Checks a variable Asynchronously
+     * @param variable
+     * @param rules
+     */
+    async checkAsync<V = any>(
+        variable: V,
+        rules: AbolishRule
+    ): Promise<[ValidationError | false, V]> {
+        const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
+
+        return [e, v?.variable];
+    }
+
+    /**
+     * Static Check Async
+     * @param variable
+     * @param rules
+     */
+    static checkAsync<V = any>(
+        variable: V,
+        rules: AbolishRule
+    ): Promise<[ValidationError | false, V]> {
+        return new this().checkAsync(variable, rules);
+    }
+
+    /**
+     * Validates a variable
+     * @param variable
+     * @param rules
+     */
+    attempt<V = any>(variable: V, rules: Record<string, any> | string): V {
+        const [e, v] = this.validate<{ variable: V }>({ variable }, { variable: rules });
+        if (e) throw new Error(e.message);
+        return v.variable;
+    }
+
+    /**
+     * Static Attempt
+     * @param variable
+     * @param rules
+     * @param abolish
+     */
+    static attempt<V = any>(
+        variable: V,
+        rules: Record<string, any> | string,
+        abolish?: typeof Abolish
+    ): V {
+        return new this().attempt(variable, rules);
+    }
+
+    /**
+     * Validates a variable Asynchronously, Throws error
+     * @param variable
+     * @param rules
+     */
+    async attemptAsync<V = any>(
+        variable: V,
+        rules: Record<string, any> | string | string[]
+    ): Promise<V> {
+        const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
+
+        if (e) throw new Error(e.message);
+
+        return v.variable;
+    }
+
+    /**
+     * Validates a variable Asynchronously, Throws error
+     * @param variable
+     * @param rules
+     */
+    static async attemptAsync<V = any>(variable: V, rules: AbolishRule): Promise<V> {
+        return new this().attemptAsync(variable, rules);
     }
 }
 

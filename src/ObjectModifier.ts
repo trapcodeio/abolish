@@ -1,4 +1,4 @@
-import { Set, Get, StartCase } from "./Functions";
+import { abolish_Set, abolish_Get, abolish_StartCase } from "./Functions";
 import has from "lodash.has";
 import unset from "lodash.unset";
 
@@ -17,18 +17,18 @@ class ObjectModifier {
     }
 
     /**
-     * Get path of object or return
+     * abolish_Get path of object or return
      * @method
      * @param path
      * @param $default
      * @return {*}
      */
     get(path: any, $default = undefined) {
-        return Get(this.data, path, $default);
+        return abolish_Get(this.data, path, $default);
     }
 
     /**
-     * Get path of current key being validated
+     * abolish_Get path of current key being validated
      * @method
      */
     getThis() {
@@ -46,18 +46,18 @@ class ObjectModifier {
     }
 
     /**
-     * Set value to path of object
+     * abolish_Set value to path of object
      * @method
      * @param path
      * @param value
      * @return {object}
      */
     set(path: string, value: any) {
-        return Set(this.data, path, value);
+        return abolish_Set(this.data, path, value);
     }
 
     /**
-     * Set value to this param path
+     * abolish_Set value to this param path
      * @methods
      * @param value
      * @return {*}
@@ -86,10 +86,10 @@ class ObjectModifier {
     }
 
     /**
-     * Get current path but with StartCase
+     * abolish_Get current path but with abolish_StartCase
      */
     getPath(): string {
-        return StartCase(this.path);
+        return abolish_StartCase(this.path);
     }
 }
 

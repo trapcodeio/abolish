@@ -143,7 +143,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 };
 
 /**
- * Set an alias for `must` as `required
+ * abolish_Set an alias for `must` as `required
  */
 GlobalValidators.required = Object.assign({}, GlobalValidators.must);
 GlobalValidators.required.name = "required";

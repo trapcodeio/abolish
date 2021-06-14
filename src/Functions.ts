@@ -8,17 +8,17 @@ import { AbolishInlineValidator, ValidationError } from "./Types";
  * @param str
  * @constructor
  */
-export function UpperFirst(str: string): string {
+export function abolish_UpperFirst(str: string): string {
     return str[0].toUpperCase() + str.substr(1);
 }
 
 /**
- * StartCase
+ * abolish_StartCase
  * @param str
  * @param abolishInstance
  * @constructor
  */
-export function StartCase(str: string, abolishInstance?: Abolish): string {
+export function abolish_StartCase(str: string, abolishInstance?: Abolish): string {
     return abolishInstance
         ? abolishInstance.config.useStartCaseInErrors
             ? startCase(str)
@@ -65,7 +65,7 @@ export function Rule(rules: any[]): any {
     return generatedRule;
 }
 
-export function Pick(object: any, keys: string[]) {
+export function abolish_Pick(object: any, keys: string[]) {
     return keys.reduce((obj: any, key: string) => {
         if (object && object.hasOwnProperty(key)) {
             obj[key] = object[key];
@@ -74,7 +74,7 @@ export function Pick(object: any, keys: string[]) {
     }, {});
 }
 
-export function Set(object: any, path: any, value: any) {
+export function abolish_Set(object: any, path: any, value: any) {
     if (Object(object) !== object) return object; // When object is not an object
     // If not yet an array, get the keys from the string-path
     if (!Array.isArray(path)) path = path.toString().match(/[^.[\]]+/g) || [];
@@ -97,7 +97,7 @@ export function Set(object: any, path: any, value: any) {
     return object; // Return the top-level object to allow chaining
 }
 
-export function Get(obj: any, path: string, defaultValue?: any) {
+export function abolish_Get(obj: any, path: string, defaultValue?: any) {
     if (path.indexOf(".") >= 0) {
         const travel = (regexp: any) =>
             String.prototype.split
@@ -137,86 +137,6 @@ export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rule
 
     return generatedRule as Rules;
 }
-
-/**
- * Validates a variable
- * @param variable
- * @param rules
- * @param abolish
- */
-export const attempt = <V = any>(
-    variable: V,
-    rules: Record<string, any> | string,
-    abolish?: typeof Abolish
-): V => {
-    const [e, v] = (abolish ? abolish : Abolish).validate<{ variable: V }>(
-        { variable },
-        { variable: rules }
-    );
-
-    if (e) throw new Error(e.message);
-
-    return v.variable;
-};
-
-/**
- * Validates a variable Asynchronously, Throws error
- * @param variable
- * @param rules
- * @param abolish
- */
-export const attemptAsync = async <V = any>(
-    variable: V,
-    rules: Record<string, any> | string | string[],
-    abolish?: typeof Abolish
-): Promise<V> => {
-    const [e, v] = await (abolish ? abolish : Abolish).validateAsync<{ variable: V }>(
-        { variable },
-        { variable: rules }
-    );
-
-    if (e) throw new Error(e.message);
-
-    return v.variable;
-};
-
-/**
- * check a variable does not throw error
- * @param variable
- * @param rules
- * @param abolish
- */
-export const check = <V = any>(
-    variable: V,
-    rules: Record<string, any> | string,
-    abolish?: typeof Abolish
-): [ValidationError | false, V] => {
-    const [e, v] = (abolish ? abolish : Abolish).validate<{ variable: V }>(
-        { variable },
-        { variable: rules }
-    );
-
-    return [e, v?.variable];
-};
-
-/**
- * Checks a variable Asynchronously
- * @param variable
- * @param rules
- * @param abolish
- */
-export const checkAsync = async <V = any>(
-    variable: V,
-    rules: Record<string, any> | string | string[],
-    abolish?: typeof Abolish
-): Promise<[ValidationError | false, V]> => {
-    const [e, v] = await (abolish ? abolish : Abolish).validateAsync<{ variable: V }>(
-        { variable },
-        { variable: rules }
-    );
-
-    return [e, v?.variable];
-};
 
 /**
  * $inLine object generator

@@ -49,3 +49,5 @@ export type AbolishValidator = {
     error?: string;
     isAsync?: boolean;
 };
+
+export type AbolishRule = string | string[] | Record<string, any> | AbolishRule[];
