@@ -1,7 +1,7 @@
 import StringToRules from "./StringToRules";
 import startCase from "lodash.startcase";
 import Abolish from "./Abolish";
-import { AbolishInlineValidator, ValidationError } from "./Types";
+import {AbolishInlineValidator} from "./Types";
 
 /**
  * Change to string to upperFirst
@@ -34,7 +34,6 @@ export function abolish_StartCase(str: string, abolishInstance?: Abolish): strin
  * { must: true, min: 10, max: 20, exact: false }
  *
  * @param rules
- * @param options
  * @constructor
  */
 export function Rule(rules: any[]): any {
