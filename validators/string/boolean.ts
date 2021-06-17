@@ -2,7 +2,7 @@ import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
     name: "boolean",
-    error: ":param is not a boolean",
+    error: ":param is not a valid boolean",
     /**
      * @param str
      * @param option

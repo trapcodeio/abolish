@@ -240,22 +240,32 @@ class Abolish {
                     delete ruleData["$name"];
 
                     if (typeof $name !== "string") {
-                        throw new Error(
-                            `$skip value or resolved function value must be a BOOLEAN in RuleFor: (${rule})`
-                        );
+                        throw new Error(`$name must be a string in RuleFor: (${rule})`);
                     }
                 }
 
                 /**
                  * check if rules has custom error: $error
                  */
-                let $error: any = false;
+                let $error: string | undefined;
                 if (ruleData.hasOwnProperty("$error")) {
                     $error = ruleData["$error"];
                     delete ruleData["$error"];
 
+                    // noinspection SuspiciousTypeOfGuard
                     if (!$error || typeof $error !== "string") {
                         throw new Error(`$error value must be a STRING in RuleFor: (${rule})`);
+                    }
+                }
+
+                let $errors: Record<string, string> | undefined;
+                if (ruleData.hasOwnProperty("$errors")) {
+                    $errors = ruleData["$errors"];
+                    delete ruleData["$errors"];
+
+                    // noinspection SuspiciousTypeOfGuard
+                    if (!$errors || typeof $errors !== "object") {
+                        throw new Error(`$errors value must be an OBJECT in RuleFor: (${rule})`);
                     }
                 }
 
@@ -314,7 +324,8 @@ class Abolish {
                             validator,
                             validatorName,
                             validatorOption,
-                            $error
+                            $error,
+                            $errors
                         });
                     } else {
                         /**
@@ -329,7 +340,7 @@ class Abolish {
                             validationResult = validator.validator(objectValue, validatorOption, {
                                 error: (message: string, data?: any) =>
                                     new AbolishError(message, data),
-                                modifier: new ObjectModifier(validated, rule)
+                                modifier: new ObjectModifier(validated, rule, $name)
                             });
                         } catch (e) {
                             /**
@@ -348,52 +359,61 @@ class Abolish {
                             ];
                         }
 
-                        if (validationResult instanceof AbolishError) {
-                            return [
-                                {
-                                    key: rule,
-                                    type: "validator",
-                                    validator: validatorName,
-                                    message: $error ? $error : validationResult.message,
-                                    data: validationResult.data
-                                },
-                                {} as R
-                            ];
-                        } else if (validationResult === false) {
-                            /**
-                             * Check if option is stringable
-                             * This is required because a rule option could an array or an object
-                             * and these cannot be converted to string
-                             *
-                             * Only strings and numbers can be parsed as :option
-                             */
-                            const optionIsStringable =
-                                typeof validatorOption === "string" ||
-                                typeof validatorOption === "number" ||
-                                Array.isArray(validatorOption);
+                        if (
+                            validationResult === false ||
+                            validationResult instanceof AbolishError
+                        ) {
+                            let message = $error;
+                            if ($errors && $errors[validatorName]) message = $errors[validatorName];
 
-                            /**
-                             * Replace :param with rule converted to upperCase
-                             * and if option is stringable, replace :option with validatorOption
-                             */
-                            let message = ($error ? $error : validator.error!).replace(
-                                ":param",
-                                $name ? $name : abolish_StartCase(rule, this)
-                            );
-                            if (optionIsStringable)
-                                message = message.replace(":option", validatorOption);
+                            if (validationResult instanceof AbolishError) {
+                                return [
+                                    {
+                                        key: rule,
+                                        type: "validator",
+                                        validator: validatorName,
+                                        message: message || validationResult.message,
+                                        data: validationResult.data
+                                    },
+                                    {} as R
+                                ];
+                            } else if (validationResult === false) {
+                                /**
+                                 * Check if option is stringable
+                                 * This is required because a rule option could an array or an object
+                                 * and these cannot be converted to string
+                                 *
+                                 * Only strings and numbers can be parsed as :option
+                                 */
+                                const optionIsStringable =
+                                    typeof validatorOption === "string" ||
+                                    typeof validatorOption === "number" ||
+                                    Array.isArray(validatorOption);
 
-                            // Return Error using the ValidationResult format
-                            return [
-                                {
-                                    key: rule,
-                                    type: "validator",
-                                    validator: validatorName,
-                                    message,
-                                    data: null
-                                },
-                                {} as R
-                            ];
+                                /**
+                                 * Replace :param with rule converted to upperCase
+                                 * and if option is stringable, replace :option with validatorOption
+                                 */
+                                message = (message || validator.error!).replace(
+                                    ":param",
+                                    $name ? $name : abolish_StartCase(rule, this)
+                                );
+
+                                if (optionIsStringable)
+                                    message = message.replace(":option", validatorOption);
+
+                                // Return Error using the ValidationResult format
+                                return [
+                                    {
+                                        key: rule,
+                                        type: "validator",
+                                        validator: validatorName,
+                                        message,
+                                        data: null
+                                    },
+                                    {} as R
+                                ];
+                            }
                         }
                     }
                 }
@@ -443,7 +463,8 @@ class Abolish {
              * Loop through jobs and run their validators
              */
             for (const job of jobs) {
-                const { $name, rule, validator, validatorName, validatorOption, $error } = job;
+                const { $name, rule, validator, validatorName, validatorOption, $error, $errors } =
+                    job;
 
                 /**
                  * Value of key being validated in object
@@ -458,7 +479,7 @@ class Abolish {
                      */
                     validationResult = await validator.validator(objectValue, validatorOption, {
                         error: (message: string, data?: any) => new AbolishError(message, data),
-                        modifier: new ObjectModifier(validated, rule)
+                        modifier: new ObjectModifier(validated, rule, $name)
                     });
                 } catch (e) {
                     /**
@@ -477,49 +498,57 @@ class Abolish {
                     ]);
                 }
 
-                if (validationResult instanceof AbolishError) {
-                    return resolve([
-                        {
-                            key: rule,
-                            type: "validator",
-                            validator: validatorName,
-                            message: $error ? $error : validationResult.message,
-                            data: validationResult.data
-                        },
-                        {}
-                    ]);
-                } else if (validationResult === false) {
-                    /**
-                     * Check if option is stringable
-                     * This is required because a rule option could an array or an object
-                     * and these cannot be converted to string
-                     *
-                     * Only strings and numbers can be parsed as :option
-                     */
-                    const optionIsStringable =
-                        typeof validatorOption === "string" || typeof validatorOption === "number";
+                if (validationResult === false || validationResult instanceof AbolishError) {
+                    let message = $error;
+                    if ($errors && $errors[validatorName]) message = $errors[validatorName];
 
-                    /**
-                     * Replace :param with rule converted to upperCase
-                     * and if option is stringable, replace :option with validatorOption
-                     */
-                    let message = ($error ? $error : validator.error!).replace(
-                        ":param",
-                        $name ? $name : abolish_StartCase(rule, this)
-                    );
-                    if (optionIsStringable) message = message.replace(":option", validatorOption);
+                    if (validationResult instanceof AbolishError) {
+                        return resolve([
+                            {
+                                key: rule,
+                                type: "validator",
+                                validator: validatorName,
+                                message: message ? message : validationResult.message,
+                                data: validationResult.data
+                            },
+                            {}
+                        ]);
+                    } else if (validationResult === false) {
+                        /**
+                         * Check if option is stringable
+                         * This is required because a rule option could an array or an object
+                         * and these cannot be converted to string
+                         *
+                         * Only strings and numbers can be parsed as :option
+                         */
+                        const optionIsStringable =
+                            typeof validatorOption === "string" ||
+                            typeof validatorOption === "number";
 
-                    // Return Error using the ValidationResult format
-                    return resolve([
-                        {
-                            key: rule,
-                            type: "validator",
-                            validator: validatorName,
-                            message,
-                            data: null
-                        },
-                        {}
-                    ]);
+                        /**
+                         * Replace :param with rule converted to upperCase
+                         * and if option is stringable, replace :option with validatorOption
+                         */
+                        message = (message || validator.error!).replace(
+                            ":param",
+                            $name ? $name : abolish_StartCase(rule, this)
+                        );
+
+                        if (optionIsStringable)
+                            message = message.replace(":option", validatorOption);
+
+                        // Return Error using the ValidationResult format
+                        return resolve([
+                            {
+                                key: rule,
+                                type: "validator",
+                                validator: validatorName,
+                                message,
+                                data: null
+                            },
+                            {}
+                        ]);
+                    }
                 }
             }
 

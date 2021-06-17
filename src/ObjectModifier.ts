@@ -9,10 +9,12 @@ import unset from "lodash.unset";
 class ObjectModifier {
     data: any;
     path: any;
+    name: string | false;
 
-    constructor(data: any, param: string) {
+    constructor(data: any, param: string, name: string | false) {
         this.data = data;
         this.path = param;
+        this.name = name;
         return this;
     }
 
@@ -88,8 +90,8 @@ class ObjectModifier {
     /**
      * abolish_Get current path but with abolish_StartCase
      */
-    getPath(): string {
-        return abolish_StartCase(this.path);
+    getName(): string {
+        return this.name || abolish_StartCase(this.path);
     }
 }
 
