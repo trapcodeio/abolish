@@ -36,7 +36,7 @@ export function abolish_StartCase(str: string, abolishInstance?: Abolish): strin
  * @param rules
  * @constructor
  */
-export function Rule(rules: any[]): any {
+export function Rule(rules: string | any[]): any {
     /**
      * Convert to array if not array.
      */
