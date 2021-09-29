@@ -14,22 +14,22 @@
     "play": "ts-node-dev --respawn tests/play.ts"
   },
   "dependencies": {
-    "@types/lodash.clonedeep": "^4.5.6",
     "lodash.clonedeep": "^4.5.0",
     "lodash.has": "^4.5.2",
     "lodash.startcase": "^4.4.0",
     "lodash.unset": "^4.5.2"
   },
   "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.has": "^4.5.6",
     "@types/lodash.startcase": "^4.4.6",
     "@types/lodash.unset": "^4.5.6",
-    "@types/node": "^16.3.2",
-    "axios": "^0.21.1",
-    "joi": "^17.4.1",
-    "prettier": "^2.3.2",
+    "@types/node": "^16.10.2",
+    "axios": "^0.21.4",
+    "joi": "^17.4.2",
+    "prettier": "^2.4.1",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.3"
   },
   "keywords": [
     "abolish",
