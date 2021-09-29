@@ -359,7 +359,7 @@ class Abolish {
                                     new AbolishError(message, data),
                                 modifier: new ObjectModifier(validated, rule, $name)
                             });
-                        } catch (e) {
+                        } catch (e: any) {
                             /**
                              * If error when running defined function
                              * Send error as validationResult with type as 'internal'
@@ -413,7 +413,7 @@ class Abolish {
                             );
 
                             if (optionIsStringable)
-                                message = message.replace(":option", validatorOption);
+                                message = message.replace(":option", String(validatorOption));
 
                             // Return Error using the ValidationResult format
                             return [
@@ -494,7 +494,7 @@ class Abolish {
                         error: (message: string, data?: any) => new AbolishError(message, data),
                         modifier: new ObjectModifier(validated, rule, $name)
                     });
-                } catch (e) {
+                } catch (e: any) {
                     /**
                      * If error when running defined function
                      * Send error as validationResult with type as 'internal'
@@ -542,7 +542,8 @@ class Abolish {
                     const optionIsStringable =
                         typeof validatorOption === "string" || typeof validatorOption === "number";
 
-                    if (optionIsStringable) message = message!.replace(":option", validatorOption);
+                    if (optionIsStringable)
+                        message = message!.replace(":option", String(validatorOption));
 
                     // Return Error using the ValidationResult format
                     return resolve([
@@ -594,7 +595,7 @@ class Abolish {
                 let validated: any;
                 try {
                     validated = joi!.attempt(value, joiSchema);
-                } catch (e) {
+                } catch (e: any) {
                     return error(e.message);
                 }
 
