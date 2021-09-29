@@ -125,13 +125,20 @@ export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rule
     for (let key of Object.keys(rules)) {
         let rule = rules[key];
 
-        if ((typeof rule as string) === "string") {
-            rule = StringToRules(rule);
-        } else if (Array.isArray(rule)) {
-            rule = Rule(rule);
-        }
+        /**
+         * Exclude non rule related super keys e.g $include
+         */
+        if (key === "$include") {
+            generatedRule[key] = rule;
+        } else {
+            if ((typeof rule as string) === "string") {
+                rule = StringToRules(rule);
+            } else if (Array.isArray(rule)) {
+                rule = Rule(rule);
+            }
 
-        generatedRule[key] = rule;
+            generatedRule[key] = rule;
+        }
     }
 
     return generatedRule as Rules;
