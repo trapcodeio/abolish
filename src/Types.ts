@@ -28,7 +28,7 @@ export type AbolishValidatorFunction = (
         error: (message: string, data?: any) => AbolishError;
         modifier: ObjectModifier;
     }
-) => boolean | AbolishError | Promise<boolean | AbolishError>;
+) => boolean | AbolishError | void | Promise<boolean | AbolishError | void>;
 
 export type AbolishInlineValidator = (
     value: any,
