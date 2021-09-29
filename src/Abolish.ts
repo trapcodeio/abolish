@@ -7,6 +7,13 @@ import ObjectModifier from "./ObjectModifier";
 import type Joi from "joi";
 import cloneDeep from "lodash.clonedeep";
 
+type AsyncData = {
+    validated: Record<string, any>;
+    jobs: any[];
+    keysToBeValidated: string[];
+    includeKeys: string[];
+};
+
 /**
  * Abolish Class
  * @class
@@ -149,10 +156,11 @@ class Abolish {
         rules: Record<keyof R | string, any>,
         isAsync = false
     ): ValidationResult<R> {
-        let asyncData = {
-            validated: {} as any,
-            jobs: [] as any,
-            keysToBeValidated: [] as string[]
+        let asyncData: AsyncData = {
+            validated: {},
+            jobs: [],
+            keysToBeValidated: [],
+            includeKeys: []
         };
 
         // clone rules
@@ -182,8 +190,17 @@ class Abolish {
         let validated: Record<string, any> = { ...object };
 
         /**
-         * abolish_Get Keys to be validated
+         * Get Keys to be validated
          */
+        let includeKeys: string[] = [];
+        if (rules.hasOwnProperty("$include")) {
+            includeKeys = rules["$include"];
+
+            if (!Array.isArray(includeKeys)) throw new Error(`$include has to be an array!`);
+
+            delete rules["$include"];
+        }
+
         let keysToBeValidated = Object.keys(rules);
 
         // Loop through defined rules
@@ -418,12 +435,13 @@ class Abolish {
         if (isAsync) {
             asyncData.validated = validated;
             asyncData.keysToBeValidated = keysToBeValidated;
+            asyncData.includeKeys = includeKeys;
 
             return asyncData as any;
         }
 
         // abolish_Pick only keys in rules
-        validated = abolish_Pick(validated, keysToBeValidated);
+        validated = abolish_Pick(validated, keysToBeValidated.concat(includeKeys));
 
         return [false, validated as R];
     }
@@ -443,12 +461,12 @@ class Abolish {
         /**
          * abolish_Get asyncData
          */
-        const asyncData: any = this.validate(object, rules, true);
+        const asyncData: AsyncData = this.validate(object, rules, true) as any;
 
         /**
          * Destruct values in async data
          */
-        const { validated, jobs, keysToBeValidated } = asyncData;
+        const { validated, jobs, keysToBeValidated, includeKeys } = asyncData;
 
         /**
          * Return a promise
@@ -540,7 +558,7 @@ class Abolish {
                 }
             }
 
-            return resolve([false, abolish_Pick(validated, keysToBeValidated)]);
+            return resolve([false, abolish_Pick(validated, keysToBeValidated.concat(includeKeys))]);
         });
     }
 
