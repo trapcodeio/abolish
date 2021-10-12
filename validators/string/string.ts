@@ -1,5 +1,5 @@
 import type { AbolishValidator } from "../../src/Types";
-import ObjectModifier from "../../src/ObjectModifier";
+import type ObjectModifier from "../../src/ObjectModifier";
 
 export = <AbolishValidator>{
     name: "string",
@@ -20,7 +20,7 @@ export = <AbolishValidator>{
 };
 
 function runThis(option: any, modifier: ObjectModifier) {
-    // abolish_Get current string from state.
+    // Get current string from state.
     const str = modifier.getThis();
 
     // @ts-ignore

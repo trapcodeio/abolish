@@ -19,7 +19,7 @@ class ObjectModifier {
     }
 
     /**
-     * abolish_Get path of object or return
+     * Get path of object or return
      * @method
      * @param path
      * @param $default
@@ -30,7 +30,7 @@ class ObjectModifier {
     }
 
     /**
-     * abolish_Get path of current key being validated
+     * Get path of current key being validated
      * @method
      */
     getThis() {
@@ -88,7 +88,7 @@ class ObjectModifier {
     }
 
     /**
-     * abolish_Get current path but with abolish_StartCase
+     * Get current path but with abolish_StartCase
      */
     getName(): string {
         return this.name || abolish_StartCase(this.path);

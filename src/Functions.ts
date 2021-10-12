@@ -29,9 +29,9 @@ export function abolish_StartCase(str: string, abolishInstance?: Abolish): strin
 /**
  * Converts an array of rules (string | object)[] to one object rule
  * @example
- * const rule = Rule(['must', {min: 10, max: 20}, '!exact'])
+ * const rule = Rule(['required', {min: 10, max: 20}, '!exact'])
  * // will return
- * { must: true, min: 10, max: 20, exact: false }
+ * { required: true, min: 10, max: 20, exact: false }
  *
  * @param rules
  * @constructor

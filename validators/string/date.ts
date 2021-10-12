@@ -2,7 +2,7 @@ import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
     name: "date",
-    validator: (v: any, o: any, { modifier }) => {
+    validator: (v, o, { modifier }) => {
         if (v instanceof Date) {
             return true;
         } else if (typeof v === "string") {

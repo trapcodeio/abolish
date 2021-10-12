@@ -21,14 +21,18 @@ export type ValidationError = {
  */
 export type ValidationResult<T = any> = [error: ValidationError | false, validated: T];
 
+export type AbolishValidatorFunctionResult = boolean | AbolishError | void;
+
+export type AbolishValidatorFunctionHelper = {
+    error: (message: string, data?: any) => AbolishError;
+    modifier: ObjectModifier;
+};
+
 export type AbolishValidatorFunction = (
     value: any,
     option: any,
-    helpers: {
-        error: (message: string, data?: any) => AbolishError;
-        modifier: ObjectModifier;
-    }
-) => boolean | AbolishError | void | Promise<boolean | AbolishError | void>;
+    helpers: AbolishValidatorFunctionHelper
+) => AbolishValidatorFunctionResult | Promise<AbolishValidatorFunctionResult>;
 
 export type AbolishInlineValidator = (
     value: any,

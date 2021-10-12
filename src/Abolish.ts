@@ -321,7 +321,7 @@ class Abolish {
 
                     /**
                      * The value of the validator set in rules
-                     * e.g {must: true}
+                     * e.g {required: true}
                      * where "true" is validationOption
                      */
                     const validatorOption = ruleData[validatorName];
@@ -459,7 +459,7 @@ class Abolish {
         rules: Record<keyof R | string, any>
     ): Promise<ValidationResult<R>> {
         /**
-         * abolish_Get asyncData
+         * Get asyncData
          */
         const asyncData: AsyncData = this.validate(object, rules, true) as any;
 

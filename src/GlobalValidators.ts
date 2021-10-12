@@ -10,8 +10,8 @@ function trimIfString(value: string | any): string | any {
 }
 
 const GlobalValidators: Record<string, AbolishValidator> = {
-    must: {
-        name: "must",
+    required: {
+        name: "required",
         error: ":param is required.",
         validator: (value: any, option: boolean): boolean => {
             if (!option) {
@@ -30,7 +30,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
     typeof: {
         name: "typeof",
-        error: ":param is not typeOf :option",
+        error: ":param is not typeof :option",
         validator: (value: any, option: string | false): boolean => {
             /**
              * If typeof is false then we don't validate this
@@ -143,9 +143,10 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 };
 
 /**
- * abolish_Set an alias for `must` as `required
+ * Set an alias for `typeof` as `type`
  */
-GlobalValidators.required = Object.assign({}, GlobalValidators.must);
-GlobalValidators.required.name = "required";
+GlobalValidators.type = Object.assign({}, GlobalValidators.type);
+GlobalValidators.type.name = "type";
+GlobalValidators.type.error = ":param is not of type :option";
 
 export = GlobalValidators;
