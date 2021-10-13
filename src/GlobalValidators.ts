@@ -10,6 +10,16 @@ function trimIfString(value: string | any): string | any {
 }
 
 const GlobalValidators: Record<string, AbolishValidator> = {
+    default: {
+        name: "default",
+        validator(value, def, { modifier }) {
+            if (value === undefined || value === null) {
+                modifier.setThis(def);
+            }
+            return true;
+        }
+    },
+
     required: {
         name: "required",
         error: ":param is required.",
