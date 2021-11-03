@@ -5,5 +5,5 @@ export = <AbolishValidator>{
     validator: (v: any, o: any[]) => {
         return o.includes(v);
     },
-    error: `:param does not match options: [:option].`
+    error: `:param does not match options: [ :option ].`
 };
