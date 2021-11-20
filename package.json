@@ -10,7 +10,7 @@
   "private": false,
   "scripts": {
     "build": "npx tsc",
-    "prepublishOnly": "npm build",
+    "prepublishOnly": "npm run build",
     "watch": "npx tsc --watch",
     "play": "npx ts-node-dev --respawn tests/play.ts"
   },
