@@ -1,6 +1,10 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea
 node_modules
-play.ts
 yarn.lock
 tests
+.prettierrc
+tsconfig.json
+
+*.ts
+!*.d.ts

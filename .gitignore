@@ -5,3 +5,7 @@ js
 types
 tests/play.ts
 yarn.lock
+
+
+*.js
+*.d.ts
