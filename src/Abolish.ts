@@ -703,6 +703,44 @@ class Abolish {
     static async attemptAsync<V = any>(variable: V, rules: AbolishRule): Promise<V> {
         return new this().attemptAsync(variable, rules);
     }
+
+    /**
+     * test a variable, returns boolean
+     * @param variable
+     * @param rules
+     */
+    test<V = any>(variable: V, rules: AbolishRule): boolean {
+        const [e] = this.check(variable, rules);
+        return !e;
+    }
+
+    /**
+     * Static Check
+     * @param variable
+     * @param rules
+     */
+    static test<V = any>(variable: V, rules: AbolishRule): boolean {
+        return new this().test(variable, rules);
+    }
+
+    /**
+     * Checks a variable Asynchronously
+     * @param variable
+     * @param rules
+     */
+    async testAsync<V = any>(variable: V, rules: AbolishRule): Promise<boolean> {
+        const [e] = await this.checkAsync(variable, rules);
+        return !e;
+    }
+
+    /**
+     * Static Check Async
+     * @param variable
+     * @param rules
+     */
+    static testAsync<V = any>(variable: V, rules: AbolishRule): Promise<boolean> {
+        return new this().testAsync(variable, rules);
+    }
 }
 
 export = Abolish;
