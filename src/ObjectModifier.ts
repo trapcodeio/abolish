@@ -1,6 +1,5 @@
 import { abolish_Set, abolish_Get, abolish_StartCase } from "./Functions";
-import has from "lodash.has";
-import unset from "lodash.unset";
+import { has, unset } from "lodash";
 
 /**
  * ObjectOnValidation

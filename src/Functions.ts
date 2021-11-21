@@ -1,5 +1,5 @@
 import StringToRules from "./StringToRules";
-import startCase from "lodash.startcase";
+import { startCase, pick, set, get } from "lodash";
 import Abolish from "./Abolish";
 import { AbolishInlineValidator } from "./Types";
 
@@ -65,49 +65,15 @@ export function Rule(rules: string | any[]): any {
 }
 
 export function abolish_Pick(object: any, keys: string[]) {
-    return keys.reduce((obj: any, key: string) => {
-        if (object && object.hasOwnProperty(key)) {
-            obj[key] = object[key];
-        }
-        return obj;
-    }, {});
+    return pick(object, keys);
 }
 
 export function abolish_Set(object: any, path: any, value: any) {
-    if (Object(object) !== object) return object; // When object is not an object
-    // If not yet an array, get the keys from the string-path
-    if (!Array.isArray(path)) path = path.toString().match(/[^.[\]]+/g) || [];
-    path.slice(0, -1).reduce(
-        (
-            a: any,
-            c: any,
-            i: number // Iterate all of them except the last one
-        ) =>
-            Object(a[c]) === a[c] // Does the key exist and is its value an object?
-                ? // Yes: then follow that path
-                  a[c]
-                : // No: create the key. Is the next key a potential array-index?
-                  (a[c] =
-                      Math.abs(path[i + 1]) >> 0 === +path[i + 1]
-                          ? [] // Yes: assign a new array object
-                          : {}), // No: assign a new plain object
-        object
-    )[path[path.length - 1]] = value; // Finally assign the value to the last key
-    return object; // Return the top-level object to allow chaining
+    return set(object, path, value);
 }
 
 export function abolish_Get(obj: any, path: string, defaultValue?: any) {
-    if (path.indexOf(".") >= 0) {
-        const travel = (regexp: any) =>
-            String.prototype.split
-                .call(path, regexp)
-                .filter(Boolean)
-                .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
-        const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
-        return result === undefined || result === obj ? defaultValue : result;
-    } else {
-        return obj[path];
-    }
+    return get(obj, path, defaultValue);
 }
 
 export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {

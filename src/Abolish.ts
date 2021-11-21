@@ -5,7 +5,7 @@ import { abolish_StartCase, abolish_Pick, abolish_Get, Rule } from "./Functions"
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import type Joi from "joi";
-import cloneDeep from "lodash.clonedeep";
+import { cloneDeep } from "lodash";
 
 type AsyncData = {
     validated: Record<string, any>;
