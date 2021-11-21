@@ -749,6 +749,10 @@ class Abolish {
 Abolish.addGlobalValidator({
     name: "object",
     validator: (value, rules, { error, modifier }) => {
+        if (!value || typeof value !== "object") {
+            return error(`:param must be an object.`);
+        }
+
         const [err, valid] = Abolish.validate(value, rules);
         if (err) return error(err.message);
         modifier.setThis(valid);
