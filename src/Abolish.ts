@@ -743,4 +743,16 @@ class Abolish {
     }
 }
 
+/**
+ * Add Global Validators
+ */
+Abolish.addGlobalValidator({
+    name: "object",
+    validator: (value, rules, { error, modifier }) => {
+        const [err, valid] = Abolish.validate(value, rules);
+        if (err) return error(err.message);
+        modifier.setThis(valid);
+    }
+});
+
 export = Abolish;
