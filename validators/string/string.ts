@@ -3,7 +3,15 @@ import type ObjectModifier from "../../src/ObjectModifier";
 
 export = <AbolishValidator>{
     name: "string",
-    validator: (str: string, option: any, { modifier }) => {
+    validator: (str: string | undefined, option: any, { modifier, error }) => {
+        if (option === undefined) {
+            if (typeof str === "string" && str.length > 0) {
+                return true;
+            }
+
+            return error(`:param is not a string`);
+        }
+
         if (typeof option !== "string")
             throw new Error(`string: Validator option must be a string`);
 
