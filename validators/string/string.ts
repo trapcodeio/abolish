@@ -4,7 +4,7 @@ import type ObjectModifier from "../../src/ObjectModifier";
 export = <AbolishValidator>{
     name: "string",
     validator: (str: string | undefined, option: any, { modifier, error }) => {
-        if (option === undefined) {
+        if (option === true || option === undefined) {
             if (typeof str === "string" && str.length > 0) {
                 return true;
             }
