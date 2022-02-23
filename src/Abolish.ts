@@ -26,6 +26,13 @@ class Abolish {
     config: { useStartCaseInErrors: boolean } = { useStartCaseInErrors: true };
 
     /**
+     * Get global validators
+     */
+    static getGlobalValidators() {
+        return GlobalValidators;
+    }
+
+    /**
      * Add single global validator
      * @param validator
      */

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/browser.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/validators/string/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/validators/array/index.min.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
         integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
@@ -25,37 +26,56 @@
   </style>
 </head>
 <body class="text-white">
-<div id="app" class="container mx-auto mt-10" hidden>
-  <h1 class="text-3xl text-center mb-10 tracking-wider">
-    Abolish PlayGround
-  </h1>
+<div id="app" hidden>
+  <div class="mx-auto mt-10 px-5">
+    <h1 class="text-3xl text-center mb-10 tracking-wider">
+      Abolish Validator PlayGround
+    </h1>
 
-  <div class="grid grid-cols-3 space-x-5 lg:space-x-10">
-    <div class="col-span-1">
-      <label for="data">Data: <span v-if="dataHasError" class="text-red-500">Has error!</span></label>
-      <textarea class="leading-6 text-green-900" :class="{'bg-red-100': dataHasError, [textareaClass]: true}"
-                @change="validate"
-                v-model="data" id="data"></textarea>
+    <div class="my-10 text-center">
+      <h6 class="text-xs text-yellow-400">Registered Validators: ({{validators.length}})</h6>
+
+      <div class="flex flex-wrap gap-y-1 gap-x-2 mt-2 justify-center">
+        <template v-for="v in validators">
+          <span class="text-xs bg-gray-700 text-gray-200 px-2 py-0.5 rounded">{{v}}</span>
+        </template>
+      </div>
     </div>
-    <div class="col-span-1">
-      <label for="rules">
-        Rules: <span v-if="rulesHasError" class="text-red-500">Has error!</span>
-        <button @click.prevent="parseRules" class="float-right text-sm text-green-400 hover:text-green-500">Parse
-          Rules
-        </button>
-      </label>
-      <textarea class="leading-6 text-blue-900" :class="{'bg-red-100': rulesHasError, [textareaClass]: true}"
-                @change="validate"
-                v-model="rules" id="rules"></textarea>
-    </div>
-    <div class="col-span-1">
-      <label for="result">Result:</label>
-      <textarea v-model="result" id="result"
-                :class="{[textareaClass]: true, 'bg-red-200': resultHasError, 'bg-green-200': !resultHasError}"
-                disabled></textarea>
+
+    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-x-5 lg:space-x-10">
+      <div class="col-span-1">
+        <label for="data" class="text-yellow-400">Data: <span v-if="dataHasError"
+                                                              class="text-red-500">Has error!</span></label>
+        <textarea class="leading-6 text-green-900" :class="{'bg-red-100': dataHasError, [textareaClass]: true}"
+                  @change="validate"
+                  v-model="data" id="data"></textarea>
+      </div>
+      <div class="col-span-1">
+        <label for="rules" class="text-yellow-400">
+          Rules: <span v-if="rulesHasError" class="text-red-500">Has error!</span>
+          <button @click.prevent="parseRules" class="float-right text-sm text-green-400 hover:text-green-500">Parse
+            Rules
+          </button>
+        </label>
+        <textarea class="leading-6 text-blue-900" :class="{'bg-red-100': rulesHasError, [textareaClass]: true}"
+                  @change="validate"
+                  v-model="rules" id="rules"></textarea>
+      </div>
+      <div class="col-span-1 md:col-span-2 lg:col-span-1 md:h-20">
+        <label for="result" class="text-yellow-500">
+          Result:
+          <span class="text-sm" :class="[resultHasError ? 'text-red-400' : 'text-green-400']">
+          {{resultHasError ? 'Failed Validation!' : 'Passed Validation!'}}
+        </span>
+        </label>
+        <textarea v-model="result" id="result"
+                  :class="{[textareaClass]: true, 'bg-red-200': resultHasError, 'bg-green-200': !resultHasError}"
+                  disabled></textarea>
+      </div>
     </div>
   </div>
 </div>
+
 <script type="module">
   // Destruct Vue
   const {ref, createApp, computed, onMounted, watch, onBeforeMount} = Vue;
@@ -65,10 +85,17 @@
   const abolish = new Abolish();
 
   // Add email validator
-  abolish.addValidator(AbolishStringValidators.email);
+  abolish.addValidators(AbolishStringValidators);
+  abolish.addValidators(AbolishArrayValidators);
 
-  const textareaClass = 'w-full rounded-lg border border-gray-300 p-4 font-mono text-xs text-black';
+  // Textarea class to reduce redundant code
+  const textareaClass = 'w-full rounded shadow-lg border-2 border-gray-900 p-4 font-mono text-xs text-black';
 
+  /**
+   * Check if json is valid
+   * @param data
+   * @returns {boolean}
+   */
   function isValidJson(data) {
     try {
       JSON.parse(data);
@@ -78,14 +105,25 @@
     }
   }
 
+  /**
+   * Convert object to json
+   * @param data
+   * @returns {string}
+   */
   function toJson(data) {
     return JSON.stringify(data, null, 2);
   }
 
+  /**
+   * Convert json to object
+   * @param data
+   * @returns {any}
+   */
   function fromJson(data) {
     return JSON.parse(data);
   }
 
+  // Vue Setup function
   function setup() {
     /**
      * ===== Variables =====
@@ -93,7 +131,7 @@
     let timeout = -1;
     const result = ref(toJson([]));
     const data = ref(toJson({
-          email: null,
+          email: 'john@example.com',
           name: 'John Doe',
           phone: '+1 (123) 456-7890',
           address: {
@@ -109,7 +147,7 @@
       '*': 'required|typeof:string',
       email: 'email',
       name: 'minLength:2|maxLength:10',
-      'address.state': 'minLength:2|minLength:2',
+      'address.state': 'minLength:2|maxLength:2',
       '$include': [
         'phone',
         'address.city',
@@ -161,7 +199,7 @@
         if (refactored !== ref.value) {
           ref.value = refactored;
         }
-      }, 1000);
+      }, 800);
     }
 
     function validate() {
@@ -186,7 +224,18 @@
 
     onMounted(validate);
 
-    return {textareaClass, data, rules, result, dataHasError, rulesHasError, resultHasError, validate, parseRules};
+    return {
+      textareaClass,
+      data,
+      rules,
+      result,
+      dataHasError,
+      rulesHasError,
+      resultHasError,
+      validate,
+      parseRules,
+      validators: Object.keys(Abolish.validators  || {}).concat(Object.keys(abolish.validators)).sort(),
+    };
   }
 
   createApp({
