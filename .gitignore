@@ -9,6 +9,6 @@ yarn.lock
 
 
 *.js
-!browser.js
+!*.min.js
 *.d.ts
 *.log
