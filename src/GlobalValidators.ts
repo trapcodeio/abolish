@@ -12,6 +12,7 @@ function trimIfString(value: string | any): string | any {
 const GlobalValidators: Record<string, AbolishValidator> = {
     default: {
         name: "default",
+        description: "Set default value if original value is undefined or null",
         validator(value, def, { modifier }) {
             if (value === undefined || value === null) {
                 modifier.setThis(def);
@@ -22,6 +23,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
     required: {
         name: "required",
+        description: "Value is required",
         error: ":param is required.",
         validator: (value: any, option: boolean): boolean => {
             if (!option) {
@@ -50,7 +52,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
             option = option.toLowerCase();
             if (option === "array") return Array.isArray(value);
             return typeof value === option;
-        }
+        },
+        description: "Value is typeof :option"
     },
 
     exact: {
@@ -58,7 +61,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         validator: (value: any, option: any): boolean => {
             return value === option;
         },
-        error: ":param failed exact validator"
+        error: ":param failed exact validator",
+        description: "Value is === :option"
     },
 
     min: {
@@ -80,7 +84,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             // Parse to Number and compare
             return Number(value) >= Number(option);
-        }
+        },
+        description: "Number: Value is >= :option"
     },
 
     max: {
@@ -102,7 +107,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             // Parse to float and compare
             return Number(value) <= Number(option);
-        }
+        },
+        description: "Number: Value is <= :option"
     },
 
     minLength: {
@@ -113,7 +119,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             value = trimIfString(value);
             return value.length >= Number(option);
-        }
+        },
+        description: "[Array, String]: Value has >= :option characters"
     },
 
     maxLength: {
@@ -124,7 +131,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             value = trimIfString(value);
             return value.length <= Number(option);
-        }
+        },
+        description: "[Array, String]: Value has <= :option characters"
     },
 
     selectMin: {
@@ -132,7 +140,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         error: "Select at-least :option :param.",
         validator: (value: any, option: number | string, helpers): boolean => {
             return GlobalValidators.minLength.validator(value, option, helpers) as boolean;
-        }
+        },
+        description: "Array: (Alias: minLength)"
     },
 
     selectMax: {
@@ -140,7 +149,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         error: "Select at-most :option :param.",
         validator: (value: any, option: number | string, helpers): boolean => {
             return GlobalValidators.maxLength.validator(value, option, helpers) as boolean;
-        }
+        },
+        description: "Array: (Alias: maxLength)"
     },
 
     $inline: {
@@ -148,7 +158,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         error: ":param failed inline validation.",
         validator: (v: any, o: AbolishInlineValidator, helpers) => {
             return o(v, helpers);
-        }
+        },
+        description: "Register a custom validation function inline."
     }
 };
 

@@ -4,7 +4,9 @@
   <title>Abolish PlayGround</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/browser.min.js"></script>
+
+  <!--  Import more validators-->
   <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/validators/string/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/trapcodeio/abolish@browser-version/validators/array/index.min.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
@@ -37,7 +39,7 @@
 
       <div class="flex flex-wrap gap-y-1 gap-x-2 mt-2 justify-center">
         <template v-for="v in validators">
-          <span class="text-xs bg-gray-700 text-gray-200 px-2 py-0.5 rounded">{{v}}</span>
+          <button class="text-xs bg-gray-700 text-green-300 hover:text-yellow-400 px-2 py-0.5 rounded">{{v}}</button>
         </template>
       </div>
     </div>
@@ -87,6 +89,12 @@
   // Add email validator
   abolish.addValidators(AbolishStringValidators);
   abolish.addValidators(AbolishArrayValidators);
+
+  // Get list of registered validators
+  const validators = Object.keys(Abolish.getGlobalValidators()).
+      concat(Object.keys(abolish.validators)).
+      sort().
+      filter(v => !['$inline'].includes(v));
 
   // Textarea class to reduce redundant code
   const textareaClass = 'w-full rounded shadow-lg border-2 border-gray-900 p-4 font-mono text-xs text-black';
@@ -140,6 +148,7 @@
             state: 'CA',
             zip: '12345',
           },
+          jsonDump: '{"registered": true}',
         },
     ));
 
@@ -199,13 +208,11 @@
         if (refactored !== ref.value) {
           ref.value = refactored;
         }
-      }, 800);
+      }, 1000);
     }
 
     function validate() {
-      if (!isValidJson(data.value) || !isValidJson(rules.value)) {
-        return;
-      }
+      if (!isValidJson(data.value) || !isValidJson(rules.value)) return;
 
       try {
         result.value = toJson(abolish.validate(fromJson(data.value), fromJson(rules.value)));
@@ -234,7 +241,7 @@
       resultHasError,
       validate,
       parseRules,
-      validators: Object.keys(Abolish.validators  || {}).concat(Object.keys(abolish.validators)).sort(),
+      validators,
     };
   }
 

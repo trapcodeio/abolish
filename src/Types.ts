@@ -49,6 +49,7 @@ export type AbolishInlineValidator = (
  */
 export type AbolishValidator = {
     name: string;
+    description?: string;
     validator: AbolishValidatorFunction;
     error?: string;
     isAsync?: boolean;
