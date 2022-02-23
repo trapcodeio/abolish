@@ -9,7 +9,7 @@
   <!--  Import more validators-->
   <script src="https://cdn.jsdelivr.net/npm/abolish@4.8.2/validators/string/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/abolish@4.8.2/validators/array/index.min.js"></script>
-  <script src="https://unpkg.com/vue@3"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
         integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -30,9 +30,13 @@
 <body class="text-white">
 <div id="app" hidden>
   <div class="mx-auto mt-10 px-5">
-    <h1 class="text-3xl text-center mb-10 tracking-wider">
+    <h1 class="text-3xl text-center tracking-wider">
       Abolish Validator PlayGround
     </h1>
+
+    <div class="text-sm text-center">
+      <a href="https://abolish.trapcode.io" target="_blank" class="text-green-400">Abolish Documentation</a>
+    </div>
 
     <div class="my-10 text-center">
       <h6 class="text-xs text-yellow-400">Registered Validators: ({{validators.length}})</h6>
@@ -85,6 +89,7 @@
   const {Abolish, Rule, ParseRules} = AbolishBrowser;
   // Initialize Abolish
   const abolish = new Abolish();
+  // abolish.config.useStartCaseInErrors = false;
 
   // Add email validator
   abolish.addValidators(AbolishStringValidators);
@@ -93,8 +98,7 @@
   // Get list of registered validators
   const validators = Object.keys(Abolish.getGlobalValidators()).
       concat(Object.keys(abolish.validators)).
-      sort().
-      filter(v => !['$inline'].includes(v));
+      filter(v => !['$inline'].includes(v)).sort();
 
   // Textarea class to reduce redundant code
   const textareaClass = 'w-full rounded shadow-lg border-2 border-gray-900 p-4 font-mono text-xs text-black';
@@ -148,7 +152,9 @@
             state: 'CA',
             zip: '12345',
           },
-          jsonDump: '{"registered": true}',
+          jsonDump: '{"verified": true}',
+          verified: '02/05/2020',
+          registered: '02/05/2020',
         },
     ));
 
@@ -157,6 +163,12 @@
       email: 'email',
       name: 'minLength:2|maxLength:10',
       'address.state': 'minLength:2|maxLength:2',
+      "address.zip": "number|string:toString",
+
+      'jsonDump': 'json|jsonDecode',
+      'verified': 'date',
+      'registered': {date: {cast: true}},
+
       '$include': [
         'phone',
         'address.city',
