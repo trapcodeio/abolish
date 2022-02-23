@@ -5,6 +5,7 @@ import email = require("./email");
 import ipAddress = require("./ipAddress");
 import json = require("./json");
 import jsonDecode = require("./jsonDecode");
+import jsonEncode = require("./jsonEncode");
 import md5 = require("./md5");
 import number = require("./number");
 import regex = require("./regex");
@@ -19,6 +20,7 @@ export {
     ipAddress,
     json,
     jsonDecode,
+    jsonEncode,
     md5,
     number,
     regex,
