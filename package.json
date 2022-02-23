@@ -8,9 +8,12 @@
   "author": "trapcodeio",
   "license": "MIT",
   "private": false,
+  "browser": {
+    "lodash": "lodash-es"
+  },
   "scripts": {
     "build": "npx tsc",
-    "bundle": "esbuild index.js --format=iife --outfile=browser.js --bundle --minify --external:joi --global-name=AbolishBrowser",
+    "bundle": "node bundle.js",
     "prepublishOnly": "npm run build",
     "watch": "npx tsc --watch",
     "play": "npx ts-node-dev --respawn tests/play.ts",
@@ -36,8 +39,5 @@
     "object-validation",
     "object-validator",
     "async-object-validator"
-  ],
-  "browser": {
-    "lodash": "lodash-es"
-  }
+  ]
 }
