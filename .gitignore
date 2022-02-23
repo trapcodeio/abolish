@@ -9,5 +9,6 @@ yarn.lock
 
 
 *.js
+!browser.js
 *.d.ts
 *.log
