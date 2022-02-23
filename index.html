@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Abolish PlayGround</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="./browser.js"></script>
+  <script src="https://unpkg.com/vue@3"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+        integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <style>
+      body {
+          background: #22272e;
+      }
+
+      textarea {
+          min-height: 400px;
+      }
+
+      textarea:disabled {
+          cursor: not-allowed;
+      }
+  </style>
+</head>
+<body class="text-white">
+<div id="app" class="container mx-auto mt-10" hidden>
+  <h1 class="text-3xl text-center mb-10 tracking-wider">
+    Abolish PlayGround
+  </h1>
+
+  <div class="grid grid-cols-3 space-x-5 lg:space-x-10">
+    <div class="col-span-1">
+      <label for="data">Data: <span v-if="dataHasError" class="text-red-500">Has error!</span></label>
+      <textarea class="leading-6 text-green-900" :class="{'bg-red-100': dataHasError, [textareaClass]: true}"
+                @change="validate"
+                v-model="data" id="data"></textarea>
+    </div>
+    <div class="col-span-1">
+      <label for="rules">
+        Rules: <span v-if="rulesHasError" class="text-red-500">Has error!</span>
+        <button @click.prevent="parseRules" class="float-right text-sm text-green-400 hover:text-green-500">Parse
+          Rules
+        </button>
+      </label>
+      <textarea class="leading-6 text-blue-900" :class="{'bg-red-100': rulesHasError, [textareaClass]: true}"
+                @change="validate"
+                v-model="rules" id="rules"></textarea>
+    </div>
+    <div class="col-span-1">
+      <label for="result">Result:</label>
+      <textarea v-model="result" id="result"
+                :class="{[textareaClass]: true, 'bg-red-200': resultHasError, 'bg-green-200': !resultHasError}"
+                disabled></textarea>
+    </div>
+  </div>
+</div>
+<script type="module">
+  // Destruct Vue
+  const {ref, createApp, computed, onMounted, watch, onBeforeMount} = Vue;
+  // Destruct AbolishBrowser
+  const {Abolish, Rule, ParseRules} = AbolishBrowser;
+  // Initialize Abolish
+  const abolish = new Abolish();
+
+  const textareaClass = 'w-full rounded-lg border border-gray-300 p-4 font-mono text-xs text-black';
+
+  function isValidJson(data) {
+    try {
+      JSON.parse(data);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function toJson(data) {
+    return JSON.stringify(data, null, 2);
+  }
+
+  function fromJson(data) {
+    return JSON.parse(data);
+  }
+
+  function setup() {
+    /**
+     * ===== Variables =====
+     */
+    let timeout = -1;
+    const result = ref(toJson([]));
+    const data = ref(toJson({
+          email: null,
+          name: 'John Doe',
+          phone: '+1 (123) 456-7890',
+          address: {
+            street: '123 Main St',
+            city: 'Anytown',
+            state: 'CA',
+            zip: '12345',
+          },
+        },
+    ));
+
+    const rules = ref(toJson({
+      '*': 'required|typeof:string',
+      email: true,
+      name: 'minLength:2|maxLength:10',
+      'address.state': 'minLength:2|minLength:2',
+      '$include': [
+        'phone',
+        'address.city',
+      ],
+    }));
+
+    /**
+     * ===== Computed =====
+     */
+    const dataHasError = computed(() => {
+      return !isValidJson(data.value);
+    });
+
+    const rulesHasError = computed(() => {
+      return !isValidJson(rules.value);
+    });
+
+    const resultHasError = computed(() => {
+      const r = fromJson(result.value);
+      if (typeof r === 'object' && r.hasOwnProperty('error')) {
+        return true;
+      } else if (Array.isArray(r) && r[0]) {
+        return true;
+      }
+    });
+
+    /**
+     * ===== Watchers =====
+     */
+    watch(data, () => onDataChange(data));
+    watch(rules, () => onDataChange(rules));
+
+    /**
+     * ===== Functions
+     */
+    function onDataChange(ref) {
+
+      // Clear timeout if exits
+      if (timeout !== -1) clearTimeout(timeout);
+      // set new timeout
+      timeout = setTimeout(() => {
+        if (!isValidJson(ref.value)) return;
+
+        // validate
+        validate();
+
+        // refactor
+        const refactored = toJson(fromJson(ref.value));
+        if (refactored !== ref.value) {
+          ref.value = refactored;
+        }
+      }, 1000);
+    }
+
+    function validate() {
+      if (!isValidJson(data.value) || !isValidJson(rules.value)) {
+        return;
+      }
+
+      try {
+        result.value = toJson(abolish.validate(fromJson(data.value), fromJson(rules.value)));
+      } catch (e) {
+        result.value = toJson({error: e.message});
+      }
+
+    }
+
+    function parseRules() {
+      const shouldParse = confirm('Are you sure you want to parse rules to object?');
+      if (!shouldParse) return;
+
+      rules.value = toJson(ParseRules(fromJson(rules.value)));
+    }
+
+    onMounted(validate);
+
+    return {textareaClass, data, rules, result, dataHasError, rulesHasError, resultHasError, validate, parseRules};
+  }
+
+  createApp({
+    created() {
+      // Remove hidden on created
+      document.getElementById('app').removeAttribute('hidden');
+    }, setup,
+  }).mount('#app');
+</script>
+
+</body>
+</html>
