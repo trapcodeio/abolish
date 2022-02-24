@@ -5,22 +5,10 @@ A Javascript object validator for custom validations
 Using the idea of [object-validator-pro](https://github.com/trapcodeio/object-validator-pro) but modern codes and
 typescript.
 
-For direct browser Installation see [abolish-browser](https://www.npmjs.com/package/abolish-browser)
-
-### Using Package Managers
-
-```sh
-npm install abolish
-```
-
-Using Yarn
-
-```sh
-yarn add abolish
-```
+Documentation: [Abolish Documentation](https://abolish.trapcode.io)
+Playground: [Abolish Playground](https://abolish-playground.trapcode.io)
 
 ### Basic Example
-
 ```javascript
 const {Abolish} = require('abolish');
 
@@ -83,5 +71,3 @@ console.log({form, validation: {error, validated}});
   }
 }
 ```
-
-Full documentation coming soon
