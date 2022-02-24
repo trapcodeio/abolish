@@ -2,15 +2,15 @@ import type { AbolishValidator } from "../../src/Types";
 
 export = <AbolishValidator>{
     name: "regex",
-    error: ":param failed Regex tests.",
+    error: ":param failed Regex validation.",
     validator: (str, regex) => {
         const isRegex = regex instanceof RegExp;
-        if (typeof str !== "string" && !isRegex) return false;
+        if (typeof str !== "string") return false;
 
-        if (regex) {
+        if (isRegex) {
             return regex.test(str);
         } else {
-            return RegExp(regex).test(str);
+            return new RegExp(regex).test(str);
         }
     }
 };
