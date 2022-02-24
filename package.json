@@ -18,7 +18,7 @@
     "prepublishOnly": "npm run build",
     "watch": "npx tsc --watch",
     "play": "npx ts-node-dev --respawn tests/play.ts",
-    "test-browser": "npx vite"
+    "test-browser": "npx vite --host"
   },
   "dependencies": {
     "lodash": "^4.17.21"

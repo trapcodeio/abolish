@@ -26,13 +26,27 @@
       }
 
       textarea:disabled {
-          cursor: not-allowed;
+          cursor: text;
+      }
+
+      /* Set textarea min-height 400px on mobile */
+      @media screen and (max-width: 600px) {
+          textarea {
+              min-height: 400px;
+          }
+      }
+
+      /* Set textarea min-height 500px on medium size devices */
+      @media screen and (max-width: 1022px) {
+          textarea {
+              min-height: 450px;
+          }
       }
   </style>
 </head>
 <body class="text-white">
 <div id="app" hidden>
-  <div class="mx-auto mt-10 px-5">
+  <div class="mx-auto my-10 px-5">
     <h1 class="text-3xl text-center tracking-wider">
       Abolish Validator PlayGround
     </h1>
@@ -166,7 +180,7 @@
       email: 'email',
       name: 'minLength:2|maxLength:10',
       'address.state': 'minLength:2|maxLength:2',
-      "address.zip": "number|string:toString",
+      'address.zip': 'number|string:toString',
 
       'jsonDump': 'json|jsonDecode',
       'verified': 'date',
