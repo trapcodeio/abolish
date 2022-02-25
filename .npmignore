@@ -8,3 +8,5 @@ tsconfig.json
 
 *.ts
 !*.d.ts
+*.log
+bundle.js
