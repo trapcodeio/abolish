@@ -639,7 +639,14 @@ class Abolish {
      * @param rules
      */
     check<V = any>(variable: V, rules: AbolishRule): [ValidationError | false, V] {
-        const [e, v] = this.validate<{ variable: V }>({ variable }, { variable: rules });
+        const [e, v] = this.validate<{ variable: V }>(
+            { variable },
+            {
+                variable: rules,
+                // variable is included in-case if skipped
+                $include: ["variable"]
+            }
+        );
         return [e, v?.variable];
     }
 
@@ -684,7 +691,14 @@ class Abolish {
      * @param rules
      */
     attempt<V = any>(variable: V, rules: Record<string, any> | string): V {
-        const [e, v] = this.validate<{ variable: V }>({ variable }, { variable: rules });
+        const [e, v] = this.validate<{ variable: V }>(
+            { variable },
+            {
+                variable: rules,
+                // variable is included in-case if skipped
+                $include: ["variable"]
+            }
+        );
         if (e) throw new Error(e.message);
         return v.variable;
     }
@@ -712,7 +726,14 @@ class Abolish {
         variable: V,
         rules: Record<string, any> | string | string[]
     ): Promise<V> {
-        const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
+        const [e, v] = await this.validateAsync<{ variable: V }>(
+            { variable },
+            {
+                variable: rules,
+                // variable is included in-case if skipped
+                $include: ["variable"]
+            }
+        );
 
         if (e) throw new Error(e.message);
 
