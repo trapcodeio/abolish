@@ -30,10 +30,13 @@ for (const f of validatorFolders) {
 
     es.buildSync({
         entryPoints: [from],
+        target: "es6",
+        legalComments: "none",
         format: "iife",
         outfile: to,
         bundle: true,
         minify: true,
+        external: ["joi", "abolish"],
         globalName: name
     });
 
