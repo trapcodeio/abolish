@@ -1,4 +1,4 @@
-import { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
+import type { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
 import { abolish_StartCase, abolish_Pick, abolish_Get, Rule } from "./Functions";
@@ -790,18 +790,19 @@ class Abolish {
 
 /**
  * Add Global Validators
+ * @redundant since constructor adds object already.
  */
-Abolish.addGlobalValidator({
-    name: "object",
-    validator: (value, rules, { error, modifier }) => {
-        if (!value || typeof value !== "object") {
-            return error(`:param must be an object.`);
-        }
-
-        const [err, valid] = Abolish.validate(value, rules);
-        if (err) return error(err.message);
-        modifier.setThis(valid);
-    }
-});
+// Abolish.addGlobalValidator({
+//     name: "object",
+//     validator: (value, rules, { error, modifier }) => {
+//         if (!value || typeof value !== "object") {
+//             return error(`:param must be an object.`);
+//         }
+//
+//         const [err, valid] = Abolish.validate(value, rules);
+//         if (err) return error(err.message);
+//         modifier.setThis(valid);
+//     }
+// });
 
 export = Abolish;

@@ -1,9 +1,10 @@
+import type { AbolishInlineValidator, AbolishValidator } from "./Types";
+
 /**
  * @param value
  * @return {string}
  * @private
  */
-import { AbolishInlineValidator, AbolishValidator } from "./Types";
 
 function trimIfString(value: string | any): string | any {
     return typeof value === "string" ? value.trim() : value;
