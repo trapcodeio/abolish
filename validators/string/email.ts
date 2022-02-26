@@ -3,7 +3,18 @@ import type { AbolishValidator } from "../../src/Types";
 export = <AbolishValidator>{
     name: "email",
     error: ":param is not a valid email.",
-    validator: (email) => {
-        return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+    validator: (email: string, action: string | boolean, { modifier }) => {
+        // skip if action is false
+        if (action === false) return true;
+
+        // Check if email is valid
+        const isValidMail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+
+        // Convert to lowercase if action is set to lowercase
+        if (isValidMail && action === "lowercase" && modifier) {
+            modifier.setThis(email.toLowerCase());
+        }
+
+        return isValidMail;
     }
 };
