@@ -1,5 +1,8 @@
 const es = require("esbuild");
 const fs = require("fs");
+const zlib = require("zlib");
+
+const files = [];
 
 es.buildSync({
     entryPoints: ["./index.js"],
@@ -15,9 +18,7 @@ es.buildSync({
 
 // log the file size of bundled file `./browser.js`
 const file = __dirname + "/browser.min.js";
-const stats = fs.statSync(file);
-
-console.log("Abolish: New size is => ", humanFileSize(stats.size).split(" "));
+files.push(getGzippedSize(file));
 
 const folder = __dirname + `/validators`;
 let validatorFolders = ["array", "string"];
@@ -40,10 +41,11 @@ for (const f of validatorFolders) {
         globalName: name
     });
 
-    // log the file size of bundled file `./browser.js`
-    const stats = fs.statSync(to);
-    console.log(`${name}: New size is => `, humanFileSize(stats.size).split(" "));
+    // log the file size of bundled file.
+    files.push(getGzippedSize(to));
 }
+
+console.table(files);
 
 /**
  * Format bytes as human-readable text.
@@ -74,4 +76,19 @@ function humanFileSize(bytes, si = false, dp = 1) {
     } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
 
     return bytes.toFixed(dp) + " " + units[u];
+}
+
+/**
+ * Get gzip size of file
+ */
+function getGzippedSize(file) {
+    const stats = fs.statSync(file);
+    const gzip = zlib.gzipSync(fs.readFileSync(file));
+    const gzipSize = gzip.length;
+
+    return {
+        file: file.replace(__dirname + "/", ""),
+        size: humanFileSize(stats.size),
+        gzip: humanFileSize(gzipSize)
+    };
 }
