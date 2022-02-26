@@ -10,6 +10,5 @@ yarn.lock
 
 *.js
 !bundle.js
-!*.min.js
 *.d.ts
 *.log
