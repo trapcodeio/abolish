@@ -24,7 +24,7 @@ es.buildSync({
     bundle: true,
     legalComments: "none",
     treeShaking: true,
-    minify: true,
+    minify: false,
     external: ["joi"]
 });
 
