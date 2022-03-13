@@ -16,9 +16,23 @@ es.buildSync({
     globalName: "AbolishBrowser"
 });
 
+es.buildSync({
+    entryPoints: ["./index.js"],
+    format: "esm",
+    outfile: "./index.esm.js",
+    // target: "es2020",
+    bundle: true,
+    legalComments: "none",
+    treeShaking: true,
+    minify: true,
+    external: ["joi"]
+});
+
 // log the file size of bundled file `./browser.js`
 const file = __dirname + "/browser.min.js";
+const fileEsm = __dirname + "/index.esm.js";
 files.push(getGzippedSize(file));
+files.push(getGzippedSize(fileEsm));
 
 const folder = __dirname + `/validators`;
 let validatorFolders = ["array", "string"];
