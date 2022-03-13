@@ -3,10 +3,6 @@
   "version": "4.8.17",
   "description": "A javascript object validator.",
   "main": "index.js",
-  "exports": {
-    "import": "./index.esm.js",
-    "require": "./index.js"
-  },
   "types": "index.d.ts",
   "repository": "https://github.com/trapcodeio/abolish",
   "author": "trapcodeio",
