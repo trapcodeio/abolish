@@ -36,7 +36,7 @@ files.push(getGzippedSize(file));
 // files.push(getGzippedSize(fileEsm));
 
 const folder = __dirname + `/validators`;
-let validatorFolders = ["array", "string"];
+let validatorFolders = ["array", "string", "utils"];
 
 for (const f of validatorFolders) {
     const from = folder + `/${f}/index.js`;
