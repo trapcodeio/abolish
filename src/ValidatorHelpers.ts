@@ -1,5 +1,9 @@
 import type Abolish from "./Abolish";
 
+/**
+ * Register all validators
+ * @param abolish
+ */
 export function registerAllValidators<T extends typeof Abolish>(abolish: T) {
     registerValidators(abolish, "string");
     registerValidators(abolish, "array");
@@ -8,6 +12,11 @@ export function registerAllValidators<T extends typeof Abolish>(abolish: T) {
     return abolish;
 }
 
+/**
+ * Register Specific Validators
+ * @param abolish
+ * @param validators
+ */
 export function registerValidators<T extends typeof Abolish>(
     abolish: T,
     validators: "string" | "array" | "utils"
