@@ -16,24 +16,26 @@ es.buildSync({
     globalName: "AbolishBrowser"
 });
 
-/*es.buildSync({
+es.buildSync({
     entryPoints: ["./index.js"],
     format: "esm",
-    outfile: "./index.esm.js",
+    outfile: "./index.esm-bundled.js",
     // target: "es2020",
     bundle: true,
     legalComments: "none",
     treeShaking: true,
-    minify: false,
+    minify: true,
     external: ["joi"]
-});*/
+});
 
 // log the file size of bundled file `./browser.js`
 const file = __dirname + "/browser.min.js";
 files.push(getGzippedSize(file));
 
-// const fileEsm = __dirname + "/index.esm.js";
-// files.push(getGzippedSize(fileEsm));
+const fileEsm = __dirname + "/index.esm-bundled.js";
+files.push(getGzippedSize(fileEsm));
+
+// copy index.d.ts to index.esm.d.ts
 
 const folder = __dirname + `/validators`;
 let validatorFolders = ["array", "string", "utils"];

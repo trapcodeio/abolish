@@ -1,4 +1,4 @@
-import Abolish = require("./src/Abolish");
+import Abolish from "./src/Abolish";
 import { Rule, ParseRules } from "./src/Functions";
 
 // Export Abolish and Rule generator
