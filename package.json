@@ -4,6 +4,8 @@
   "description": "A javascript object validator.",
   "main": "index.js",
   "module": "index.esm.js",
+  "unkpg": "browser.min.js",
+  "jsdelivr": "browser.min.js",
   "types": "index.d.ts",
   "repository": "https://github.com/trapcodeio/abolish",
   "author": "trapcodeio",
