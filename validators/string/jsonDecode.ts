@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export = <AbolishValidator>{
+export default <AbolishValidator>{
     name: "jsonDecode",
     error: ":param is not a valid JSON string",
     /**

@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export = <AbolishValidator>{
+export default <AbolishValidator>{
     name: "md5",
     error: ":param is not a valid MD5 string",
     validator: (str) => {

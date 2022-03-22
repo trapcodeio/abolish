@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export = <AbolishValidator>{
+export default <AbolishValidator>{
     name: "date",
     validator: (v, o: "cast" | { cast: true }, { modifier }) => {
         if (v instanceof Date) {

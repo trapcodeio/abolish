@@ -86,4 +86,4 @@ const StringToRules = (str: string): { [key: string]: any } => {
     return keyColumnValObj;
 };
 
-export = StringToRules;
+export default StringToRules;

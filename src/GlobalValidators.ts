@@ -172,4 +172,4 @@ GlobalValidators.type.name = "type";
 GlobalValidators.type.error = ":param is not of type :option";
 GlobalValidators.type.description = "Alias: typeof";
 
-export = GlobalValidators;
+export default GlobalValidators;

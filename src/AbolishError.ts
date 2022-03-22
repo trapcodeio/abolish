@@ -25,4 +25,4 @@ class AbolishError {
     }
 }
 
-export = AbolishError;
+export default AbolishError;
