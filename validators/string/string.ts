@@ -1,7 +1,7 @@
 import type { AbolishValidator } from "../../src/Types";
 import type ObjectModifier from "../../src/ObjectModifier";
 
-export = <AbolishValidator>{
+export default <AbolishValidator>{
     name: "string",
     validator: (str: string | undefined, option: any, { modifier, error }) => {
         if (option === true || option === undefined) {
