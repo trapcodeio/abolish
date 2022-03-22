@@ -1,9 +1,11 @@
 # Abolish
 
+<p align="center">
+  <img src="https://abolish.trapcode.io/abolish-black.png" />
+</p>
+
 A Javascript object validator for custom validations
 
-Using the idea of [object-validator-pro](https://github.com/trapcodeio/object-validator-pro) but modern codes and
-typescript.
 
 Documentation: [Abolish Documentation](https://abolish.trapcode.io)
 <br>
