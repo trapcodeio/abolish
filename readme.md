@@ -1,9 +1,5 @@
 # Abolish
 
-<div align="center" style="background: black">
-  <img src="https://abolish.trapcode.io/abolish-white.svg" />
-</div>
-
 A Javascript object validator for custom validations
 
 
