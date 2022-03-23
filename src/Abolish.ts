@@ -4,7 +4,6 @@ import GlobalValidators from "./GlobalValidators";
 import { abolish_StartCase, abolish_Pick, abolish_Get, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
-import type Joi from "joi";
 import { cloneDeep } from "lodash";
 
 type AsyncData = {
@@ -588,52 +587,6 @@ class Abolish {
     }
 
     /**
-     * Enables the use of $joi validator
-     * @param joi
-     */
-    static useJoi(joi?: Joi.Root) {
-        if (!joi) {
-            try {
-                joi = require("joi") as Joi.Root;
-            } catch (e) {
-                throw new Error(`Joi not found! Install Joi`);
-            }
-        }
-
-        /**
-         * Add Validator Joi
-         */
-        return this.addGlobalValidator({
-            name: "$joi",
-            validator(value, joiSchema: Joi.Schema, { error, modifier }) {
-                /**
-                 * Check if schema is Joi Schema
-                 */
-                if (!joi!.isSchema(joiSchema)) {
-                    return error(`Invalid JOI schema provided for :param`);
-                }
-
-                /**
-                 * Validate value against joiSchema Passed
-                 */
-                let validated: any;
-                try {
-                    validated = joi!.attempt(value, joiSchema);
-                } catch (e: any) {
-                    return error(e.message);
-                }
-
-                /**
-                 * abolish_Set Value for abolish
-                 */
-                modifier.setThis(validated);
-
-                return true;
-            }
-        });
-    }
-
-    /**
      * check a variable does not throw error
      * @param variable
      * @param rules
@@ -787,22 +740,5 @@ class Abolish {
         return new this().testAsync(variable, rules);
     }
 }
-
-/**
- * Add Global Validators
- * @redundant since constructor adds object already.
- */
-// Abolish.addGlobalValidator({
-//     name: "object",
-//     validator: (value, rules, { error, modifier }) => {
-//         if (!value || typeof value !== "object") {
-//             return error(`:param must be an object.`);
-//         }
-//
-//         const [err, valid] = Abolish.validate(value, rules);
-//         if (err) return error(err.message);
-//         modifier.setThis(valid);
-//     }
-// });
 
 export = Abolish;
