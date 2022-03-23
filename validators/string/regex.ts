@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export default <AbolishValidator>{
+export = <AbolishValidator>{
     name: "regex",
     error: ":param failed Regex validation.",
     validator: (str, regex) => {

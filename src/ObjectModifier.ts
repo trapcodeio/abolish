@@ -94,4 +94,4 @@ class ObjectModifier {
     }
 }
 
-export default ObjectModifier;
+export = ObjectModifier;

@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export default <AbolishValidator>{
+export = <AbolishValidator>{
     name: "url",
     error: ":param is not a valid URL",
     validator: (str) => {

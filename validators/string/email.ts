@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export default <AbolishValidator>{
+export = <AbolishValidator>{
     name: "email",
     error: ":param is not a valid email.",
     validator: (email: string, action: string | boolean, { modifier }) => {

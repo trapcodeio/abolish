@@ -805,4 +805,4 @@ class Abolish {
 //     }
 // });
 
-export default Abolish;
+export = Abolish;

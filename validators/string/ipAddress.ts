@@ -1,6 +1,6 @@
 import type { AbolishValidator } from "../../src/Types";
 
-export default <AbolishValidator>{
+export = <AbolishValidator>{
     name: "ipAddress",
     error: ":param is not a valid IP address.",
     validator: (ip) => {
