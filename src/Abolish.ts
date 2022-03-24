@@ -49,6 +49,13 @@ class Abolish {
     }
 
     /**
+     * Get global validators list
+     */
+    static getGlobalValidatorsList() {
+        return Object.keys(this.getGlobalValidators());
+    }
+
+    /**
      * Add single global validator
      * @param validator
      */
