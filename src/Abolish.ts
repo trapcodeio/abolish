@@ -35,7 +35,8 @@ class Abolish {
                 }
 
                 const [err, valid] = this.validate(value, rules);
-                if (err) return error(err.message);
+                if (err) return error(err.message, err);
+
                 modifier.setThis(valid);
             }
         });
