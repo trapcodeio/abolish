@@ -11,3 +11,4 @@ tsconfig.json
 !*.d.ts
 *.log
 bundle.js
+JapaFile.js
