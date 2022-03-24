@@ -1,7 +1,7 @@
 import type { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { abolish_StartCase, abolish_Pick, abolish_Get, Rule } from "./Functions";
+import { abolish_Get, abolish_Pick, abolish_StartCase, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import { cloneDeep } from "lodash";
@@ -338,7 +338,7 @@ class Abolish {
 
                     if (!isAsync && validator.isAsync) {
                         throw new Error(
-                            `Validator: {${validatorName}} is async, use validateAsync method instead.`
+                            `Validator: {${validatorName}} is async, use async method instead.`
                         );
                     }
 
@@ -741,4 +741,6 @@ class Abolish {
     }
 }
 
-export = Abolish;
+export type TypeOfAbolishOrInstance = typeof Abolish | InstanceType<typeof Abolish>;
+
+export default Abolish;

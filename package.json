@@ -21,7 +21,9 @@
     "prepublishOnly": "npm run build",
     "watch": "npx tsc --watch",
     "play": "npx ts-node-dev --respawn tests/play.ts",
-    "test-browser": "npx vite --host"
+    "test-browser": "npx vite --host",
+    "test": "npm run build && node JapaFile.js",
+    "test-dev": "npx nodemon JapaFile.js --watch '*/**' --ext 'ts'"
   },
   "dependencies": {
     "lodash": "^4.17.21"
@@ -30,12 +32,15 @@
     "@types/lodash": "^4.14.178",
     "@types/node": "^16.11.9",
     "esbuild": "^0.14.23",
+    "japa": "^4.0.0",
     "joi": "^17.6.0",
     "lodash-es": "^4.17.21",
     "prettier": "^2.5.1",
+    "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.5",
-    "vite": "^2.8.4"
+    "vite": "^2.8.4",
+    "yup": "^0.32.11"
   },
   "keywords": [
     "abolish",

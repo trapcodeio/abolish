@@ -4,7 +4,7 @@ import ObjectModifier from "./ObjectModifier";
 /**
  * ValidationError
  * @description
- * Result returned by the validate object
+ * Result returned by to validate object
  */
 export type ValidationError = {
     key: string;

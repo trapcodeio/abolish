@@ -1,5 +1,7 @@
-import Joi from "joi";
-import type Abolish from "../src/Abolish";
+import * as Joi from "joi";
+import type { TypeOfAbolishOrInstance } from "../src/Abolish";
+import type { AbolishValidator } from "../src/Types";
+import { AddValidatorToClassOrInstance } from "./index";
 
 /**
  * $joi schema helper
@@ -17,19 +19,13 @@ export const $joi = (schema: Joi.Schema | ((joi: Joi.Root) => Joi.Schema)) => {
  * @param abolish
  * @param joi
  */
-export function useJoi(abolish: typeof Abolish, joi?: Joi.Root) {
-    if (!joi) {
-        try {
-            joi = require("joi") as Joi.Root;
-        } catch (e) {
-            throw new Error(`Joi not found! Install Joi`);
-        }
-    }
+export function useJoi(abolish: TypeOfAbolishOrInstance, joi?: Joi.Root) {
+    if (!joi) joi = Joi;
 
     /**
      * Add Validator Joi
      */
-    return abolish.addGlobalValidator({
+    const validator: AbolishValidator = {
         name: "$joi",
         validator(value, joiSchema: Joi.Schema, { error, modifier }) {
             /**
@@ -42,19 +38,20 @@ export function useJoi(abolish: typeof Abolish, joi?: Joi.Root) {
             /**
              * Validate value against joiSchema Passed
              */
-            let validated: any;
             try {
-                validated = joi!.attempt(value, joiSchema);
+                const validated = joi!.attempt(value, joiSchema);
+
+                /**
+                 * set Value for abolish
+                 */
+                modifier.setThis(validated);
+
+                return true;
             } catch (e: any) {
                 return error(e.message);
             }
-
-            /**
-             * set Value for abolish
-             */
-            modifier.setThis(validated);
-
-            return true;
         }
-    });
+    };
+
+    AddValidatorToClassOrInstance(abolish, validator);
 }
