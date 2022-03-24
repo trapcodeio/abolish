@@ -5,6 +5,7 @@
 
 import test from "japa";
 import { Abolish } from "../index";
+import { email as EmailValidator, url as UrlValidator } from "../validators/string";
 
 test.group("Static Methods", () => {
     test("getGlobalValidators", (assert) => {
@@ -43,7 +44,7 @@ test.group("Static Methods", () => {
         };
 
         const [e, v] = Abolish.validate(data, {
-            age: "required|number|min:18",
+            age: "required|typeof:number|min:18",
             email: "required|email"
         });
 
@@ -69,7 +70,7 @@ test.group("Static Methods", () => {
         };
 
         const [e, v] = await Abolish.validateAsync(data, {
-            age: "required|number|min:18",
+            age: "required|typeof:number|min:18",
             email: "required|email"
         });
 
@@ -88,7 +89,7 @@ test.group("Static Methods", () => {
     });
 
     test("check", (assert) => {
-        const [e, age] = Abolish.check(20, "required|number|min:18");
+        const [e, age] = Abolish.check(20, "required|typeof:number|min:18");
 
         // Validation should pass
         assert.isFalse(e);
@@ -97,7 +98,7 @@ test.group("Static Methods", () => {
         assert.equal(age, 20);
 
         // fail validation
-        const [e2, age2] = Abolish.check(17, "required|number|min:18");
+        const [e2, age2] = Abolish.check(17, "required|typeof:number|min:18");
 
         // Validation should fail
         assert.isNotFalse(e2);
@@ -110,7 +111,7 @@ test.group("Static Methods", () => {
     });
 
     test("checkAsync", async (assert) => {
-        const [e, age] = await Abolish.checkAsync(20, "required|number|min:18");
+        const [e, age] = await Abolish.checkAsync(20, "required|typeof:number|min:18");
 
         // Validation should pass
         assert.isFalse(e);
@@ -119,7 +120,7 @@ test.group("Static Methods", () => {
         assert.equal(age, 20);
 
         // fail validation
-        const [e2, age2] = await Abolish.checkAsync(17, "required|number|min:18");
+        const [e2, age2] = await Abolish.checkAsync(17, "required|typeof:number|min:18");
 
         // Validation should fail
         assert.isNotFalse(e2);
@@ -131,9 +132,107 @@ test.group("Static Methods", () => {
         assert.isUndefined(age2);
     });
 
-    // test("attempt", (assert) => {});
-    // test("attemptAsync", (assert) => {});
-    //
-    // test("test", (assert) => {});
-    // test("testAsync", (assert) => {});
+    test("attempt", (assert) => {
+        // Add Email validator
+        Abolish.addGlobalValidator(EmailValidator);
+
+        let age;
+        try {
+            age = Abolish.attempt(17, "required|typeof:number|min:18");
+        } catch (e: any) {}
+
+        // Validation failed
+        assert.isUndefined(age);
+
+        // Validation should pass
+        const email = Abolish.attempt("ADMIN@example.com", "required|email:lowercase");
+
+        // Validation passed
+        assert.equal(email, "admin@example.com");
+    });
+
+    test("attemptAsync", async (assert) => {
+        // Add Email validator
+        Abolish.addGlobalValidator(EmailValidator);
+
+        let age;
+        try {
+            age = await Abolish.attemptAsync(17, "required|typeof:number|min:18");
+        } catch (e: any) {}
+
+        // Validation failed
+        assert.isUndefined(age);
+
+        // Validation should pass
+        const email = await Abolish.attemptAsync("ADMIN@example.com", "required|email:lowercase");
+
+        // Validation passed
+        assert.equal(email, "admin@example.com");
+    });
+
+    test("test", (assert) => {
+        // Add Email validator
+        Abolish.addGlobalValidator(EmailValidator);
+
+        // Pass validation
+        const isValidMail = Abolish.test("ADMIN@example.com", "required|email");
+
+        // Validation passed
+        assert.isTrue(isValidMail);
+
+        // Fail validation
+        const isValidMail2 = Abolish.test("not a mail", "required|email");
+
+        // Validation failed
+        assert.isFalse(isValidMail2);
+    });
+
+    test("testAsync", async (assert) => {
+        // Add Email validator
+        Abolish.addGlobalValidator(EmailValidator);
+
+        // Pass validation
+        const isValidMail = await Abolish.testAsync(
+            "ADMIN@example.com",
+            "required|email:lowercase"
+        );
+
+        // Validation passed
+        assert.isTrue(isValidMail);
+
+        // Fail validation
+        const isValidMail2 = await Abolish.testAsync("not a mail", "required|email:lowercase");
+
+        // Validation failed
+        assert.isFalse(isValidMail2);
+    });
+});
+
+test.group("Instance Methods", (group) => {
+    let abolish: Abolish;
+
+    /**
+     * Since static methods calls instance methods,
+     * There will be no need to create tests for them.
+     */
+
+    group.before(() => {
+        abolish = new Abolish();
+    });
+
+    test("addValidator", (assert) => {
+        abolish.addValidator(UrlValidator);
+
+        // Check if validator is added
+        assert.hasAnyKeys(abolish.validators, ["url"]);
+
+        // Use validator
+        const [e, url] = abolish.check("https://example.com", "url");
+
+        // Validation should pass
+        assert.isFalse(e);
+
+        // Url should be https://example.com
+        assert.equal(url, "https://example.com");
+    });
 });
