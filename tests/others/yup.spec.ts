@@ -21,24 +21,6 @@ test.group("Yup: Setup", () => {
 
         assert.include(Object.keys(abolish.validators), "$yup");
     });
-
-    // test("Use with custom Yup", (assert) => {
-    //     // Register Yup
-    //     useYup(Abolish, Yup);
-    //
-    //     // Validators
-    //     const validators = Abolish.getGlobalValidators();
-    //
-    //     // $yup
-    //     assert.include(Object.keys(validators), "$yup");
-    //
-    //     // Test with instance
-    //     const abolish = new Abolish();
-    //
-    //     useYup(abolish, Yup);
-    //
-    //     assert.include(Object.keys(abolish.validators), "$yup");
-    // });
 });
 
 test.group("Yup: Usage", (group) => {

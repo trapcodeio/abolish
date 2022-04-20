@@ -10,7 +10,7 @@ yarn.lock
 
 *.js
 !bundle.js
-!index.esm.js
+!japaFile.js
 *.d.ts
 !index.esm.d.ts
 *.log
