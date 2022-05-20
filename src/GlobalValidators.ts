@@ -1,15 +1,5 @@
 import type { AbolishInlineValidator, AbolishValidator } from "./Types";
 
-/**
- * @param value
- * @return {string}
- * @private
- */
-
-function trimIfString(value: string | any): string | any {
-    return typeof value === "string" ? value.trim() : value;
-}
-
 const GlobalValidators: Record<string, AbolishValidator> = {
     default: {
         name: "default",
@@ -26,7 +16,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         name: "required",
         description: "Value is required",
         error: ":param is required.",
-        validator: (value: any, option: boolean): boolean => {
+        validator: (value: any, option: boolean) => {
             if (!option) {
                 return true;
             }
@@ -44,7 +34,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     typeof: {
         name: "typeof",
         error: ":param is not typeof :option",
-        validator: (value: any, option: string | false): boolean => {
+        validator: (value: any, option: string | false) => {
             /**
              * If typeof is false then we don't validate this
              */
@@ -69,7 +59,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     min: {
         name: "min",
         error: ":param is too small. (Min. :option)",
-        validator: (value: any, option: number | string, helpers): boolean => {
+        validator: (value: any, option: number | string, helpers) => {
             const isNotNumber = isNaN(value);
 
             /**
@@ -78,7 +68,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
              * we pass the validation to `minLength`
              */
             if ((typeof value === "string" && isNotNumber) || Array.isArray(value))
-                return GlobalValidators.minLength.validator(value, option, helpers) as boolean;
+                return GlobalValidators.minLength.validator(value, option, helpers);
 
             // return false if this is not a number
             if (isNotNumber) return false;
@@ -92,7 +82,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     max: {
         name: "max",
         error: ":param is too big. (Max. :option)",
-        validator: (value: any, option: number | string, helpers): boolean => {
+        validator: (value: any, option: number | string, helpers) => {
             const isNotNumber = isNaN(value);
 
             /**
@@ -101,7 +91,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
              * we pass the validation to `minLength`
              */
             if ((typeof value === "string" && isNotNumber) || Array.isArray(value))
-                return GlobalValidators.maxLength.validator(value, option, helpers) as boolean;
+                return GlobalValidators.maxLength.validator(value, option, helpers);
 
             // return false if this is not a number
             if (isNotNumber) return false;
@@ -115,11 +105,16 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     minLength: {
         name: "minLength",
         error: ":param is too short. (Min. :option characters)",
-        validator: (value: any, option: number | string): boolean => {
-            if (typeof value !== "string" && !Array.isArray(value)) return false;
-
-            value = trimIfString(value);
-            return value.length >= Number(option);
+        validator: (value: any, option: number | string, { error }) => {
+            if (typeof value === "string") {
+                return value.trim().length >= Number(option);
+            } else if (Array.isArray(value)) {
+                return value.length >= Number(option)
+                    ? true
+                    : error(`:param length is too short. (Min: ${option})`);
+            } else {
+                return false;
+            }
         },
         description: "[Array, String]: Value has >= :option characters"
     },
@@ -127,11 +122,16 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     maxLength: {
         name: "maxLength",
         error: ":param is too long. (Max. :option characters)",
-        validator: (value: any, option: number | string): boolean => {
-            if (typeof value !== "string" && !Array.isArray(value)) return false;
-
-            value = trimIfString(value);
-            return value.length <= Number(option);
+        validator: (value: any, option: number | string, { error }) => {
+            if (typeof value === "string") {
+                return value.trim().length <= Number(option);
+            } else if (Array.isArray(value)) {
+                return value.length <= Number(option)
+                    ? true
+                    : error(`:param length is too long. (Max: ${option})`);
+            } else {
+                return false;
+            }
         },
         description: "[Array, String]: Value has <= :option characters"
     },
