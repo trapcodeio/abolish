@@ -1,3 +1,3 @@
-import same = require("./same");
+import same from "./same";
 
 export { same };

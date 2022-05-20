@@ -176,13 +176,61 @@ test.group("Default Validators", () => {
         }
     });
 
-    test.failing("$inline", () => {
-        Abolish.attempt(
-            "password",
+    test("objectAsync", async (assert) => {
+        const rule = {
+            name: "required|typeof:string",
+            age: "required|typeof:number|min:18"
+        };
+
+        // Passes
+        const [e, v] = await Abolish.checkAsync(
             {
-                $name: 'Password',
-                ...$inline((password) => password === "123456", ":param must be 123456")
+                name: "Sam",
+                age: 18,
+                isCool: true
+            },
+            { object: rule }
+        );
+
+        // Error is false
+        assert.isFalse(e);
+
+        // validated object
+        assert.deepEqual(v, {
+            name: "Sam",
+            age: 18
+        } as any);
+
+        // Fails
+        const [e2, v2] = await Abolish.checkAsync<any>(
+            {
+                name: "Sam",
+                age: 17,
+                isCool: true
+            },
+            {
+                object: rule
             }
         );
+
+        // Error is true
+        assert.isDefined(e2);
+
+        // validated object is undefined
+        assert.deepEqual(v2, undefined);
+
+        if (e2) {
+            assert.equal(e2.validator, "object");
+            // Check object error validator
+            assert.equal(e2.data.key, "age");
+            assert.equal(e2.data.validator, "min");
+        }
+    });
+
+    test.failing("$inline", () => {
+        Abolish.attempt("password", {
+            $name: "Password",
+            ...$inline((password) => password === "123456", ":param must be 123456")
+        });
     });
 });

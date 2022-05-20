@@ -1,18 +1,18 @@
-import alphaNumeric = require("./alphaNumeric");
-import boolean = require("./boolean");
-import date = require("./date");
-import email = require("./email");
-import ipAddress = require("./ipAddress");
-import json = require("./json");
-import jsonDecode = require("./jsonDecode");
-import jsonEncode = require("./jsonEncode");
-import md5 = require("./md5");
-import number = require("./number");
-import regex = require("./regex");
-import string = require("./string");
-import url = require("./url");
+import alphaNumeric from "./alphaNumeric";
+import boolean from "./boolean";
+import date from "./date";
+import email from "./email";
+import ipAddress from "./ipAddress";
+import json from "./json";
+import jsonDecode from "./jsonDecode";
+import jsonEncode from "./jsonEncode";
+import md5 from "./md5";
+import number from "./number";
+import regex from "./regex";
+import string from "./string";
+import url from "./url";
 
-export {
+export = {
     alphaNumeric,
     boolean,
     date,

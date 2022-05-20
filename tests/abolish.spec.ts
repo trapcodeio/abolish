@@ -5,7 +5,7 @@
 
 import test from "japa";
 import { Abolish } from "../index";
-import { email as EmailValidator, url as UrlValidator } from "../validators/string";
+import StringValidators from "../validators/string";
 
 test.group("Static Methods", () => {
     test("getGlobalValidators", (assert) => {
@@ -29,8 +29,7 @@ test.group("Static Methods", () => {
     });
 
     test("addGlobalValidators", (assert) => {
-        const stringValidators = require("../validators/string");
-        Abolish.addGlobalValidators(stringValidators);
+        Abolish.addGlobalValidators(StringValidators);
 
         // check if the string `ipAddress` is in the list of validators
         assert.include(Abolish.getGlobalValidatorsList(), "ipAddress");
@@ -134,7 +133,7 @@ test.group("Static Methods", () => {
 
     test("attempt", (assert) => {
         // Add Email validator
-        Abolish.addGlobalValidator(EmailValidator);
+        Abolish.addGlobalValidator(StringValidators.email);
 
         let age;
         try {
@@ -153,7 +152,7 @@ test.group("Static Methods", () => {
 
     test("attemptAsync", async (assert) => {
         // Add Email validator
-        Abolish.addGlobalValidator(EmailValidator);
+        Abolish.addGlobalValidator(StringValidators.email);
 
         let age;
         try {
@@ -172,7 +171,7 @@ test.group("Static Methods", () => {
 
     test("test", (assert) => {
         // Add Email validator
-        Abolish.addGlobalValidator(EmailValidator);
+        Abolish.addGlobalValidator(StringValidators.email);
 
         // Pass validation
         const isValidMail = Abolish.test("ADMIN@example.com", "required|email");
@@ -189,7 +188,7 @@ test.group("Static Methods", () => {
 
     test("testAsync", async (assert) => {
         // Add Email validator
-        Abolish.addGlobalValidator(EmailValidator);
+        Abolish.addGlobalValidator(StringValidators.email);
 
         // Pass validation
         const isValidMail = await Abolish.testAsync(
@@ -221,7 +220,7 @@ test.group("Instance Methods", (group) => {
     });
 
     test("addValidator", (assert) => {
-        abolish.addValidator(UrlValidator);
+        abolish.addValidator(StringValidators.url);
 
         // Check if validator is added
         assert.hasAnyKeys(abolish.validators, ["url"]);

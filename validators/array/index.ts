@@ -1,5 +1,6 @@
-import any = require("./any");
-import array = require("./array");
-import arrayValues = require("./arrayValues");
+import any from "./any";
+import array from "./array";
+import arrayValues from "./arrayValues";
+import arrayValuesAsync from "./arrayValuesAsync";
 
-export { any, array, arrayValues };
+export = { any, array, arrayValues, arrayValuesAsync };

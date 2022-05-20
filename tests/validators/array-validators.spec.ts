@@ -60,4 +60,24 @@ test.group("Array Validators", (group) => {
 
         assert.deepEqual(value, data);
     });
+
+    test("arrayValuesAsync", async (assert) => {
+        const data = [
+            { id: 1, name: "John" },
+            { id: 2, name: "Jane" },
+            { id: 3, name: "Jack" }
+        ];
+
+        const value = await Abolish.attemptAsync(data, {
+            array: 3,
+            arrayValuesAsync: {
+                object: {
+                    id: "typeof:number",
+                    name: "typeof:string"
+                }
+            }
+        });
+
+        assert.deepEqual(value, data);
+    });
 });
