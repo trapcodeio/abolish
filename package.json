@@ -1,6 +1,6 @@
 {
   "name": "abolish",
-  "version": "4.12.1",
+  "version": "4.12.2",
   "description": "A javascript object validator.",
   "main": "index.js",
   "module": "index.esm.js",
