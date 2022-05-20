@@ -6,12 +6,32 @@ import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import { cloneDeep } from "lodash";
 
+type Job = {
+    $name: string | false;
+    rule: string;
+    validator: AbolishValidator;
+    validatorName: string;
+    validatorOption: any;
+    $error: string | undefined;
+    $errors: Record<string, string> | undefined;
+};
+
 type AsyncData = {
     validated: Record<string, any>;
-    jobs: any[];
+    jobs: Job[];
     keysToBeValidated: string[];
     includeKeys: string[];
 };
+
+class AttemptError extends Error {
+    public error: ValidationError;
+
+    constructor(e: ValidationError) {
+        super(e.message);
+        this.name = "AttemptError";
+        this.error = e;
+    }
+}
 
 /**
  * Abolish Class
@@ -388,7 +408,8 @@ class Abolish {
                             validationResult = validator.validator(objectValue, validatorOption, {
                                 error: (message: string, data?: any) =>
                                     new AbolishError(message, data),
-                                modifier: new ObjectModifier(validated, rule, $name)
+                                modifier: new ObjectModifier(validated, rule, $name),
+                                abolish: this
                             });
                         } catch (e: any) {
                             /**
@@ -523,7 +544,8 @@ class Abolish {
                      */
                     validationResult = await validator.validator(objectValue, validatorOption, {
                         error: (message: string, data?: any) => new AbolishError(message, data),
-                        modifier: new ObjectModifier(validated, rule, $name)
+                        modifier: new ObjectModifier(validated, rule, $name),
+                        abolish: this
                     });
                 } catch (e: any) {
                     /**
@@ -558,7 +580,7 @@ class Abolish {
                      * Replace :param with rule converted to upperCase
                      * and if option is stringable, replace :option with validatorOption
                      */
-                    message = (message || validator.error).replace(
+                    message = (message || validator.error!).replace(
                         ":param",
                         $name ? $name : abolish_StartCase(rule, this)
                     )!;
@@ -660,7 +682,7 @@ class Abolish {
                 $include: ["variable"]
             }
         );
-        if (e) throw new Error(e.message);
+        if (e) throw new AttemptError(e);
         return v.variable;
     }
 
@@ -696,7 +718,7 @@ class Abolish {
             }
         );
 
-        if (e) throw new Error(e.message);
+        if (e) throw new AttemptError(e);
 
         return v.variable;
     }

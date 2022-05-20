@@ -1,5 +1,6 @@
-import AbolishError from "./AbolishError";
-import ObjectModifier from "./ObjectModifier";
+import type Abolish from "./Abolish";
+import type AbolishError from "./AbolishError";
+import type ObjectModifier from "./ObjectModifier";
 
 /**
  * ValidationError
@@ -17,7 +18,7 @@ export type ValidationError = {
 /**
  * ValidationResult
  * @description
- * Result returned by the validate object
+ * Result returned by to validate object
  */
 export type ValidationResult<T = any> = [error: ValidationError | false, validated: T];
 
@@ -26,6 +27,7 @@ export type AbolishValidatorFunctionResult = boolean | AbolishError | void;
 export type AbolishValidatorFunctionHelper = {
     error: (message: string, data?: any) => AbolishError;
     modifier: ObjectModifier;
+    abolish: Abolish;
 };
 
 export type AbolishValidatorFunction = (
@@ -36,10 +38,7 @@ export type AbolishValidatorFunction = (
 
 export type AbolishInlineValidator = (
     value: any,
-    helpers: {
-        error: (message: string, data?: any) => AbolishError;
-        modifier: ObjectModifier;
-    }
+    helpers: AbolishValidatorFunctionHelper
 ) => boolean | AbolishError | Promise<boolean | AbolishError>;
 
 /**
