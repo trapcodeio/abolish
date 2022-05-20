@@ -5,7 +5,7 @@ import { Rule } from "../../src/Functions";
 export = <AbolishValidator>{
     name: "arrayValues",
     error: ":param array values does not match the expected types",
-    validator: (arr: any[], rule: AbolishRule, { error, abolish }) => {
+    validator: (arr: any[], rule: AbolishRule, { error, abolish, modifier }) => {
         assertType(arr, "array", `arrayValues values`);
         assertType(rule, ["string", "array", "object"]);
 
@@ -15,6 +15,7 @@ export = <AbolishValidator>{
 
         // loop through the array and check if the values are of the given types
         // using abolish
+        const newArray = [] as any[];
         for (let i = 0; i < arr.length; i++) {
             const [err, validated] = abolish.check(arr[i], {
                 $name: `arrayValues[${i}]`,
@@ -23,7 +24,9 @@ export = <AbolishValidator>{
 
             if (err) return error(err.message, err);
 
-            arr[i] = validated;
+            newArray.push(validated);
         }
+
+        modifier.setThis(newArray);
     }
 };
