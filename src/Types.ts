@@ -54,4 +54,6 @@ export type AbolishValidator = {
     isAsync?: boolean;
 };
 
+export type AbolishAsyncValidator = Omit<AbolishValidator, "isAsync"> & { isAsync: true };
+
 export type AbolishRule = string | string[] | Record<string, any> | AbolishRule[];

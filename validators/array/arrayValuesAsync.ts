@@ -1,9 +1,10 @@
-import type { AbolishRule, AbolishValidator } from "../../src/Types";
+import type { AbolishAsyncValidator, AbolishRule } from "../../src/Types";
 import { assertType } from "../helpers";
 import { Rule } from "../../src/Functions";
 
-export = <AbolishValidator>{
+export = <AbolishAsyncValidator>{
     name: "arrayValuesAsync",
+    isAsync: true,
     error: ":param array values does not match the expected types",
     validator: async (arr: any[], rule: AbolishRule, { error, abolish, modifier }) => {
         assertType(arr, "array", `arrayValuesAsync values`);
