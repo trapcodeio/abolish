@@ -78,6 +78,5 @@
   "exclude": [
     "tests",
     "build.ts",
-    "js"
   ]
 }

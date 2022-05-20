@@ -179,7 +179,10 @@ test.group("Default Validators", () => {
     test.failing("$inline", () => {
         Abolish.attempt(
             "password",
-            $inline((password) => password === "123456", ":param must be 123456")
+            {
+                $name: 'Password',
+                ...$inline((password) => password === "123456", ":param must be 123456")
+            }
         );
     });
 });
