@@ -154,6 +154,20 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         description: "Array: (Alias: maxLength)"
     },
 
+    object: {
+        name: "object",
+        validator: (value, rules, { error, modifier, abolish }) => {
+            if (!value || typeof value !== "object") {
+                return error(`:param must be an object.`);
+            }
+
+            const [err, valid] = abolish.validate(value, rules);
+            if (err) return error(err.message, err);
+
+            modifier.setThis(valid);
+        }
+    },
+
     $inline: {
         name: "$inline",
         error: ":param failed inline validation.",

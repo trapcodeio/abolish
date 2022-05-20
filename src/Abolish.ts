@@ -44,24 +44,6 @@ class Abolish {
 
     config: { useStartCaseInErrors: boolean } = { useStartCaseInErrors: true };
 
-    constructor() {
-        // override global `object` validator
-        // so that we can use our own validators in object.
-        this.addValidator({
-            name: "object",
-            validator: (value, rules, { error, modifier }) => {
-                if (!value || typeof value !== "object") {
-                    return error(`:param must be an object.`);
-                }
-
-                const [err, valid] = this.validate(value, rules);
-                if (err) return error(err.message, err);
-
-                modifier.setThis(valid);
-            }
-        });
-    }
-
     /**
      * Get global validators
      */

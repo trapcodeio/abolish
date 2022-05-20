@@ -92,6 +92,13 @@ class ObjectModifier {
     getName(): string {
         return this.name || abolish_StartCase(this.path);
     }
+
+    /**
+     * Get current path but with abolish_StartCase
+     */
+    getNameRaw(): string {
+        return this.name || this.path;
+    }
 }
 
 export = ObjectModifier;
