@@ -168,6 +168,21 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         }
     },
 
+    objectAsync: {
+        name: "objectAsync",
+        isAsync: true,
+        validator: async (value, rules, { error, modifier, abolish }) => {
+            if (!value || typeof value !== "object") {
+                return error(`:param must be an object.`);
+            }
+
+            const [err, valid] = await abolish.validateAsync(value, rules);
+            if (err) return error(err.message, err);
+
+            modifier.setThis(valid);
+        }
+    },
+
     $inline: {
         name: "$inline",
         error: ":param failed inline validation.",
