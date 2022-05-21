@@ -51,7 +51,7 @@ export interface AbolishValidator {
     description?: string;
     validator: AbolishValidatorFunction;
     error?: string;
-    isAsync?: boolean;
+    isAsync?: true;
 }
 
 export interface AbolishAsyncValidator extends Omit<AbolishValidator, "isAsync"> {
