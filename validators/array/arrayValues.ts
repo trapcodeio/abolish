@@ -1,6 +1,6 @@
 import type { AbolishRule, AbolishValidator } from "../../src/Types";
-import { assertType } from "../helpers";
 import { Rule } from "../../src/Functions";
+import { assertType } from "../../src/types-checker";
 
 export = <AbolishValidator>{
     name: "arrayValues",

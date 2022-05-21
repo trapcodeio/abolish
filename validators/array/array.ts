@@ -1,5 +1,5 @@
 import type { AbolishValidator } from "../../src/Types";
-import { assertType } from "../helpers";
+import { assertType } from "../../src/types-checker";
 
 export = <AbolishValidator>{
     name: "array",
