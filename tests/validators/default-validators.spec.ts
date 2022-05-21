@@ -77,6 +77,13 @@ test.group("Default Validators", () => {
 
         // Test Function
         assert.isFalse(Abolish.test(0, "typeof:function"));
+
+        // Test using  multiple types as string
+        assert.isTrue(Abolish.test(0, "typeof:number,string"));
+        assert.isFalse(Abolish.test({}, "typeof:number,string"));
+        // Test using  multiple types as array
+        assert.isTrue(Abolish.test("hello", { typeof: ["number", "string"] }));
+        assert.isFalse(Abolish.test([], { typeof: ["number", "string"] }));
     });
 
     test("exact", (assert) => {

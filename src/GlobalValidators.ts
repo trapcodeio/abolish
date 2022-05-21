@@ -1,4 +1,6 @@
+import { string } from "joi";
 import type { AbolishInlineValidator, AbolishValidator } from "./Types";
+import { isType } from "./types-checker";
 
 const GlobalValidators: Record<string, AbolishValidator> = {
     default: {
@@ -34,15 +36,16 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     typeof: {
         name: "typeof",
         error: ":param is not typeof :option",
-        validator: (value: any, option: string | false) => {
+        validator: (value: any, option: string | false | string[]) => {
             /**
              * If typeof is false then we don't validate this
              */
             if (option === false) return true;
 
-            option = option.toLowerCase();
-            if (option === "array") return Array.isArray(value);
-            return typeof value === option;
+            // check if option is an array in form of a string with comma separated types
+            if (typeof option === "string" && option.includes(",")) option = option.split(",");
+
+            return isType(value, option);
         },
         description: "Value is typeof :option"
     },
