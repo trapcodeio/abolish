@@ -46,14 +46,16 @@ export type AbolishInlineValidator = (
  * @description
  * A new validator type
  */
-export type AbolishValidator = {
+export interface AbolishValidator {
     name: string;
     description?: string;
     validator: AbolishValidatorFunction;
     error?: string;
     isAsync?: boolean;
-};
+}
 
-export type AbolishAsyncValidator = Omit<AbolishValidator, "isAsync"> & { isAsync: true };
+export interface AbolishAsyncValidator extends Omit<AbolishValidator, "isAsync"> {
+    isAsync: true;
+}
 
 export type AbolishRule = string | string[] | Record<string, any> | AbolishRule[];
