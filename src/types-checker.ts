@@ -11,7 +11,6 @@ export function assertType<T>(option: T, type: string | string[], name = "Option
         else if (type === "array" && Array.isArray(option)) return true;
     } else {
         const hasArrayInTypes = type.includes("array");
-
         if (!hasArrayInTypes && type.includes(typeof option)) {
             return true;
         } else if (hasArrayInTypes && (type.includes(typeof option) || Array.isArray(option))) {
@@ -19,7 +18,7 @@ export function assertType<T>(option: T, type: string | string[], name = "Option
         }
     }
 
-    throw new TypeError(`${name} must be typeof [${type}]`);
+    throw new TypeError(`${name} must be typeof [${type}], but [${typeof option}] was given.`);
 }
 
 /**
@@ -33,4 +32,25 @@ export function isType<T>(variable: T, type: string | string[]): boolean {
     } catch (e) {
         return false;
     }
+}
+
+/**
+ * Function that checks if an array values is of the given types.
+ */
+export function arrayIsTypeOf(arr: any[], types: string | string[]) {
+    if (typeof types === "string") types = [types];
+
+    /**
+     * Check if the array values is of the given types.
+     */
+    return !arr.some((value) => {
+        try {
+            assertType(value, types);
+            return false;
+        } catch (e) {
+            // Stop on first error.
+            // This reduces the amount of checks.
+            return true;
+        }
+    });
 }

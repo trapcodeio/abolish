@@ -132,6 +132,20 @@ test.group("Default Validators", () => {
         assert.isFalse(Abolish.test("hello", { maxLength: 4 }));
     });
 
+    test("size", (assert) => {
+        // String
+        assert.isTrue(Abolish.test("hello", { size: 5 }));
+        assert.isFalse(Abolish.test("hello", { size: 4 }));
+
+        // Array
+        assert.isTrue(Abolish.test([1, 2, 3], { size: 3 }));
+        assert.isFalse(Abolish.test([1, 2, 3], { size: 2 }));
+
+        // Object
+        assert.isTrue(Abolish.test({ a: 1, b: 2, c: 3 }, { size: 3 }));
+        assert.isFalse(Abolish.test({ a: 1, b: 2, c: 3 }, { size: 2 }));
+    });
+
     test("object", (assert) => {
         const rule = {
             name: "required|typeof:string",

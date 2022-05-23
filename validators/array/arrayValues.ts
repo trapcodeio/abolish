@@ -6,8 +6,8 @@ export = <AbolishValidator>{
     name: "arrayValues",
     error: ":param array values does not match the expected types",
     validator: (arr: any[], rule: AbolishRule, { error, abolish, modifier }) => {
-        assertType(arr, "array", `arrayValues values`);
-        assertType(rule, ["string", "array", "object"]);
+        assertType(arr, "array", `[arrayValues] value`);
+        assertType(rule, ["string", "array", "object"], `[arrayValues] rule`);
 
         if (typeof rule === "string" || Array.isArray(rule)) {
             rule = Rule(rule);
@@ -21,9 +21,7 @@ export = <AbolishValidator>{
                 $name: `arrayValues[${i}]`,
                 ...(rule as Record<string, any>)
             });
-
             if (err) return error(err.message, err);
-
             newArray.push(validated);
         }
 

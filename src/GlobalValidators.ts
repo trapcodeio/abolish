@@ -35,6 +35,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
     typeof: {
         name: "typeof",
+        description: "Value is typeof :option",
         error: ":param is not typeof :option",
         validator: (value: any, option: string | false | string[]) => {
             /**
@@ -46,22 +47,22 @@ const GlobalValidators: Record<string, AbolishValidator> = {
             if (typeof option === "string" && option.includes(",")) option = option.split(",");
 
             return isType(value, option);
-        },
-        description: "Value is typeof :option"
+        }
     },
 
     exact: {
         name: "exact",
+        error: ":param failed exact validator",
+        description: "Value is === :option",
         validator: (value: any, option: any): boolean => {
             return value === option;
-        },
-        error: ":param failed exact validator",
-        description: "Value is === :option"
+        }
     },
 
     min: {
         name: "min",
         error: ":param is too small. (Min. :option)",
+        description: "Number: Value is >= :option",
         validator: (value: any, option: number | string, helpers) => {
             const isNotNumber = isNaN(value);
 
@@ -78,13 +79,13 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             // Parse to Number and compare
             return Number(value) >= Number(option);
-        },
-        description: "Number: Value is >= :option"
+        }
     },
 
     max: {
         name: "max",
         error: ":param is too big. (Max. :option)",
+        description: "Number: Value is <= :option",
         validator: (value: any, option: number | string, helpers) => {
             const isNotNumber = isNaN(value);
 
@@ -101,13 +102,13 @@ const GlobalValidators: Record<string, AbolishValidator> = {
 
             // Parse to float and compare
             return Number(value) <= Number(option);
-        },
-        description: "Number: Value is <= :option"
+        }
     },
 
     minLength: {
         name: "minLength",
         error: ":param is too short. (Min. :option characters)",
+        description: "Value length is >= :option",
         validator: (value: any, option: number | string, { error }) => {
             if (typeof value === "string") {
                 return value.trim().length >= Number(option);
@@ -118,13 +119,13 @@ const GlobalValidators: Record<string, AbolishValidator> = {
             } else {
                 return false;
             }
-        },
-        description: "[Array, String]: Value has >= :option characters"
+        }
     },
 
     maxLength: {
         name: "maxLength",
         error: ":param is too long. (Max. :option characters)",
+        description: "Value length is <= :option",
         validator: (value: any, option: number | string, { error }) => {
             if (typeof value === "string") {
                 return value.trim().length <= Number(option);
@@ -135,26 +136,38 @@ const GlobalValidators: Record<string, AbolishValidator> = {
             } else {
                 return false;
             }
-        },
-        description: "[Array, String]: Value has <= :option characters"
+        }
     },
 
-    selectMin: {
-        name: "selectMin",
-        error: "Select at-least :option :param.",
-        validator: (value: any, option: number | string, helpers): boolean => {
-            return GlobalValidators.minLength.validator(value, option, helpers) as boolean;
-        },
-        description: "Array: (Alias: minLength)"
-    },
+    size: {
+        name: "size",
+        error: ":param must be of size: [:option]",
+        description: "Check the size of a String, Array, or Object",
+        validator: (value: any, option: number | number[], { error }) => {
+            let size = undefined as number | undefined;
 
-    selectMax: {
-        name: "selectMax",
-        error: "Select at-most :option :param.",
-        validator: (value: any, option: number | string, helpers): boolean => {
-            return GlobalValidators.maxLength.validator(value, option, helpers) as boolean;
-        },
-        description: "Array: (Alias: maxLength)"
+            if (typeof value === "string" || Array.isArray(value)) {
+                size = value.length;
+            } else if (typeof value === "object") {
+                // since we don't know the type of the object, we use `Object.keys`
+                // in a try-catch block to avoid throwing an error
+                try {
+                    size = Object.keys(value).length;
+                } catch (e: any) {
+                    return error(e.message);
+                }
+            }
+
+            // if no size is found, we return false
+            if (size === undefined) return false;
+            // if option is an array, we check if the size is in the array
+            else if (Array.isArray(option)) {
+                return option.includes(size);
+            }
+
+            // if option is a number, we check if the size is equal to it
+            return size === Number(option);
+        }
     },
 
     object: {
@@ -168,7 +181,8 @@ const GlobalValidators: Record<string, AbolishValidator> = {
             if (err) return error(err.message, err);
 
             modifier.setThis(valid);
-        }
+        },
+        description: ["Object: Value is an object"]
     },
 
     objectAsync: {
@@ -194,6 +208,27 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         },
         description: "Register a custom validation function inline."
     }
+
+    /**
+     * Select min/max length has been moved to minLength/maxLength
+     */
+    // selectMin: {
+    //     name: "selectMin",
+    //     error: "Select at-least :option :param.",
+    //     validator: (value: any, option: number | string, helpers): boolean => {
+    //         return GlobalValidators.minLength.validator(value, option, helpers) as boolean;
+    //     },
+    //     description: "Array: (Alias: minLength)"
+    // },
+    //
+    // selectMax: {
+    //     name: "selectMax",
+    //     error: "Select at-most :option :param.",
+    //     validator: (value: any, option: number | string, helpers): boolean => {
+    //         return GlobalValidators.maxLength.validator(value, option, helpers) as boolean;
+    //     },
+    //     description: "Array: (Alias: maxLength)"
+    // },
 };
 
 /**
