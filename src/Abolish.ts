@@ -32,7 +32,7 @@ export class AttemptError extends Error {
         this.error = e;
     }
 
-    instanceOf(e: any) {
+    static instanceOf(e: any) {
         return e instanceof AttemptError;
     }
 }
