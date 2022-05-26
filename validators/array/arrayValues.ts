@@ -24,7 +24,6 @@ export = <AbolishValidator>{
             if (err) return error(err.message, err);
             newArray.push(validated);
         }
-
         modifier.setThis(newArray);
     }
 };

@@ -40,6 +40,8 @@ export function isType<T>(variable: T, type: string | string[]): boolean {
 export function arrayIsTypeOf(arr: any[], types: string | string[]) {
     if (typeof types === "string") types = [types];
 
+    if (!arr.length) return true;
+
     /**
      * Check if the array values is of the given types.
      */
