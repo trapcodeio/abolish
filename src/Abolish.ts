@@ -23,13 +23,17 @@ type AsyncData = {
     includeKeys: string[];
 };
 
-class AttemptError extends Error {
+export class AttemptError extends Error {
     public error: ValidationError;
 
     constructor(e: ValidationError) {
         super(e.message);
         this.name = "AttemptError";
         this.error = e;
+    }
+
+    instanceOf(e: any) {
+        return e instanceof AttemptError;
     }
 }
 
