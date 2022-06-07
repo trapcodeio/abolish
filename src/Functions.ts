@@ -1,5 +1,5 @@
 import StringToRules from "./StringToRules";
-import { startCase, pick, set, get } from "lodash";
+import { startCase, set, get } from "lodash";
 import Abolish from "./Abolish";
 
 /**
@@ -8,7 +8,7 @@ import Abolish from "./Abolish";
  * @constructor
  */
 export function abolish_UpperFirst(str: string): string {
-    return str[0].toUpperCase() + str.substr(1);
+    return str[0].toUpperCase() + str.substring(1);
 }
 
 /**
@@ -39,9 +39,7 @@ export function Rule(rules: string | any[]): any {
     /**
      * Convert to array if not array.
      */
-    if (!Array.isArray(rules)) {
-        rules = [rules];
-    }
+    if (!Array.isArray(rules)) rules = [rules];
 
     /**
      * Stores generated rules
@@ -63,16 +61,58 @@ export function Rule(rules: string | any[]): any {
     return generatedRule;
 }
 
-export function abolish_Pick(object: any, keys: string[]) {
-    return pick(object, keys);
+export function abolish_Pick(obj: any, keys: string[]) {
+    // Create new object
+    const picked = {} as Record<any, any>;
+    const hasDotKeys = keys.some(hasDotNotation);
+
+    // Loop through props and push to new object
+    if (hasDotKeys) {
+        for (let prop of keys) {
+            picked[prop] = abolish_Get(obj, prop);
+        }
+    } else {
+        for (let prop of keys) {
+            picked[prop] = obj[prop];
+        }
+    }
+
+    // Return new object
+    return picked;
 }
 
-export function abolish_Set(object: any, path: any, value: any) {
-    return set(object, path, value);
+/**
+ * Abolish_Set
+ * Because lodash is slow, we will only include it when there is a dot notation in the path.
+ * @param obj
+ * @param path
+ * @param value
+ */
+export function abolish_Set(obj: any, path: any, value: any) {
+    if (hasDotNotation(path)) {
+        return set(obj, path, value);
+    } else {
+        obj[path] = value;
+        return obj;
+    }
 }
 
-export function abolish_Get(obj: any, path: string, defaultValue?: any) {
-    return get(obj, path, defaultValue);
+/**
+ * Abolish_Get
+ * Because lodash is slow, we will only include it when there is a dot notation in the path.
+ * @param obj
+ * @param path
+ */
+export function abolish_Get(obj: any, path: string) {
+    if (hasDotNotation(path)) {
+        return get(obj, path);
+    } else {
+        return obj[path];
+    }
+}
+
+export function hasDotNotation(path: string) {
+    return path.indexOf(".") !== -1;
 }
 
 export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {

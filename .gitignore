@@ -6,6 +6,7 @@ js
 types
 tests/play.ts
 yarn.lock
+benchmarks
 
 
 *.js

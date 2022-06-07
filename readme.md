@@ -22,7 +22,7 @@ abolish.addValidator({
   name: 'addProtocol',
   validator: (url, option, {modifier}) => {
     // Check if url does not have required protocol
-    if (url.substr(0, option.length) !== option) {
+    if (url.substring(0, option.length) !== option) {
       // Add protocol
       modifier.setThis(`${option}://${url}`)
     }

@@ -31,7 +31,7 @@ const keyColumnValStringGraveAccent = new RegExp(/([a-zA-Z_*0-9]+:`[^`]+`)/g);
 /**
  * StringToRules
  * @description
- * Convert string to rules object
+ * Convert string to rule object
  * @param str
  * @constructor
  */
@@ -53,8 +53,8 @@ const StringToRules = (str: string): { [key: string]: any } => {
             const [key, ...value] = pair.split(":");
             let valueToString: string = value.join(":");
 
-            valueToString = valueToString.substr(1);
-            valueToString = valueToString.substr(0, value.length - 1);
+            valueToString = valueToString.substring(1);
+            valueToString = valueToString.substring(0, value.length - 1);
 
             keyColumnValObj[key] = valueToString;
         } else if (pair.match(keyColumnVal)) {
@@ -74,8 +74,8 @@ const StringToRules = (str: string): { [key: string]: any } => {
             let value = true;
 
             // if !key set value to false
-            if (key.substr(0, 1) === "!") {
-                key = key.substr(1);
+            if (key.substring(0, 1) === "!") {
+                key = key.substring(1);
                 value = false;
             }
 

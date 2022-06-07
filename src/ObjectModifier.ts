@@ -21,11 +21,10 @@ class ObjectModifier {
      * Get path of object or return
      * @method
      * @param path
-     * @param $default
      * @return {*}
      */
-    get(path: any, $default = undefined) {
-        return abolish_Get(this.data, path, $default);
+    get(path: any) {
+        return abolish_Get(this.data, path);
     }
 
     /**

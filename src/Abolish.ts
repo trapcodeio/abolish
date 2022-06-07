@@ -4,7 +4,6 @@ import GlobalValidators from "./GlobalValidators";
 import { abolish_Get, abolish_Pick, abolish_StartCase, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
-import { cloneDeep } from "lodash";
 
 type Job = {
     $name: string | false;
@@ -201,7 +200,7 @@ class Abolish {
         };
 
         // clone rules
-        rules = cloneDeep(rules);
+        rules = { ...rules };
 
         /**
          * Check for wildcard rules (*, $)
@@ -263,7 +262,6 @@ class Abolish {
              * if ruleData has property of $skip then check
              */
             let $skip: any = false;
-
             if (ruleData.hasOwnProperty("$skip")) {
                 $skip = ruleData["$skip"];
                 delete ruleData["$skip"];
@@ -365,7 +363,12 @@ class Abolish {
 
                     /**
                      * Value of key being validated in object
+                     * if rule has dot notation e.g. "address.city"
+                     * we use `abolish_Get`
+                     * else use normal index
                      */
+                    // const objectValue = abolish_Get(validated, rule);
+                    // const objectValue = validated[rule];
                     const objectValue = abolish_Get(validated, rule);
 
                     /**

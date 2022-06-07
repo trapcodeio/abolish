@@ -30,7 +30,6 @@ test.group("Static Methods", () => {
 
     test("addGlobalValidators", (assert) => {
         Abolish.addGlobalValidators(StringValidators);
-
         // check if the string `ipAddress` is in the list of validators
         assert.include(Abolish.getGlobalValidatorsList(), "ipAddress");
     });

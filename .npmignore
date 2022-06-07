@@ -6,6 +6,7 @@ yarn.lock
 tests
 .prettierrc
 tsconfig.json
+benchmarks
 
 *.ts
 !*.d.ts
