@@ -81,6 +81,20 @@ export function abolish_Pick(obj: any, keys: string[]) {
     return picked;
 }
 
+export function abolish_Omit(obj: Record<string, any>, keys: string[]) {
+    // Create new object
+    const picked = {} as Record<string, any>;
+
+    // Loop through props and push to new object
+    for (let prop in obj) {
+        if (keys.includes(prop)) continue;
+        picked[prop] = obj[prop];
+    }
+
+    // Return new object
+    return picked;
+}
+
 /**
  * Abolish_Set
  * Because lodash is slow, we will only include it when there is a dot notation in the path.

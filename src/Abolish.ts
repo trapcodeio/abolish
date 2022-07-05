@@ -1,7 +1,7 @@
 import type { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { abolish_Get, abolish_Pick, abolish_StartCase, Rule } from "./Functions";
+import { abolish_Get, abolish_Omit, abolish_Pick, abolish_StartCase, Rule } from "./Functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -35,6 +35,11 @@ export class AttemptError extends Error {
         return e instanceof AttemptError;
     }
 }
+
+const SUPER = {
+    Keys: ["*", "$", "$include"],
+    Rules: ["$name", "$skip", "$error", "$errors"]
+};
 
 /**
  * Abolish Class
@@ -199,18 +204,12 @@ class Abolish {
             includeKeys: []
         };
 
-        // clone rules
-        rules = { ...rules };
-
         /**
          * Check for wildcard rules (*, $)
          */
         let internalWildcardRules: any = {};
         if (rules.hasOwnProperty("*") || rules.hasOwnProperty("$")) {
             internalWildcardRules = rules["*"] || rules["$"];
-
-            delete rules["*"];
-            delete rules["$"];
 
             /**
              * Convert rules[*] to object if string
@@ -233,20 +232,15 @@ class Abolish {
             includeKeys = rules["$include"];
 
             if (!Array.isArray(includeKeys)) throw new Error(`$include has to be an array!`);
-
-            delete rules["$include"];
         }
 
         let keysToBeValidated = Object.keys(rules);
+        // remove SUPER_RULES from keysToBeValidated
+        keysToBeValidated = keysToBeValidated.filter((key) => !SUPER.Keys.includes(key));
 
         // Loop through defined rules
         for (const rule of keysToBeValidated) {
             let ruleData: any = rules[rule];
-
-            /**
-             * If ruleData is wildcard change rule data to empty object
-             */
-            if (["*", "$"].includes(ruleData)) ruleData = {};
 
             /**
              * Convert ruleData to object if string
@@ -264,7 +258,7 @@ class Abolish {
             let $skip: any = false;
             if (ruleData.hasOwnProperty("$skip")) {
                 $skip = ruleData["$skip"];
-                delete ruleData["$skip"];
+                // delete ruleData["$skip"];
 
                 if (typeof $skip === "function") {
                     $skip = $skip(validated[rule]);
@@ -279,6 +273,7 @@ class Abolish {
 
             /**
              * Run validation if not $skip
+             * else remove key from keysToBeValidated
              */
             if ($skip) {
                 keysToBeValidated = keysToBeValidated.filter((v) => v !== rule);
@@ -289,7 +284,7 @@ class Abolish {
                 let $name: string | false = false;
                 if (ruleData.hasOwnProperty("$name")) {
                     $name = ruleData["$name"];
-                    delete ruleData["$name"];
+                    // delete ruleData["$name"];
 
                     if (typeof $name !== "string") {
                         throw new Error(`$name must be a string in RuleFor: (${rule})`);
@@ -302,7 +297,7 @@ class Abolish {
                 let $error: string | undefined;
                 if (ruleData.hasOwnProperty("$error")) {
                     $error = ruleData["$error"];
-                    delete ruleData["$error"];
+                    // delete ruleData["$error"];
 
                     // noinspection SuspiciousTypeOfGuard
                     if (!$error || typeof $error !== "string") {
@@ -313,7 +308,7 @@ class Abolish {
                 let $errors: Record<string, string> | undefined;
                 if (ruleData.hasOwnProperty("$errors")) {
                     $errors = ruleData["$errors"];
-                    delete ruleData["$errors"];
+                    // delete ruleData["$errors"];
 
                     // noinspection SuspiciousTypeOfGuard
                     if (!$errors || typeof $errors !== "object") {
@@ -324,7 +319,7 @@ class Abolish {
                 /**
                  * Append internal Wildcard data
                  */
-                ruleData = { ...internalWildcardRules, ...ruleData };
+                ruleData = { ...internalWildcardRules, ...abolish_Omit(ruleData, SUPER.Rules) };
 
                 /**
                  * Loop through ruleData to check if validators defined exists
