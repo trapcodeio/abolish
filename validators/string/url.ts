@@ -1,15 +1,43 @@
 import type { AbolishValidator } from "../../src/Types";
+import { assertType } from "../../src/types-checker";
 
 export = <AbolishValidator>{
     name: "url",
     error: ":param is not a valid URL",
-    validator: (str) => {
+    validator: (
+        str,
+        option: boolean | { allowedHostnames: string[]; denyHostnames: string[] },
+        { error }
+    ) => {
+        assertType(option, ["boolean", "object"]);
+
+        let url: URL;
+
         try {
-            new URL(str);
-            return true;
+            url = new URL(str);
         } catch (e) {
             return false;
         }
+
+        if (url && typeof option === "object") {
+            if (option.allowedHostnames) {
+                if (!option.allowedHostnames.includes(url.hostname)) {
+                    return error(
+                        `:param hostname is not among the allowed hostnames: [${option.allowedHostnames.join(
+                            ","
+                        )}]`
+                    );
+                }
+            }
+
+            if (option.denyHostnames) {
+                if (option.denyHostnames.includes(url.hostname)) {
+                    return error(":param hostname is not allowed.");
+                }
+            }
+        }
+
+        return true;
     }
 };
 

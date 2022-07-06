@@ -151,4 +151,32 @@ test.group("String Validators", (group) => {
         assert.isFalse(Abolish.test("hello", "url")); // => false
         assert.isTrue(Abolish.test("https://google.com", "url")); // => true
     });
+
+    test("url: allowed hostnames", (assert) => {
+        assert.isTrue(
+            Abolish.test("https://google.com", {
+                url: { allowedHostnames: ["google.com"] }
+            })
+        );
+
+        assert.isFalse(
+            Abolish.test("https://facebook.com", {
+                url: { allowedHostnames: ["google.com"] }
+            })
+        );
+    });
+
+    test("url: deny hostnames", (assert) => {
+        assert.isTrue(
+            Abolish.test("https://google.com", {
+                url: { denyHostnames: ["facebook.com"] }
+            })
+        );
+
+        assert.isFalse(
+            Abolish.test("https://facebook.com", {
+                url: { denyHostnames: ["facebook.com"] }
+            })
+        );
+    });
 });
