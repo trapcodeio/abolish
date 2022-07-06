@@ -18,11 +18,11 @@ export type ValidationError = {
 
 export type $errorRule =
     | string
-    | ((e: Pick<ValidationError, "code" | "data" | "validator">) => string);
+    | ((e: Pick<ValidationError, "code" | "data" | "validator"> & { value: any }) => string);
 
 export type $errorsRule = Record<
     string,
-    string | ((e: Pick<ValidationError, "code" | "data">) => string)
+    string | ((e: Pick<ValidationError, "code" | "data"> & { value: any }) => string)
 >;
 
 /**

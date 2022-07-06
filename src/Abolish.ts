@@ -308,8 +308,10 @@ class Abolish {
                     // delete ruleData["$error"];
 
                     // noinspection SuspiciousTypeOfGuard
-                    if (!$error || typeof $error !== "string") {
-                        throw new Error(`$error value must be a STRING in RuleFor: (${rule})`);
+                    if (!$error || (typeof $error !== "string" && typeof $error !== "function")) {
+                        throw new Error(
+                            `$error value must be a STRING or FUNCTION in RuleFor: (${rule})`
+                        );
                     }
                 }
 
@@ -437,7 +439,12 @@ class Abolish {
 
                             if ($error) {
                                 if (typeof $error === "function") {
-                                    message = $error({ code, validator: validatorName, data });
+                                    message = $error({
+                                        code,
+                                        validator: validatorName,
+                                        data,
+                                        value: objectValue
+                                    });
                                 } else {
                                     message = $error;
                                 }
@@ -446,7 +453,7 @@ class Abolish {
                             if ($errors && $errors[validatorName]) {
                                 let customError = $errors[validatorName];
                                 if (typeof customError === "function") {
-                                    message = customError({ code, data });
+                                    message = customError({ code, data, value: objectValue });
                                 } else {
                                     message = customError;
                                 }
@@ -588,7 +595,12 @@ class Abolish {
 
                     if ($error) {
                         if (typeof $error === "function") {
-                            message = $error({ code, validator: validatorName, data });
+                            message = $error({
+                                code,
+                                validator: validatorName,
+                                data,
+                                value: objectValue
+                            });
                         } else {
                             message = $error;
                         }
@@ -597,7 +609,7 @@ class Abolish {
                     if ($errors && $errors[validatorName]) {
                         let customError = $errors[validatorName];
                         if (typeof customError === "function") {
-                            message = customError({ code, data });
+                            message = customError({ code, data, value: objectValue });
                         } else {
                             message = customError;
                         }
