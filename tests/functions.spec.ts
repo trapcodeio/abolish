@@ -1,8 +1,9 @@
 import test from "japa";
-import { abolish_Omit, ParseRules, Rule } from "../src/functions";
+import { ParseRules, Rule } from "../src/functions";
 import { skipIfNotDefined } from "../src/helpers";
 import { Abolish } from "../index";
 import { registerAllValidators } from "../src/ValidatorHelpers";
+import { abolish_Omit } from "../src/inbuilt.fn";
 
 test.group("Functions", (group) => {
     group.before(() => {

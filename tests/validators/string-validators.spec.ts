@@ -155,13 +155,13 @@ test.group("String Validators", (group) => {
     test("url: allowed hostnames", (assert) => {
         assert.isTrue(
             Abolish.test("https://google.com", {
-                url: { allowedHostnames: ["google.com"] }
+                url: { hostname: { allow: ["google.com"] } }
             })
         );
 
         assert.isFalse(
             Abolish.test("https://facebook.com", {
-                url: { allowedHostnames: ["google.com"] }
+                url: { hostname: { allow: ["google.com"] } }
             })
         );
     });
@@ -169,13 +169,13 @@ test.group("String Validators", (group) => {
     test("url: deny hostnames", (assert) => {
         assert.isTrue(
             Abolish.test("https://google.com", {
-                url: { blockedHostnames: ["facebook.com"] }
+                url: { hostname: { block: ["facebook.com"] } }
             })
         );
 
         assert.isFalse(
             Abolish.test("https://facebook.com", {
-                url: { blockedHostnames: ["facebook.com"] }
+                url: { hostname: { block: ["facebook.com"] } }
             })
         );
     });

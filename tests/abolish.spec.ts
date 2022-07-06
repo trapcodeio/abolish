@@ -102,7 +102,7 @@ test.group("Static Methods", () => {
         assert.isNotFalse(e2);
 
         // has validation error keys
-        assert.hasAllKeys(e2, ["data", "key", "message", "validator", "type"]);
+        assert.hasAllKeys(e2, ["data", "key", "message", "validator", "type", "code"]);
 
         // Age should be undefined
         assert.isUndefined(age2);
@@ -124,7 +124,7 @@ test.group("Static Methods", () => {
         assert.isNotFalse(e2);
 
         // has validation error keys
-        assert.hasAllKeys(e2, ["data", "key", "message", "validator", "type"]);
+        assert.hasAllKeys(e2, ["data", "key", "message", "validator", "type", "code"]);
 
         // Age should be undefined
         assert.isUndefined(age2);
