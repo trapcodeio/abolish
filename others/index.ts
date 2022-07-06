@@ -1,5 +1,5 @@
 import Abolish, { TypeOfAbolishOrInstance } from "../src/Abolish";
-import { AbolishValidator } from "../src/Types";
+import { AbolishValidator } from "../src/types";
 
 export function AddValidatorToClassOrInstance(
     abolish: TypeOfAbolishOrInstance,

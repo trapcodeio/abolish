@@ -1,9 +1,9 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "email",
     error: ":param is not a valid email.",
-    validator: (email: string, action: string | boolean, { modifier }) => {
+    validator: (email: string, action: "lowercase" | boolean, { modifier }) => {
         // skip if action is false
         if (action === false) return true;
 
@@ -18,3 +18,11 @@ export = <AbolishValidator>{
         return isValidMail;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            email: "lowercase" | boolean;
+        }
+    }
+}

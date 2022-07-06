@@ -1,14 +1,14 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import { assertType } from "../../src/types-checker";
+
+type AllowOrBlock = { allow?: string[]; block?: string[] };
+type UrlOption = boolean | { hostname?: AllowOrBlock; protocol?: AllowOrBlock };
 
 export = <AbolishValidator>{
     name: "url",
     error: ":param is not a valid URL",
-    validator: (
-        str,
-        option: boolean | { allowedHostnames: string[]; denyHostnames: string[] },
-        { error }
-    ) => {
+    description: ["Check that a value is a valid URL", "Allow/Block hostnames"],
+    validator: (str, option: UrlOption, { error }) => {
         assertType(option, ["boolean", "object"]);
 
         let url: URL;
@@ -20,19 +20,33 @@ export = <AbolishValidator>{
         }
 
         if (url && typeof option === "object") {
-            if (option.allowedHostnames) {
-                if (!option.allowedHostnames.includes(url.hostname)) {
+            // validate hostname
+            if (option.hostname) {
+                if (option.hostname.allow && !option.hostname.allow.includes(url.hostname)) {
                     return error(
-                        `:param hostname is not among the allowed hostnames: [${option.allowedHostnames.join(
+                        `:param hostname is not among the allowed hostnames: [${option.hostname.allow.join(
                             ","
                         )}]`
-                    );
+                    ).setCode("hostname.notAllowed");
+                }
+
+                if (option.hostname.block && option.hostname.block.includes(url.hostname)) {
+                    return error(":param hostname is not allowed.").setCode("hostname.blocked");
                 }
             }
 
-            if (option.denyHostnames) {
-                if (option.denyHostnames.includes(url.hostname)) {
-                    return error(":param hostname is not allowed.");
+            // validate protocol
+            if (option.protocol) {
+                if (option.protocol.allow && !option.protocol.allow.includes(url.protocol)) {
+                    return error(
+                        `:param protocol is not among the allowed protocols: [${option.protocol.allow.join(
+                            ","
+                        )}]`
+                    ).setCode("protocol.notAllowed");
+                }
+
+                if (option.protocol.block && option.protocol.block.includes(url.protocol)) {
+                    return error(":param protocol is not allowed.").setCode("protocol.blocked");
                 }
             }
         }
@@ -40,6 +54,14 @@ export = <AbolishValidator>{
         return true;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            url: UrlOption;
+        }
+    }
+}
 
 /**
  * ----------------------------------------------------

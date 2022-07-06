@@ -53,7 +53,7 @@ test.group("String Validators", (group) => {
         assert.isTrue(Abolish.test("json@email.com", "email"));
     });
 
-    test("ipAddress", (assert) => {
+    test("ipAddress", () => {
         // validate ipv4
         Abolish.attempt("69.89.31.226", "ipAddress"); // => true
         // validate ipv6
@@ -169,13 +169,13 @@ test.group("String Validators", (group) => {
     test("url: deny hostnames", (assert) => {
         assert.isTrue(
             Abolish.test("https://google.com", {
-                url: { denyHostnames: ["facebook.com"] }
+                url: { blockedHostnames: ["facebook.com"] }
             })
         );
 
         assert.isFalse(
             Abolish.test("https://facebook.com", {
-                url: { denyHostnames: ["facebook.com"] }
+                url: { blockedHostnames: ["facebook.com"] }
             })
         );
     });

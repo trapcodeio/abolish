@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "jsonEncode",
@@ -12,3 +12,11 @@ export = <AbolishValidator>{
         modifier.setThis(JSON.stringify(str));
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            jsonEncode: true;
+        }
+    }
+}

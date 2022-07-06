@@ -1,5 +1,5 @@
-import type { AbolishRule, AbolishValidator } from "../../src/Types";
-import { Rule } from "../../src/Functions";
+import type { AbolishRule, AbolishValidator } from "../../src/types";
+import { Rule } from "../../src/functions";
 import { assertType } from "../../src/types-checker";
 
 export = <AbolishValidator>{
@@ -27,3 +27,11 @@ export = <AbolishValidator>{
         modifier.setThis(newArray);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            arrayValues: AbolishRule;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "number",
@@ -21,3 +21,11 @@ export = <AbolishValidator>{
         return isNumber;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            number: true;
+        }
+    }
+}

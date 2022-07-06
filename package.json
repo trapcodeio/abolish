@@ -20,7 +20,7 @@
     "bundle": "node bundle.js",
     "prepublishOnly": "npm run test",
     "watch": "npx tsc --watch",
-    "play": "npx ts-node-dev --respawn tests/play.ts",
+    "play": "npx ts-node-dev --respawn play.ts",
     "test-browser": "npx vite --host",
     "test": "npm run build && node JapaFile.js",
     "test-dev": "npx nodemon JapaFile.js --watch '*/**' --ext 'ts'"

@@ -1,4 +1,4 @@
-import { abolish_Set, abolish_Get, abolish_StartCase } from "./Functions";
+import { abolish_Set, abolish_Get, abolish_StartCase } from "./inbuilt.fn";
 import { has, unset } from "lodash";
 
 /**

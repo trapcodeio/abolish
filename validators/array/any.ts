@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "any",

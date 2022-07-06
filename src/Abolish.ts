@@ -1,7 +1,15 @@
-import type { AbolishRule, AbolishValidator, ValidationError, ValidationResult } from "./Types";
+import type {
+    $errorRule,
+    $errorsRule,
+    AbolishRule,
+    AbolishValidator,
+    ValidationError,
+    ValidationResult
+} from "./types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { abolish_Get, abolish_Omit, abolish_Pick, abolish_StartCase, Rule } from "./Functions";
+import { abolish_Get, abolish_Omit, abolish_Pick, abolish_StartCase } from "./inbuilt.fn";
+import { Rule } from "./functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 
@@ -11,8 +19,8 @@ type Job = {
     validator: AbolishValidator;
     validatorName: string;
     validatorOption: any;
-    $error: string | undefined;
-    $errors: Record<string, string> | undefined;
+    $error: $errorRule | undefined;
+    $errors: $errorsRule | undefined;
 };
 
 type AsyncData = {
@@ -294,7 +302,7 @@ class Abolish {
                 /**
                  * check if rules has custom error: $error
                  */
-                let $error: string | undefined;
+                let $error: $errorRule | undefined;
                 if (ruleData.hasOwnProperty("$error")) {
                     $error = ruleData["$error"];
                     // delete ruleData["$error"];
@@ -305,7 +313,7 @@ class Abolish {
                     }
                 }
 
-                let $errors: Record<string, string> | undefined;
+                let $errors: $errorsRule | undefined;
                 if (ruleData.hasOwnProperty("$errors")) {
                     $errors = ruleData["$errors"];
                     // delete ruleData["$errors"];
@@ -402,6 +410,7 @@ class Abolish {
                              */
                             return [
                                 {
+                                    code: "default",
                                     key: rule,
                                     type: "internal",
                                     validator: validatorName,
@@ -418,42 +427,59 @@ class Abolish {
                         ) {
                             let message: string | undefined;
                             let data: Record<string, any> | null = null;
+                            let code = "default";
 
                             if (validationResult instanceof AbolishError) {
                                 message = validationResult.message;
                                 data = validationResult.data;
+                                code = validationResult.code;
                             }
 
-                            message = $error || message;
-                            if ($errors && $errors[validatorName]) message = $errors[validatorName];
+                            if ($error) {
+                                if (typeof $error === "function") {
+                                    message = $error({ code, validator: validatorName, data });
+                                } else {
+                                    message = $error;
+                                }
+                            }
+
+                            if ($errors && $errors[validatorName]) {
+                                let customError = $errors[validatorName];
+                                if (typeof customError === "function") {
+                                    message = customError({ code, data });
+                                } else {
+                                    message = customError;
+                                }
+                            }
 
                             /**
-                             * Check if option is stringable
+                             * Check if option is stringAble
                              * This is required because a rule option could an array or an object
                              * and these cannot be converted to string
                              *
                              * Only strings and numbers can be parsed as :option
                              */
-                            const optionIsStringable =
+                            const optionIsStringAble =
                                 typeof validatorOption === "string" ||
                                 typeof validatorOption === "number" ||
                                 Array.isArray(validatorOption);
 
                             /**
                              * Replace :param with rule converted to upperCase
-                             * and if option is stringable, replace :option with validatorOption
+                             * and if option is stringAble, replace :option with validatorOption
                              */
                             message = (message || validator.error!).replace(
                                 ":param",
                                 $name ? $name : abolish_StartCase(rule, this)
                             );
 
-                            if (optionIsStringable)
+                            if (optionIsStringAble)
                                 message = message.replace(":option", String(validatorOption));
 
                             // Return Error using the ValidationResult format
                             return [
                                 {
+                                    code,
                                     key: rule,
                                     type: "validator",
                                     validator: validatorName,
@@ -538,6 +564,7 @@ class Abolish {
                      */
                     return resolve([
                         {
+                            code: "default",
                             key: rule,
                             type: "internal",
                             validator: validatorName,
@@ -551,14 +578,30 @@ class Abolish {
                 if (validationResult === false || validationResult instanceof AbolishError) {
                     let message: string | undefined;
                     let data: Record<string, any> | null = null;
+                    let code = "default";
 
                     if (validationResult instanceof AbolishError) {
                         message = validationResult.message;
                         data = validationResult.data;
+                        code = validationResult.code;
                     }
 
-                    message = $error || message;
-                    if ($errors && $errors[validatorName]) message = $errors[validatorName];
+                    if ($error) {
+                        if (typeof $error === "function") {
+                            message = $error({ code, validator: validatorName, data });
+                        } else {
+                            message = $error;
+                        }
+                    }
+
+                    if ($errors && $errors[validatorName]) {
+                        let customError = $errors[validatorName];
+                        if (typeof customError === "function") {
+                            message = customError({ code, data });
+                        } else {
+                            message = customError;
+                        }
+                    }
 
                     /**
                      * Replace :param with rule converted to upperCase
@@ -576,15 +619,16 @@ class Abolish {
                      *
                      * Only strings and numbers can be parsed as :option
                      */
-                    const optionIsStringable =
+                    const optionIsStringAble =
                         typeof validatorOption === "string" || typeof validatorOption === "number";
 
-                    if (optionIsStringable)
+                    if (optionIsStringAble)
                         message = message!.replace(":option", String(validatorOption));
 
                     // Return Error using the ValidationResult format
                     return resolve([
                         {
+                            code,
                             key: rule,
                             type: "validator",
                             validator: validatorName,

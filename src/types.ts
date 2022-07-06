@@ -8,12 +8,22 @@ import type ObjectModifier from "./ObjectModifier";
  * Result returned by to validate object
  */
 export type ValidationError = {
+    code: string;
     key: string;
     type: "internal" | "validator";
     message: string;
     validator: string;
     data: any;
 };
+
+export type $errorRule =
+    | string
+    | ((e: Pick<ValidationError, "code" | "data" | "validator">) => string);
+
+export type $errorsRule = Record<
+    string,
+    string | ((e: Pick<ValidationError, "code" | "data">) => string)
+>;
 
 /**
  * ValidationResult

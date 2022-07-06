@@ -1,9 +1,11 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import { assertType } from "../../src/types-checker";
 
+type inArrayOption = any[] | ((v?: any) => any[] | true);
 export = <AbolishValidator>{
     name: "inArray",
-    validator: (value: any, option: any[] | ((v?: any) => any[] | true), { error }) => {
+    description: "Check that a value is in an array",
+    validator: (value: any, option: inArrayOption, { error }) => {
         assertType(option, ["array", "function"]);
         const err = error(`:param does not exists in the given array`);
 
@@ -29,3 +31,11 @@ export = <AbolishValidator>{
         return err;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            inArray: inArrayOption;
+        }
+    }
+}

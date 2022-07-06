@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "regex",
@@ -14,3 +14,11 @@ export = <AbolishValidator>{
         }
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            regex: string | RegExp;
+        }
+    }
+}

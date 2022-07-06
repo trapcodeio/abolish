@@ -1,6 +1,6 @@
 import * as Joi from "joi";
 import type { TypeOfAbolishOrInstance } from "../src/Abolish";
-import type { AbolishValidator } from "../src/Types";
+import type { AbolishValidator } from "../src/types";
 import { AddValidatorToClassOrInstance } from "./index";
 
 /**

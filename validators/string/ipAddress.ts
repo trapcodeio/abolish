@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "ipAddress",
@@ -10,3 +10,11 @@ export = <AbolishValidator>{
         return isIpRegex.test(ip);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            ipAddress: true;
+        }
+    }
+}

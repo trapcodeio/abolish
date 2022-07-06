@@ -72,11 +72,18 @@
     /* Advanced Options */
     "skipLibCheck": true,
     /* Skip type checking of declaration files. */
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "@types/node",
+      "./src/validator",
+      "./validators/options"
+    ]
+
     /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": [
     "tests",
     "build.ts",
-  ]
+  ],
+
 }

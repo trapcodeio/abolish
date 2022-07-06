@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import type ObjectModifier from "../../src/ObjectModifier";
 
 export = <AbolishValidator>{
@@ -39,5 +39,13 @@ function runThis(option: any, modifier: ObjectModifier) {
         modifier.setThis(String(str)[option]());
     } else {
         throw new Error(`Validator string:${option} is not supported!`);
+    }
+}
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            string: true | string;
+        }
     }
 }

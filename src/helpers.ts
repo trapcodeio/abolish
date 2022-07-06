@@ -1,4 +1,4 @@
-import { AbolishInlineValidator } from "./Types";
+import { AbolishInlineValidator } from "./types";
 
 /**
  * $inLine object generator

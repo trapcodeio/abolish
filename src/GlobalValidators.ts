@@ -1,5 +1,5 @@
 import { string } from "joi";
-import type { AbolishInlineValidator, AbolishValidator } from "./Types";
+import type { AbolishInlineValidator, AbolishValidator } from "./types";
 import { isType } from "./types-checker";
 
 const GlobalValidators: Record<string, AbolishValidator> = {
@@ -54,7 +54,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         name: "exact",
         error: ":param failed exact validator",
         description: "Value is === :option",
-        validator: (value: any, option: any): boolean => {
+        validator: (value: any, option: string | boolean | number): boolean => {
             return value === option;
         }
     },

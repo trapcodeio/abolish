@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "same",
@@ -7,3 +7,11 @@ export = <AbolishValidator>{
         return v === modifier.get(o);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            same: string;
+        }
+    }
+}

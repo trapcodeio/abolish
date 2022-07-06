@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import { arrayIsTypeOf } from "../../src/types-checker";
 
 export = <AbolishValidator>{
@@ -22,3 +22,11 @@ export = <AbolishValidator>{
         return true;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            array: boolean | string | string[];
+        }
+    }
+}

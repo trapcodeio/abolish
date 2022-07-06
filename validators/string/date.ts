@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "date",
@@ -23,3 +23,11 @@ export = <AbolishValidator>{
     },
     error: `:param is not a valid Date!`
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            date: "cast" | { cast: true };
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import test from "japa";
-import { abolish_Omit, ParseRules, Rule } from "../src/Functions";
+import { abolish_Omit, ParseRules, Rule } from "../src/functions";
 import { skipIfNotDefined } from "../src/helpers";
 import { Abolish } from "../index";
 import { registerAllValidators } from "../src/ValidatorHelpers";
@@ -51,13 +51,7 @@ test.group("Functions", (group) => {
 
         let count = 5;
         while (count--) {
-            const [e] = Abolish.validate(
-                {
-                    url: "http://localhost:2222/webhook/1"
-                },
-                rule
-            );
-
+            const [e] = Abolish.validate({ url: "http://localhost:2222/webhook/1" }, rule);
             if (e) throw new Error(e.message);
         }
     });

@@ -1,10 +1,12 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import { assertType } from "../../src/types-checker";
 
+type notInArrayOption = any[] | ((v?: any) => any[] | true);
 export = <AbolishValidator>{
     name: "notInArray",
     error: ":param is not allowed",
-    validator: (value: any, option: any[] | ((v?: any) => any[] | true), { error }) => {
+    description: "Check that a value is not in an array",
+    validator: (value: any, option: notInArrayOption) => {
         assertType(option, ["array", "function"]);
 
         /**
@@ -33,3 +35,11 @@ export = <AbolishValidator>{
         return true;
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            notInArray: notInArrayOption;
+        }
+    }
+}

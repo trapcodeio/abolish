@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 
 export = <AbolishValidator>{
     name: "md5",
@@ -10,3 +10,11 @@ export = <AbolishValidator>{
         return regexExp.test(str);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            md5: true;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import type { AbolishValidator } from "../../src/Types";
+import type { AbolishValidator } from "../../src/types";
 import { assertType } from "../../src/types-checker";
 
 export = <AbolishValidator>{
@@ -13,3 +13,11 @@ export = <AbolishValidator>{
         return error(`:param array length must be [${size}], but [${arrLen}] was given.`);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            arraySize: number | number[];
+        }
+    }
+}

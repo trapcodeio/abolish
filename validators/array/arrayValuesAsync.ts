@@ -1,5 +1,5 @@
-import type { AbolishAsyncValidator, AbolishRule } from "../../src/Types";
-import { Rule } from "../../src/Functions";
+import type { AbolishAsyncValidator, AbolishRule } from "../../src/types";
+import { Rule } from "../../src/functions";
 import { assertType } from "../../src/types-checker";
 
 export = <AbolishAsyncValidator>{
@@ -29,3 +29,11 @@ export = <AbolishAsyncValidator>{
         modifier.setThis(newArray);
     }
 };
+
+declare module "../../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            arrayValuesAsync: AbolishRule;
+        }
+    }
+}

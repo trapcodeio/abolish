@@ -5,6 +5,6 @@
  */
 
 import Abolish from "./src/Abolish";
-import { ParseRules, Rule } from "./src/Functions";
+import { ParseRules, Rule } from "./src/functions";
 
 export { Abolish, Rule, ParseRules };
