@@ -47,6 +47,45 @@ test.group("Array Validators", (group) => {
         ); // => true
     });
 
+    test("notInArray", (assert) => {
+        const roles = ["user", "staff"];
+        assert.isTrue(Abolish.test("admin", { notInArray: roles })); // => true
+        assert.isFalse(Abolish.test("user", { notInArray: roles })); // => false
+
+        // Use function to get the array
+        assert.isTrue(Abolish.test("admin", { notInArray: () => roles })); // => false
+        assert.isFalse(Abolish.test("user", { notInArray: () => roles })); // => true
+
+        // Use function to determine if the value is not in the array
+        assert.isTrue(
+            Abolish.test("admin", {
+                notInArray: (v: string) => !roles.includes(v)
+            })
+        ); // => true
+
+        // Or something more complex
+        type User = { name: string; role: string };
+        const users: User[] = [
+            // random list of users
+            { name: "John", role: "admin" },
+            { name: "Jane", role: "staff" },
+            { name: "Sam", role: "user" }
+        ];
+
+        assert.isTrue(
+            Abolish.test(
+                { name: "John1", role: "admin3" },
+                { notInArray: (v: User) => !users.some((user) => user.name === v.name) }
+            )
+        ); // => true
+
+        assert.isFalse(
+            Abolish.test(users[1], {
+                notInArray: (v: User) => !users.some((user) => user.name === v.name)
+            })
+        ); // => false
+    });
+
     test("array", (assert) => {
         const roles = ["user", "staff"];
         assert.isTrue(Abolish.test(roles, "array")); // => true
