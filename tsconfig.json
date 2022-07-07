@@ -73,11 +73,11 @@
     "skipLibCheck": true,
     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,
-    "types": [
-      "@types/node",
-      "./src/validator",
-      "./validators/options"
-    ]
+//    "types": [
+//      "@types/node",
+//      "./src/validator",
+//      "./validators/options"
+//    ]
 
     /* Disallow inconsistently-cased references to the same file. */
   },
