@@ -30,7 +30,7 @@ test.group("Yup: Usage", (group) => {
         useYup(Abolish);
     });
 
-    test.only("Validate", () => {
+    test("Validate", () => {
         // Assert
         Abolish.attempt(
             "email@example.com",
