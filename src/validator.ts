@@ -1,7 +1,7 @@
 /**
  * This is not an automatically generated file.
  */
-import { $errorRule, $errorsRule, AbolishInlineValidator, AbolishRule } from "./types";
+import type { $errorRule, $errorsRule, AbolishInlineValidator, AbolishRule } from "./types";
 
 export declare module AvailableValidators {
     export interface Options {
@@ -30,3 +30,8 @@ export declare module AvailableValidators {
  * alias for AvailableValidators.Options
  */
 export type AV = Partial<AvailableValidators.Options>;
+
+/**
+ * Import all additional validators
+ */
+import "../validators/validators";

@@ -7,6 +7,15 @@ import type { ValidateOptions } from "yup/es/types";
 export type YupSchemaOption<T extends Yup.BaseSchema> = { schema: T; options?: ValidateOptions };
 type YupHelper<T> = (y: typeof Yup) => T;
 
+declare module "../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            $yup: Yup.BaseSchema | YupSchemaOption<any>;
+            $yupAsync: Yup.BaseSchema | YupSchemaOption<any>;
+        }
+    }
+}
+
 /**
  * $yup Schema Helper
  */

@@ -2,6 +2,7 @@ import test from "japa";
 import { Abolish } from "../../index";
 import { $joi, useJoi } from "../../others/joi";
 import joi from "joi";
+import { RuleTyped } from "../../src/functions";
 
 test.group("Joi: Setup", () => {
     test("Use", (assert) => {
@@ -49,7 +50,12 @@ test.group("Joi Usage", (group) => {
 
     test("Validate", () => {
         // Assert
-        Abolish.attempt("email@example.com", { $joi: joi.string().email() });
+        Abolish.attempt(
+            "email@example.com",
+            RuleTyped({
+                $joi: joi.string().email()
+            })
+        );
     });
 
     test("Validate with helper", () => {

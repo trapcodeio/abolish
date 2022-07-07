@@ -55,3 +55,11 @@ export function useJoi(abolish: TypeOfAbolishOrInstance, joi?: Joi.Root) {
 
     AddValidatorToClassOrInstance(abolish, validator);
 }
+
+declare module "../src/validator" {
+    module AvailableValidators {
+        interface Options {
+            $joi: Joi.Schema | ((joi: Joi.Root) => Joi.Schema);
+        }
+    }
+}

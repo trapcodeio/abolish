@@ -1,5 +1,5 @@
 import test from "japa";
-import { ParseRules, Rule } from "../src/functions";
+import { ParseRulesTyped, Rule } from "../src/functions";
 import { skipIfNotDefined } from "../src/helpers";
 import { Abolish } from "../index";
 import { registerAllValidators } from "../src/ValidatorHelpers";
@@ -40,10 +40,10 @@ test.group("Functions", (group) => {
 
         const rules = { stringRequired };
 
-        const rule = ParseRules({
+        const rule = ParseRulesTyped({
             $: "required",
             description: skipIfNotDefined(["$name:Desc", rules.stringRequired]),
-            url: "required|typeof:string|url",
+            url: ["required|typeof:string", { url: true }],
             // as any used here because abolish needs a fix.
             settings: skipIfNotDefined({
                 object: { includeData: skipIfNotDefined("boolean") }

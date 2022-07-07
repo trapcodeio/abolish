@@ -2,6 +2,7 @@ import test from "japa";
 import { $yup, $yupAsync, useYup } from "../../others/yup";
 import { Abolish } from "../../index";
 import * as Yup from "yup";
+import { RuleTyped } from "../../src/functions";
 
 test.group("Yup: Setup", () => {
     test("Use Yup", (assert) => {
@@ -29,11 +30,14 @@ test.group("Yup: Usage", (group) => {
         useYup(Abolish);
     });
 
-    test("Validate", () => {
+    test.only("Validate", () => {
         // Assert
-        Abolish.attempt("email@example.com", {
-            $yup: Yup.string().email()
-        });
+        Abolish.attempt(
+            "email@example.com",
+            RuleTyped({
+                $yup: Yup.string().email()
+            })
+        );
     });
 
     test("Validate with helper", () => {
@@ -57,11 +61,14 @@ test.group("Yup: Usage", (group) => {
 
     test("Validate Async", async () => {
         // Assert
-        await Abolish.attemptAsync("email@example.com", {
-            $yupAsync: {
-                schema: Yup.string().email()
-            }
-        });
+        await Abolish.attemptAsync(
+            "email@example.com",
+            RuleTyped({
+                $yupAsync: {
+                    schema: Yup.string().email()
+                }
+            })
+        );
     });
 
     test("Validate Async with helper", async () => {
