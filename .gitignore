@@ -13,5 +13,6 @@ benchmarks
 !bundle.js
 !japaFile.js
 *.d.ts
+!validators/validators.d.ts
 !index.esm.d.ts
 *.log
