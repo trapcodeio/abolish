@@ -6,8 +6,6 @@
 
 import Abolish from "./src/Abolish";
 import { ParseRules, Rule } from "./src/functions";
+import type { AV } from "./src/validator";
 
-// import all validators type.
-import "validators/validators";
-
-export { Abolish, Rule, ParseRules };
+export { Abolish, Rule, ParseRules, AV };
