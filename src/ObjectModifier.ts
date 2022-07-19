@@ -23,6 +23,12 @@ class ObjectModifier {
         return this;
     }
 
+    setData(data: any) {
+        this.data = data;
+        this.$hasData = true;
+        return this;
+    }
+
     get hasData() {
         return this.$hasData;
     }

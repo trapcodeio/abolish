@@ -35,10 +35,15 @@ export class AbolishCompiled {
     public include: string[] = [];
 
     /**
+     * Is Object is true, but if a variable is passed, it will return false
+     */
+    public isObject = true;
+
+    /**
      * Validate Compiled Schema
      * @param data
      */
-    public validate<R = Record<string, any>>(data: Record<string, any>): ValidationResult<R> {
+    public validateObject<R = Record<string, any>>(data: Record<string, any>): ValidationResult<R> {
         const validated: Record<string, any> = { ...data };
 
         for (const field in this.data) {
@@ -132,5 +137,15 @@ export class AbolishCompiled {
                 ? (validated as R)
                 : abolish_Pick(validated, Object.keys(this.data).concat(this.include))
         ];
+    }
+
+    public validateVariable<T>(variable: T) {
+        const data = this.validateObject({ variable });
+        if (!data[0]) data[1] = data[1].variable;
+        return data;
+    }
+
+    public validate<T>(value: T) {
+        return this.isObject ? this.validateObject(value) : this.validateVariable(value);
     }
 }

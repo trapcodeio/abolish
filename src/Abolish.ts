@@ -215,7 +215,7 @@ class Abolish {
         isAsync = false
     ): ValidationResult<R> {
         if (rules instanceof AbolishCompiled) {
-            return rules.validate(object);
+            return rules.validateObject(object);
         }
 
         let asyncData: AsyncData = {
@@ -833,7 +833,7 @@ class Abolish {
      * @param schema
      * @param CustomAbolish
      */
-    static compile(schema: Record<string, AbolishRule>, CustomAbolish?: typeof Abolish) {
+    static compileObject(schema: Record<string, AbolishRule>, CustomAbolish?: typeof Abolish) {
         const abolish = new (CustomAbolish || this)();
         const compiled = new AbolishCompiled();
 
@@ -916,7 +916,7 @@ class Abolish {
                     validatorOption: option,
                     validatorError: validator.error,
                     validator: (value: any, data: Record<string, any>) => {
-                        if (!ctx.modifier.hasData) ctx.modifier.data = data;
+                        if (!ctx.modifier.hasData) ctx.modifier.setData(data);
                         return validator.validator(value, option, ctx);
                     }
                 };
@@ -939,8 +939,14 @@ class Abolish {
      * Compile for a variable
      * @param schema
      */
-    static compileForVariable(schema: AbolishRule) {
-        return this.compile({ variable: schema }) as AbolishVariableCompiled;
+    static compile(schema: AbolishRule) {
+        const compiled = this.compileObject({
+            variable: schema,
+            $include: ["variable"]
+        }) as AbolishVariableCompiled;
+
+        compiled.isObject = false;
+        return compiled;
     }
 }
 
