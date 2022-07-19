@@ -878,6 +878,8 @@ class Abolish {
                 parsedRules = { ...(internalWildcardRules as Record<string, any>), ...parsedRules };
             }
 
+            const modifier = new ObjectModifier({}, field).flagNoData();
+
             /**
              * Loop Through each rule and generate validator
              */
@@ -901,7 +903,7 @@ class Abolish {
 
                 const ctx: AbolishValidatorFunctionHelper = {
                     abolish,
-                    modifier: new ObjectModifier({}, field).flagNoData(),
+                    modifier,
                     error: (message: string, data?: any) => new AbolishError(message, data)
                 };
 
