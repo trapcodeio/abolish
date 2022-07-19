@@ -37,7 +37,7 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         name: "typeof",
         description: "Value is typeof :option",
         error: ":param is not typeof :option",
-        validator: (value: any, option: string | false | string[]) => {
+        validator: function $typeof(value: any, option: string | false | string[]) {
             /**
              * If typeof is false then we don't validate this
              */
@@ -238,5 +238,15 @@ GlobalValidators.type = Object.assign({}, GlobalValidators.typeof);
 GlobalValidators.type.name = "type";
 GlobalValidators.type.error = ":param is not of type :option";
 GlobalValidators.type.description = "Alias: typeof";
+
+/**
+ * Loop through all the validators and rename functions to match the name of the validator
+ */
+for (const key of Object.keys(GlobalValidators)) {
+    const validator = GlobalValidators[key];
+    Object.defineProperty(validator.validator, "name", {
+        value: validator.name
+    });
+}
 
 export = GlobalValidators;

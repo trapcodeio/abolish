@@ -1,3 +1,5 @@
+// noinspection DuplicatedCode
+
 import type {
     $errorRule,
     $errorsRule,
@@ -12,6 +14,8 @@ import { abolish_Get, abolish_Omit, abolish_Pick, abolish_StartCase } from "./in
 import { Rule } from "./functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
+import { AbolishValidatorFunctionHelper } from "./types";
+import { AbolishCompiled, AbolishVariableCompiled, CompiledData } from "./Compiler";
 
 type Job = {
     $name: string | false;
@@ -85,6 +89,11 @@ class Abolish {
 
             // Add validator to instance validators
             GlobalValidators[validator.name] = validator;
+
+            // set validator function name
+            Object.defineProperty(validator.validator, "name", {
+                value: validator.name
+            });
         } else {
             throw new TypeError("addGlobalValidator argument must be an object.");
         }
@@ -172,7 +181,7 @@ class Abolish {
      */
     static validate<R = Record<string, any> | any>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any>
+        rules: Record<keyof R | string, any> | AbolishCompiled
     ): ValidationResult<R> {
         return new this().validate(object, rules);
     }
@@ -202,9 +211,13 @@ class Abolish {
      */
     validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any>,
+        rules: Record<keyof R | string, any> | AbolishCompiled,
         isAsync = false
     ): ValidationResult<R> {
+        if (rules instanceof AbolishCompiled) {
+            return rules.validate(object);
+        }
+
         let asyncData: AsyncData = {
             validated: {},
             jobs: [],
@@ -661,14 +674,19 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    check<V = any>(variable: V, rules: AbolishRule): [ValidationError | false, V] {
+    check<V = any>(
+        variable: V,
+        rules: AbolishRule | AbolishVariableCompiled
+    ): [ValidationError | false, V] {
         const [e, v] = this.validate<{ variable: V }>(
             { variable },
-            {
-                variable: rules,
-                // variable is included in-case if skipped
-                $include: ["variable"]
-            }
+            rules instanceof AbolishCompiled
+                ? rules
+                : {
+                      variable: rules,
+                      // variable is included in-case if skipped
+                      $include: ["variable"]
+                  }
         );
         return [e, v?.variable];
     }
@@ -808,6 +826,119 @@ class Abolish {
      */
     static testAsync<V = any>(variable: V, rules: AbolishRule): Promise<boolean> {
         return new this().testAsync(variable, rules);
+    }
+
+    /**
+     * Compile a schema
+     * @param schema
+     * @param CustomAbolish
+     */
+    static compile(schema: Record<string, AbolishRule>, CustomAbolish?: typeof Abolish) {
+        const abolish = new (CustomAbolish || this)();
+        const compiled = new AbolishCompiled();
+
+        let internalWildcardRules: AbolishRule | undefined;
+        for (const [field, rules] of Object.entries(schema)) {
+            /**
+             * Check for wildcard rules (*, $)
+             */
+            if (["*", "$"].includes(field)) {
+                internalWildcardRules = rules;
+                delete schema[field];
+
+                /**
+                 * Convert rules[*] to object if string
+                 * Using StringToRules function
+                 */
+                if (typeof internalWildcardRules === "string")
+                    internalWildcardRules = StringToRules(internalWildcardRules);
+            } else if (field === "$include") {
+                compiled.include = rules as string[];
+                delete schema[field];
+            }
+        }
+        /**
+         * Loop Through each field and rule
+         */
+        for (const [field, rules] of Object.entries(schema)) {
+            compiled.data[field] = [];
+
+            /**
+             * Convert ruleData to object if string
+             * Using StringToRules function
+             */
+            let parsedRules: any = rules;
+            if (typeof rules === "string") {
+                parsedRules = StringToRules(rules);
+            } else if (Array.isArray(rules)) {
+                parsedRules = Rule(rules);
+            }
+
+            if (internalWildcardRules) {
+                parsedRules = { ...(internalWildcardRules as Record<string, any>), ...parsedRules };
+            }
+
+            /**
+             * Loop Through each rule and generate validator
+             */
+            for (const [validatorName, option] of Object.entries(parsedRules)) {
+                const validator = (abolish.validators[validatorName] ||
+                    GlobalValidators[validatorName]) as AbolishValidator;
+
+                if (!validator) throw new Error(`Validator ${validatorName} not found`);
+
+                /**
+                 * Check if option is stringAble
+                 * This is required because a rule option could an array or an object
+                 * and these cannot be converted to string
+                 *
+                 * Only strings and numbers can be parsed as :option
+                 */
+                const optionIsStringAble =
+                    typeof option === "string" ||
+                    typeof option === "number" ||
+                    Array.isArray(option);
+
+                const ctx: AbolishValidatorFunctionHelper = {
+                    abolish,
+                    modifier: new ObjectModifier({}, field).flagNoData(),
+                    error: (message: string, data?: any) => new AbolishError(message, data)
+                };
+
+                // If no error defined set default error
+                if (!validator.error)
+                    validator.error = `:param failed {${validator.name}} validation.`;
+
+                const data: CompiledData = {
+                    validatorName,
+                    validatorOption: option,
+                    validatorError: validator.error,
+                    validator: (value: any, data: Record<string, any>) => {
+                        if (!ctx.modifier.hasData) ctx.modifier.data = data;
+                        return validator.validator(value, option, ctx);
+                    }
+                };
+
+                if (optionIsStringAble) data.validatorOptionString = String(option);
+
+                // Set validator name
+                Object.defineProperty(data.validator, "name", {
+                    value: `Wrapped(${validatorName})`
+                });
+
+                compiled.data[field].push(data);
+            }
+        }
+
+        return compiled;
+    }
+
+    /**
+     * Compile for a variable
+     * @param schema
+     */
+    static compileForVariable(schema: AbolishRule) {
+        return this.compile({ variable: schema }) as AbolishVariableCompiled;
     }
 }
 

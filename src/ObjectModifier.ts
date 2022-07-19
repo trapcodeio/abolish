@@ -9,12 +9,22 @@ class ObjectModifier {
     data: any;
     path: any;
     name: string | false;
+    private $hasData = true;
 
-    constructor(data: any, param: string, name: string | false) {
+    constructor(data: any, param: string, name: string | false = false) {
         this.data = data;
         this.path = param;
         this.name = name;
         return this;
+    }
+
+    flagNoData() {
+        this.$hasData = false;
+        return this;
+    }
+
+    get hasData() {
+        return this.$hasData;
     }
 
     /**

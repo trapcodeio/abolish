@@ -4,9 +4,10 @@
 node_modules
 js
 types
-tests/play.ts
+dev/play.ts
 yarn.lock
 benchmarks
+dev
 
 
 *.js
