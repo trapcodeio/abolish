@@ -10,12 +10,18 @@ import type {
 } from "./types";
 import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
-import { abolish_Get, abolish_Omit, abolish_Pick, abolish_StartCase } from "./inbuilt.fn";
+import {
+    abolish_Get,
+    abolish_Omit,
+    abolish_Pick,
+    abolish_StartCase,
+    hasDotNotation
+} from "./inbuilt.fn";
 import { Rule } from "./functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import { AbolishValidatorFunctionHelper } from "./types";
-import { AbolishCompiled, AbolishVariableCompiled, CompiledData } from "./Compiler";
+import { AbolishCompiled, AbolishCompiledObject, CompiledData } from "./Compiler";
 
 type Job = {
     $name: string | false;
@@ -676,18 +682,21 @@ class Abolish {
      */
     check<V = any>(
         variable: V,
-        rules: AbolishRule | AbolishVariableCompiled
+        rules: AbolishRule | AbolishCompiled
     ): [ValidationError | false, V] {
+        if (rules instanceof AbolishCompiled) {
+            return rules.validateVariable(variable);
+        }
+
         const [e, v] = this.validate<{ variable: V }>(
             { variable },
-            rules instanceof AbolishCompiled
-                ? rules
-                : {
-                      variable: rules,
-                      // variable is included in-case if skipped
-                      $include: ["variable"]
-                  }
+            {
+                variable: rules,
+                // variable is included in-case if skipped
+                $include: ["variable"]
+            }
         );
+
         return [e, v?.variable];
     }
 
@@ -838,6 +847,8 @@ class Abolish {
         const compiled = new AbolishCompiled();
 
         let internalWildcardRules: AbolishRule | undefined;
+        let includeFields: string[] = [];
+
         for (const [field, rules] of Object.entries(schema)) {
             /**
              * Check for wildcard rules (*, $)
@@ -853,10 +864,11 @@ class Abolish {
                 if (typeof internalWildcardRules === "string")
                     internalWildcardRules = StringToRules(internalWildcardRules);
             } else if (field === "$include") {
-                compiled.include = rules as string[];
+                includeFields = rules as string[];
                 delete schema[field];
             }
         }
+
         /**
          * Loop Through each field and rule
          */
@@ -932,20 +944,36 @@ class Abolish {
             }
         }
 
-        return compiled;
+        // Populate Fields to be picked
+        // In order to make sure unique fields are picked
+        // We have to loop and check if the field is already picked
+        Object.keys(compiled.data).forEach((field) => {
+            if (!compiled.fields.includes(field)) compiled.fields.push(field);
+        });
+
+        includeFields.forEach((field) => {
+            if (!compiled.fields.includes(field)) compiled.fields.push(field);
+        });
+
+        // Check if any field has dot notation
+        compiled.fieldsHasDotNotation = compiled.fields.some(hasDotNotation);
+
+        return compiled as AbolishCompiledObject;
     }
 
     /**
      * Compile for a variable
-     * @param schema
+     * @param rule
      */
-    static compile(schema: AbolishRule) {
+    static compile(rule: AbolishRule) {
         const compiled = this.compileObject({
-            variable: schema,
+            variable: rule,
             $include: ["variable"]
-        }) as AbolishVariableCompiled;
+        }) as AbolishCompiled;
 
+        // set object to false.
         compiled.isObject = false;
+
         return compiled;
     }
 }

@@ -16,14 +16,13 @@ export = <AbolishValidator>{
         // loop through the array and check if the values are of the given types
         // using abolish
         const newArray = [] as any[];
-        for (let i = 0; i < arr.length; i++) {
-            const [err, validated] = abolish.check(arr[i], {
-                $name: `arrayValues[${i}]`,
-                ...(rule as Record<string, any>)
-            });
-            if (err) return error(err.message, err);
-            newArray.push(validated);
+
+        for (let i in arr) {
+            const result = abolish.check(arr[i], rule);
+            if (result[0]) return error(result[0].message, result[0]).setCode(`index|${i}`);
+            newArray.push(result[1]);
         }
+
         modifier.setThis(newArray);
     }
 };

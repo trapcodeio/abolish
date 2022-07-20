@@ -1,4 +1,4 @@
-import { abolish_Set, abolish_Get, abolish_StartCase } from "./inbuilt.fn";
+import { abolish_Set, abolish_Get, abolish_StartCase, hasDotNotation } from "./inbuilt.fn";
 import { has, unset } from "lodash";
 
 /**
@@ -10,11 +10,13 @@ class ObjectModifier {
     path: any;
     name: string | false;
     private $hasData = true;
+    private readonly pathHasDotNotation;
 
     constructor(data: any, param: string, name: string | false = false) {
         this.data = data;
         this.path = param;
         this.name = name;
+        this.pathHasDotNotation = hasDotNotation(param);
         return this;
     }
 
@@ -79,7 +81,7 @@ class ObjectModifier {
      * @return {*}
      */
     setThis(value: any) {
-        return this.set(this.path, value);
+        return abolish_Set(this.data, this.path, value, this.pathHasDotNotation);
     }
 
     /**

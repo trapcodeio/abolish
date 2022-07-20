@@ -28,11 +28,12 @@ export function abolish_StartCase(str: string, abolishInstance?: Abolish): strin
  * Pick keys from object
  * @param obj
  * @param keys
+ * @param $hasDotFields
  */
-export function abolish_Pick(obj: any, keys: string[]) {
+export function abolish_Pick(obj: any, keys: string[], $hasDotFields?: boolean) {
     // Create new object
     const picked = {} as Record<any, any>;
-    const hasDotKeys = keys.some(hasDotNotation);
+    const hasDotKeys = $hasDotFields === undefined ? keys.some(hasDotNotation) : $hasDotFields;
 
     // Loop through props and push to new object
     if (hasDotKeys) {
@@ -69,9 +70,10 @@ export function abolish_Omit(obj: Record<string, any>, keys: string[]) {
  * @param obj
  * @param path
  * @param value
+ * @param $hasDotNotation
  */
-export function abolish_Set(obj: any, path: any, value: any) {
-    if (hasDotNotation(path)) {
+export function abolish_Set(obj: any, path: any, value: any, $hasDotNotation?: boolean) {
+    if ($hasDotNotation === undefined && hasDotNotation(path)) {
         return set(obj, path, value);
     } else {
         obj[path] = value;
@@ -84,9 +86,10 @@ export function abolish_Set(obj: any, path: any, value: any) {
  * Because lodash is slow, we will only include it when there is a dot notation in the path.
  * @param obj
  * @param path
+ * @param $hasDotNotation
  */
-export function abolish_Get(obj: any, path: string) {
-    if (hasDotNotation(path)) {
+export function abolish_Get(obj: any, path: string, $hasDotNotation?: boolean) {
+    if ($hasDotNotation === undefined && hasDotNotation(path)) {
         return get(obj, path);
     } else {
         return obj[path];

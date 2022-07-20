@@ -1,6 +1,6 @@
 import { AbolishValidatorFunctionResult, ValidationResult } from "./types";
 import AbolishError from "./AbolishError";
-import { abolish_Pick } from "./inbuilt.fn";
+import { abolish_Get, abolish_Pick } from "./inbuilt.fn";
 
 export interface CompiledData {
     // $name?: string;
@@ -18,8 +18,8 @@ export interface CompiledData {
     ) => AbolishValidatorFunctionResult | Promise<AbolishValidatorFunctionResult>;
 }
 
-export interface AbolishVariableCompiled extends AbolishCompiled {
-    variable?: true;
+export interface AbolishCompiledObject extends AbolishCompiled {
+    isObject: true;
 }
 
 export class AbolishCompiled {
@@ -30,9 +30,14 @@ export class AbolishCompiled {
     public data: Record<string, CompiledData[]> = {};
 
     /**
-     * Fields to be included in validation result
+     * Schema Keys and Included Fields
      */
-    public include: string[] = [];
+    public fields: string[] = [];
+
+    /**
+     * If fields has any dot notation set to true
+     */
+    public fieldsHasDotNotation = false;
 
     /**
      * Is Object is true, but if a variable is passed, it will return false
@@ -44,11 +49,17 @@ export class AbolishCompiled {
      * @param data
      */
     public validateObject<R = Record<string, any>>(data: Record<string, any>): ValidationResult<R> {
+        if (!this.isObject) {
+            throw new Error(
+                "Variable compiled schema cannot be used to validate an object, use object compiled schema!"
+            );
+        }
+
         const validated: Record<string, any> = { ...data };
 
         for (const field in this.data) {
             const compiledList = this.data[field];
-            const value = validated[field];
+            const value = abolish_Get(validated, field, this.fieldsHasDotNotation);
 
             for (const compiled of compiledList) {
                 let result: AbolishValidatorFunctionResult = false;
@@ -69,7 +80,10 @@ export class AbolishCompiled {
                     ];
                 }
 
-                if (result === false || result instanceof AbolishError) {
+                if (
+                    typeof result !== undefined &&
+                    (result === false || result instanceof AbolishError)
+                ) {
                     let message = compiled.validatorError;
                     let data: Record<string, any> | null = null;
                     let code = "default";
@@ -133,16 +147,27 @@ export class AbolishCompiled {
 
         return [
             false,
-            Object.keys(validated).length <= 1
+            this.fields.length <= 1
                 ? (validated as R)
-                : abolish_Pick(validated, Object.keys(this.data).concat(this.include))
+                : (abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R)
         ];
     }
 
     public validateVariable<T>(variable: T) {
+        if (this.isObject) {
+            throw new Error(
+                "Object compiled cannot be used to validate a variable, use regular compiled schema!"
+            );
+        }
+
+        this.isObject = true; // set to true to avoid error
         const data = this.validateObject({ variable });
-        if (!data[0]) data[1] = data[1].variable;
-        return data;
+        this.isObject = false; // set back to false
+
+        // get variable from data
+        data[1] = data[1].variable;
+
+        return data as ValidationResult<T>;
     }
 
     public validate<T>(value: T) {
