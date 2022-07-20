@@ -187,7 +187,7 @@ class Abolish {
      */
     static validate<R = Record<string, any> | any>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any> | AbolishCompiled
+        rules: Record<keyof R | string, any> | AbolishCompiledObject
     ): ValidationResult<R> {
         return new this().validate(object, rules);
     }
@@ -217,7 +217,7 @@ class Abolish {
      */
     validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any> | AbolishCompiled,
+        rules: Record<keyof R | string, any> | AbolishCompiledObject,
         isAsync = false
     ): ValidationResult<R> {
         if (rules instanceof AbolishCompiled) {
