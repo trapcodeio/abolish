@@ -16,21 +16,20 @@ export type ValidationError = {
     data: any;
 };
 
+export type $skipRule = boolean | ((value: any, data: Record<any, any>) => boolean);
+
 export type $errorRule =
     | string
     | ((e: Pick<ValidationError, "code" | "data" | "validator"> & { value: any }) => string);
 
-export type $errorsRule = Record<
-    string,
-    string | ((e: Pick<ValidationError, "code" | "data"> & { value: any }) => string)
->;
+export type $errorsRule = Record<string, $errorRule>;
 
 /**
  * ValidationResult
  * @description
  * Result returned by to validate object
  */
-export type ValidationResult<T = any> = [error: ValidationError | false, validated: T];
+export type ValidationResult<T = any> = [error: ValidationError | undefined, validated: T];
 
 export type AbolishValidatorFunctionResult = boolean | AbolishError | void;
 

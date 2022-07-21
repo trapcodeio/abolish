@@ -3,6 +3,7 @@
 import type {
     $errorRule,
     $errorsRule,
+    $skipRule,
     AbolishRule,
     AbolishValidator,
     ValidationError,
@@ -21,7 +22,13 @@ import { Rule } from "./functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import { AbolishValidatorFunctionHelper } from "./types";
-import { AbolishCompiled, AbolishCompiledObject, CompiledData } from "./Compiler";
+import {
+    AbolishCompiled,
+    AbolishCompiledObject,
+    CompiledRule,
+    CompiledValidator
+} from "./Compiler";
+import { arrayIsTypeOf, assertType } from "./types-checker";
 
 type Job = {
     $name: string | false;
@@ -472,7 +479,12 @@ class Abolish {
                             if ($errors && $errors[validatorName]) {
                                 let customError = $errors[validatorName];
                                 if (typeof customError === "function") {
-                                    message = customError({ code, data, value: objectValue });
+                                    message = customError({
+                                        code,
+                                        data,
+                                        validator: validatorName,
+                                        value: objectValue
+                                    });
                                 } else {
                                     message = customError;
                                 }
@@ -531,7 +543,7 @@ class Abolish {
         // abolish_Pick only keys in rules
         validated = abolish_Pick(validated, keysToBeValidated.concat(includeKeys));
 
-        return [false, validated as R];
+        return [undefined, validated as R];
     }
 
     /**
@@ -628,7 +640,12 @@ class Abolish {
                     if ($errors && $errors[validatorName]) {
                         let customError = $errors[validatorName];
                         if (typeof customError === "function") {
-                            message = customError({ code, data, value: objectValue });
+                            message = customError({
+                                code,
+                                data,
+                                validator: validatorName,
+                                value: objectValue
+                            });
                         } else {
                             message = customError;
                         }
@@ -671,7 +688,10 @@ class Abolish {
                 }
             }
 
-            return resolve([false, abolish_Pick(validated, keysToBeValidated.concat(includeKeys))]);
+            return resolve([
+                undefined,
+                abolish_Pick(validated, keysToBeValidated.concat(includeKeys))
+            ]);
         });
     }
 
@@ -683,7 +703,7 @@ class Abolish {
     check<V = any>(
         variable: V,
         rules: AbolishRule | AbolishCompiled
-    ): [ValidationError | false, V] {
+    ): [ValidationError | undefined, V] {
         if (rules instanceof AbolishCompiled) {
             return rules.validateVariable(variable);
         }
@@ -705,7 +725,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    static check<V = any>(variable: V, rules: AbolishRule): [ValidationError | false, V] {
+    static check<V = any>(variable: V, rules: AbolishRule): [ValidationError | undefined, V] {
         return new this().check(variable, rules);
     }
 
@@ -717,7 +737,7 @@ class Abolish {
     async checkAsync<V = any>(
         variable: V,
         rules: AbolishRule
-    ): Promise<[ValidationError | false, V]> {
+    ): Promise<[ValidationError | undefined, V]> {
         const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
 
         return [e, v?.variable];
@@ -731,7 +751,7 @@ class Abolish {
     static checkAsync<V = any>(
         variable: V,
         rules: AbolishRule
-    ): Promise<[ValidationError | false, V]> {
+    ): Promise<[ValidationError | undefined, V]> {
         return new this().checkAsync(variable, rules);
     }
 
@@ -855,7 +875,6 @@ class Abolish {
              */
             if (["*", "$"].includes(field)) {
                 internalWildcardRules = rules;
-                delete schema[field];
 
                 /**
                  * Convert rules[*] to object if string
@@ -865,7 +884,6 @@ class Abolish {
                     internalWildcardRules = StringToRules(internalWildcardRules);
             } else if (field === "$include") {
                 includeFields = rules as string[];
-                delete schema[field];
             }
         }
 
@@ -873,7 +891,9 @@ class Abolish {
          * Loop Through each field and rule
          */
         for (const [field, rules] of Object.entries(schema)) {
-            compiled.data[field] = [];
+            if (SUPER.Keys.includes(field)) continue;
+
+            const compiledRule: CompiledRule = { validators: [] };
 
             /**
              * Convert ruleData to object if string
@@ -890,12 +910,50 @@ class Abolish {
                 parsedRules = { ...(internalWildcardRules as Record<string, any>), ...parsedRules };
             }
 
-            const modifier = new ObjectModifier({}, field).flagNoData();
+            let $error: $errorRule | undefined;
+            let $errors: $errorsRule = {};
 
             /**
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
+                if (!SUPER.Rules.includes(validatorName)) continue;
+
+                if (validatorName === "$skip") {
+                    // $skip = option as $skipRule;
+                    assertType(option, ["boolean", "function"], "$skip");
+
+                    // set skip
+                    compiledRule.$skip = option as $skipRule;
+                } else if (validatorName === "$error") {
+                    // $error = option as $errorRule;
+                    assertType(option, ["string", "function"], "$error");
+
+                    $error = option as $errorRule;
+                } else if (validatorName === "$errors") {
+                    // $errors = option as Record<string, $errorRule>;
+                    assertType(option, ["object"], "$errors");
+
+                    $errors = option as $errorsRule;
+                }
+            }
+
+            /**
+             * Object modifier
+             */
+            const modifier = new ObjectModifier({}, field).flagNoData();
+
+            /**
+             *  Hold Skip Rule.
+             */
+            // let $skip: $skipRule | undefined = undefined;
+
+            /**
+             * Loop Through each rule and generate validator
+             */
+            for (const [validatorName, option] of Object.entries(parsedRules)) {
+                if (SUPER.Rules.includes(validatorName)) continue;
+
                 const validator = (abolish.validators[validatorName] ||
                     GlobalValidators[validatorName]) as AbolishValidator;
 
@@ -911,6 +969,7 @@ class Abolish {
                 const optionIsStringAble =
                     typeof option === "string" ||
                     typeof option === "number" ||
+                    typeof option === "boolean" ||
                     Array.isArray(option);
 
                 const ctx: AbolishValidatorFunctionHelper = {
@@ -923,25 +982,66 @@ class Abolish {
                 if (!validator.error)
                     validator.error = `:param failed {${validator.name}} validation.`;
 
-                const data: CompiledData = {
-                    validatorName,
-                    validatorOption: option,
-                    validatorError: validator.error,
-                    validator: (value: any, data: Record<string, any>) => {
+                /**
+                 * Parse error
+                 */
+                let error = validator.error;
+                let errorFn: CompiledValidator["errorFn"];
+
+                /**
+                 * Process $error
+                 * if $error is a string, use it as error message
+                 * if $error is a function, use it as error function
+                 */
+                if ($error) {
+                    if (typeof $error === "string") {
+                        error = $error;
+                    } else if (typeof $error === "function") {
+                        errorFn = $error;
+                    }
+                }
+
+                if ($errors && $errors[validatorName]) {
+                    const errorMessage = $errors[validatorName];
+                    if (typeof errorMessage === "string") {
+                        error = errorMessage;
+                    } else if (typeof errorMessage === "function") {
+                        errorFn = errorMessage;
+                    }
+                }
+
+                if (error.includes(":param")) {
+                    // replace all :param with field name
+                    error = error.replace(/:param/g, field);
+                }
+
+                const data: CompiledValidator = {
+                    name: validatorName,
+                    option: option,
+                    error: error,
+
+                    func: (value: any, data: Record<string, any>) => {
                         if (!ctx.modifier.hasData) ctx.modifier.setData(data);
                         return validator.validator(value, option, ctx);
                     }
                 };
 
-                if (optionIsStringAble) data.validatorOptionString = String(option);
+                if (errorFn) data.errorFn = errorFn;
+
+                if (optionIsStringAble) {
+                    data.optionString = String(option);
+                    data.error = data.error.replace(/:option/g, data.optionString);
+                }
 
                 // Set validator name
-                Object.defineProperty(data.validator, "name", {
+                Object.defineProperty(data.func, "name", {
                     value: `Wrapped(${validatorName})`
                 });
 
-                compiled.data[field].push(data);
+                compiledRule.validators.push(data);
             }
+
+            compiled.data[field] = compiledRule;
         }
 
         // Populate Fields to be picked
@@ -954,6 +1054,8 @@ class Abolish {
         includeFields.forEach((field) => {
             if (!compiled.fields.includes(field)) compiled.fields.push(field);
         });
+
+        compiled.includedFields = includeFields;
 
         // Check if any field has dot notation
         compiled.fieldsHasDotNotation = compiled.fields.some(hasDotNotation);

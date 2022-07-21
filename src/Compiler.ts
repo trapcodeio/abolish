@@ -1,18 +1,19 @@
-import { AbolishValidatorFunctionResult, ValidationResult } from "./types";
+import type {
+    $skipRule,
+    AbolishValidatorFunctionResult,
+    ValidationError,
+    ValidationResult
+} from "./types";
 import AbolishError from "./AbolishError";
 import { abolish_Get, abolish_Pick } from "./inbuilt.fn";
 
-export interface CompiledData {
-    // $name?: string;
-    // $skip?: (value: any) => boolean;
-    // $error?: $errorRule;
-    // $errors?: $errorsRule;
-    // field: string;
-    validatorName: string;
-    validatorOption: any;
-    validatorOptionString?: string;
-    validatorError: string;
-    validator: (
+export interface CompiledValidator {
+    name: string;
+    option: any;
+    optionString?: string;
+    error: string;
+    errorFn?: (e: Pick<ValidationError, "code" | "data" | "validator"> & { value: any }) => string;
+    func: (
         value: any,
         option: any
     ) => AbolishValidatorFunctionResult | Promise<AbolishValidatorFunctionResult>;
@@ -22,17 +23,33 @@ export interface AbolishCompiledObject extends AbolishCompiled {
     isObject: true;
 }
 
+export interface CompiledRule {
+    $skip?: $skipRule;
+    validators: CompiledValidator[];
+}
+
 export class AbolishCompiled {
     // constructor(public abolish: Abolish) {}
     /**
      * Hold Compiled Object
      */
-    public data: Record<string, CompiledData[]> = {};
+    public data: Record<
+        string,
+        {
+            $skip?: $skipRule;
+            validators: CompiledValidator[];
+        }
+    > = {};
 
     /**
      * Schema Keys and Included Fields
      */
     public fields: string[] = [];
+
+    /**
+     * Fields included
+     */
+    public includedFields: string[] = [];
 
     /**
      * If fields has any dot notation set to true
@@ -56,23 +73,40 @@ export class AbolishCompiled {
         }
 
         const validated: Record<string, any> = { ...data };
+        let fields = this.fields;
 
         for (const field in this.data) {
-            const compiledList = this.data[field];
+            const compiled = this.data[field];
             const value = abolish_Get(validated, field, this.fieldsHasDotNotation);
 
-            for (const compiled of compiledList) {
+            // Check if skip rule is set
+            if (compiled.$skip) {
+                if (typeof compiled.$skip === "function") {
+                    compiled.$skip = compiled.$skip(value, validated);
+                }
+
+                if (compiled.$skip) {
+                    // if field is not in included fields, remove it from fields
+                    if (!this.includedFields.includes(field)) {
+                        fields = fields.filter((f) => f !== field);
+                    }
+
+                    continue;
+                }
+            }
+
+            for (const validator of compiled.validators) {
                 let result: AbolishValidatorFunctionResult = false;
 
                 try {
-                    result = compiled.validator(value, validated) as AbolishValidatorFunctionResult;
+                    result = validator.func(value, validated) as AbolishValidatorFunctionResult;
                 } catch (e: any) {
                     return [
                         {
                             code: "default",
                             key: field,
                             type: "internal",
-                            validator: compiled.validatorName,
+                            validator: validator.name,
                             message: e.message,
                             data: e.stack
                         },
@@ -84,14 +118,26 @@ export class AbolishCompiled {
                     typeof result !== undefined &&
                     (result === false || result instanceof AbolishError)
                 ) {
-                    let message = compiled.validatorError;
+                    let message = validator.error;
                     let data: Record<string, any> | null = null;
                     let code = "default";
+                    let modifiedMessage = false;
 
                     if (result instanceof AbolishError) {
                         message = result.message;
+                        modifiedMessage = true;
                         data = result.data;
                         code = result.code;
+                    }
+
+                    if (validator.errorFn) {
+                        modifiedMessage = true;
+                        message = validator.errorFn({
+                            code,
+                            data,
+                            validator: validator.name,
+                            value
+                        });
                     }
 
                     // if ($error) {
@@ -116,18 +162,19 @@ export class AbolishCompiled {
                     //     }
                     // }
 
-                    /**
-                     * Replace :param with rule converted to upperCase
-                     * and if option is stringAble, replace :option with validatorOption
-                     */
-                    message = message.replace(
-                        ":param",
-                        // $name ? $name : abolish_StartCase(rule, this)
-                        field
-                    );
+                    if (modifiedMessage) {
+                        /**
+                         * Replace :param with rule converted to upperCase
+                         * and if option is stringAble, replace :option with validatorOption
+                         */
+                        if (message.includes(":param")) {
+                            // Replace all :param with field name
+                            message = message.replace(":param", field);
+                        }
 
-                    if (compiled.validatorOptionString)
-                        message = message.replace(":option", compiled.validatorOptionString);
+                        if (validator.optionString && message.includes(":option"))
+                            message = message.replace(":option", validator.optionString);
+                    }
 
                     // Return Error using the ValidationResult format
                     return [
@@ -135,7 +182,7 @@ export class AbolishCompiled {
                             code,
                             key: field,
                             type: "validator",
-                            validator: compiled.validatorName,
+                            validator: validator.name,
                             message,
                             data
                         },
@@ -145,12 +192,28 @@ export class AbolishCompiled {
             }
         }
 
-        return [
-            false,
-            this.fields.length <= 1
-                ? (validated as R)
-                : (abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R)
-        ];
+        let result: R;
+
+        if (fields.length === 1) {
+            const onlyField = fields[0];
+            result = { [onlyField]: validated[onlyField] } as R;
+        } else if (this.fields.length > 1) {
+            result = abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R;
+        } else {
+            result = {} as R;
+        }
+
+        return [undefined, result];
+
+        // return [false, abolish_Pick(validated, fields, this.fieldsHasDotNotation) as R];
+        // return [false, abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R];
+
+        // return [
+        //     false,
+        //     this.fields.length === 1
+        //         ? (validated as R)
+        //         : (abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R)
+        // ];
     }
 
     public validateVariable<T>(variable: T) {
@@ -171,6 +234,6 @@ export class AbolishCompiled {
     }
 
     public validate<T>(value: T) {
-        return this.isObject ? this.validateObject(value) : this.validateVariable(value);
+        return this.isObject ? this.validateObject<T>(value) : this.validateVariable(value);
     }
 }

@@ -163,7 +163,7 @@ test.group("Default Validators", () => {
         );
 
         // Error is false
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // validated object
         assert.deepEqual(v, {
@@ -214,7 +214,7 @@ test.group("Default Validators", () => {
         );
 
         // Error is false
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // validated object
         assert.deepEqual(v, {

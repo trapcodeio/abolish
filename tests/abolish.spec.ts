@@ -47,7 +47,7 @@ test.group("Static Methods", () => {
         });
 
         // Validation should pass
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // validation data should not be the same as the original data
         // because only `age` and `email` keys are validated
@@ -73,7 +73,7 @@ test.group("Static Methods", () => {
         });
 
         // Validation should pass
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // validation data should not be the same as the original data
         // because only `age` and `email` keys are validated
@@ -90,7 +90,7 @@ test.group("Static Methods", () => {
         const [e, age] = Abolish.check(20, "required|typeof:number|min:18");
 
         // Validation should pass
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // Age should be 20
         assert.equal(age, 20);
@@ -112,7 +112,7 @@ test.group("Static Methods", () => {
         const [e, age] = await Abolish.checkAsync(20, "required|typeof:number|min:18");
 
         // Validation should pass
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // Age should be 20
         assert.equal(age, 20);
@@ -228,7 +228,7 @@ test.group("Instance Methods", (group) => {
         const [e, url] = abolish.check("https://example.com", "url");
 
         // Validation should pass
-        assert.isFalse(e);
+        assert.isUndefined(e);
 
         // Url should be https://example.com
         assert.equal(url, "https://example.com");

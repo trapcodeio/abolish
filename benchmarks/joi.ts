@@ -7,18 +7,21 @@ import { Abolish } from "../index";
 registerAllValidators(Abolish);
 
 const abolish = new Abolish();
+
 const compiled = Abolish.compile({ typeof: "string" });
+// const compiledValue = 18;
+const compiledValue = "A String";
 
 function Abolish_TypeOfString() {
-    // compiled.validateVariable("A String");
-    abolish.check("A String", compiled);
+    // compiled.validateVariable(compiledValue);
+    abolish.check(compiledValue, compiled);
 }
 
 // compile joi schema
 const joiSchema = Joi.string();
 
 function Joi_TypeOfString() {
-    joiSchema.validate("A string");
+    joiSchema.validate(compiledValue);
 }
 
 // compile yup schema
@@ -26,7 +29,7 @@ function Joi_TypeOfString() {
 const yupSchema = Yup.string();
 
 function Yup_TypeOfString() {
-    yupSchema.validateSync("A string");
+    yupSchema.validateSync(compiledValue);
 }
 //
 benchmarkFunctions("TypeOfString", [
@@ -103,5 +106,5 @@ function Joi_ArrayValues() {
     joiArrayValues.validate(arrayData);
 }
 
-benchmarkFunctions("Object", [Abolish_Object, Joi_Object]).run();
-benchmarkFunctions("ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();
+// benchmarkFunctions("Object", [Abolish_Object, Joi_Object]).run();
+// benchmarkFunctions("ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();

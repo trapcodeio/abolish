@@ -8,7 +8,7 @@ import { registerValidators } from "../../src/ValidatorHelpers";
 import StringValidator from "../../validators/string/string";
 
 test.group("Utils Validators", (group) => {
-    group.beforeEach(() => {
+    group.before(() => {
         registerValidators(Abolish, "utils");
         Abolish.addGlobalValidator(StringValidator);
     });
