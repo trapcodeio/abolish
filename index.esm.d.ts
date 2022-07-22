@@ -5,7 +5,7 @@
  */
 
 import Abolish from "./src/Abolish";
-import { ParseRules, Rule } from "./src/functions";
+import { Schema, Rule } from "./src/functions";
 import type { AV } from "./src/validator";
 
-export { Abolish, Rule, ParseRules, AV };
+export { Abolish, Rule, Schema, AV };

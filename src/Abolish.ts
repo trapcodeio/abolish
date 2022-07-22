@@ -5,6 +5,7 @@ import type {
     $errorsRule,
     $skipRule,
     AbolishRule,
+    AbolishSchema,
     AbolishValidator,
     ValidationError,
     ValidationResult
@@ -28,7 +29,7 @@ import {
     CompiledRule,
     CompiledValidator
 } from "./Compiler";
-import { arrayIsTypeOf, assertType } from "./types-checker";
+import { assertType } from "./types-checker";
 
 type Job = {
     $name: string | false;
@@ -195,11 +196,19 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate<R = Record<string, any> | any>(
+    static validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any> | AbolishCompiledObject
+        rules: AbolishSchema<keyof R | string>
+    ): ValidationResult<R>;
+    static validate<R extends Record<string, any>>(
+        object: Record<string, any>,
+        rules: AbolishCompiledObject
+    ): ValidationResult<R>;
+    static validate<R = Record<string, any>>(
+        object: Record<string, any>,
+        rules: Record<string, any>
     ): ValidationResult<R> {
-        return new this().validate(object, rules);
+        return new this().validate<R>(object, rules as AbolishSchema<keyof R | string>);
     }
 
     /**
@@ -227,14 +236,24 @@ class Abolish {
      */
     validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any> | AbolishCompiledObject,
+        rules: AbolishSchema<keyof R | string>,
+        isAsync?: boolean
+    ): ValidationResult<R>;
+    validate<R extends Record<string, any>>(
+        object: Record<string, any>,
+        rules: AbolishCompiledObject,
+        isAsync?: boolean
+    ): ValidationResult<R>;
+    validate<R = Record<string, any>>(
+        object: Record<string, any>,
+        rules: Record<string, any>,
         isAsync = false
     ): ValidationResult<R> {
         if (rules instanceof AbolishCompiled) {
             return rules.validateObject(object);
         }
 
-        let asyncData: AsyncData = {
+        const asyncData: AsyncData = {
             validated: {},
             jobs: [],
             keysToBeValidated: [],
@@ -272,6 +291,7 @@ class Abolish {
         }
 
         let keysToBeValidated = Object.keys(rules);
+
         // remove SUPER_RULES from keysToBeValidated
         keysToBeValidated = keysToBeValidated.filter((key) => !SuperKeys.Fields.includes(key));
 
@@ -703,10 +723,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    check<V = any>(
-        variable: V,
-        rules: AbolishRule | AbolishCompiled
-    ): [ValidationError | undefined, V] {
+    check<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): ValidationResult<V> {
         if (rules instanceof AbolishCompiled) {
             return rules.validateVariable(variable);
         }
@@ -728,7 +745,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    static check<V = any>(variable: V, rules: AbolishRule): [ValidationError | undefined, V] {
+    static check<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): ValidationResult<V> {
         return new this().check(variable, rules);
     }
 
@@ -737,12 +754,8 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    async checkAsync<V = any>(
-        variable: V,
-        rules: AbolishRule
-    ): Promise<[ValidationError | undefined, V]> {
+    async checkAsync<V = any>(variable: V, rules: AbolishRule): Promise<ValidationResult<V>> {
         const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
-
         return [e, v?.variable];
     }
 
@@ -751,10 +764,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    static checkAsync<V = any>(
-        variable: V,
-        rules: AbolishRule
-    ): Promise<[ValidationError | undefined, V]> {
+    static checkAsync<V = any>(variable: V, rules: AbolishRule): Promise<ValidationResult<V>> {
         return new this().checkAsync(variable, rules);
     }
 
@@ -763,17 +773,10 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    attempt<V = any>(variable: V, rules: Record<string, any> | string): V {
-        const [e, v] = this.validate<{ variable: V }>(
-            { variable },
-            {
-                variable: rules,
-                // variable is included in-case if skipped
-                $include: ["variable"]
-            }
-        );
+    attempt<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): V {
+        const [e, v] = this.check<V>(variable, rules);
         if (e) throw new AttemptError(e);
-        return v.variable;
+        return v;
     }
 
     /**
@@ -784,7 +787,7 @@ class Abolish {
      */
     static attempt<V = any>(
         variable: V,
-        rules: Record<string, any> | string,
+        rules: AbolishRule | AbolishCompiled,
         abolish?: typeof Abolish
     ): V {
         return new this().attempt(variable, rules);
@@ -795,10 +798,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    async attemptAsync<V = any>(
-        variable: V,
-        rules: Record<string, any> | string | string[]
-    ): Promise<V> {
+    async attemptAsync<V = any>(variable: V, rules: AbolishRule): Promise<V> {
         const [e, v] = await this.validateAsync<{ variable: V }>(
             { variable },
             {
@@ -827,7 +827,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    test<V = any>(variable: V, rules: AbolishRule): boolean {
+    test<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): boolean {
         const [e] = this.check(variable, rules);
         return !e;
     }
@@ -837,7 +837,7 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    static test<V = any>(variable: V, rules: AbolishRule): boolean {
+    static test<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): boolean {
         return new this().test(variable, rules);
     }
 

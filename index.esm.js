@@ -5,6 +5,6 @@
  */
 import AbolishEsm from "./index.esm-bundled.js";
 
-const { Abolish, ParseRules, Rule } = AbolishEsm;
+const { Abolish, Schema, Rule } = AbolishEsm;
 
-export { Abolish, ParseRules, Rule };
+export { Abolish, Schema, Rule };

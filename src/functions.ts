@@ -40,6 +40,11 @@ export function Rule(rules: AbolishRule): any {
 export type AbolishRuleTyped = string | AV | Array<string | AV>;
 export type AbolishSchemaTyped = Record<string, AbolishRuleTyped>;
 
+/**
+ * Typed version of Rule
+ * @param rule
+ * @constructor
+ */
 export function RuleTyped(rule: AbolishRuleTyped) {
     return Rule(rule);
 }
@@ -49,7 +54,7 @@ export function RuleTyped(rule: AbolishRuleTyped) {
  * @param rules
  * @constructor
  */
-export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {
+export function Schema<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {
     /**
      * Stores generated rules
      */
@@ -88,8 +93,6 @@ export function ParseRules<Rules = Record<string, any>>(rules: Record<keyof Rule
  * @param rules
  * @constructor
  */
-export function ParseRulesTyped<Rules = Record<string, any>>(
-    rules: Record<keyof Rules, AbolishRuleTyped>
-) {
-    return ParseRules(rules as any) as Rules;
+export function SchemaTyped(rules: AbolishSchemaTyped) {
+    return Schema(rules as any) as AbolishSchemaTyped;
 }

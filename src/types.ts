@@ -68,3 +68,7 @@ export interface AbolishAsyncValidator extends Omit<AbolishValidator, "isAsync">
 }
 
 export type AbolishRule = string | string[] | Record<string, any> | AbolishRule[];
+export type AbolishSchema<Keys extends string | number | symbol = string> = Record<
+    Keys,
+    AbolishRule
+>;

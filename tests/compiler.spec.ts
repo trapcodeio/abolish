@@ -1,33 +1,22 @@
 import { Abolish } from "../index";
-import { registerAllValidators } from "../src/ValidatorHelpers";
-import { AbolishSchemaTyped, RuleTyped } from "../src/functions";
+import { AbolishSchemaTyped, SchemaTyped, RuleTyped } from "../src/functions";
 import test from "japa";
 import { AbolishCompiled } from "../src/Compiler";
 import { SuperKeys } from "../src/Abolish";
 
-test.group("Compiler", (group) => {
-    let schema: any;
+let schema = SchemaTyped({
+    $: "required",
+    name: RuleTyped([
+        "typeof:string|minLength:3",
+        {
+            $skip: () => false,
+            $errors: { typeof: "Name is not a string" }
+        }
+    ]),
+    $include: ["age"]
+});
 
-    group.before(() => {
-        registerAllValidators(Abolish);
-        /**
-         * Test Compiler
-         */
-
-        schema = {
-            $: "required",
-            name: RuleTyped([
-                "typeof:string",
-                {
-                    $skip: () => false,
-                    $error: "Name is required",
-                    $errors: { typeof: "Name is not a string" }
-                }
-            ]),
-            $include: ["age"]
-        };
-    });
-
+test.group("Compiler", () => {
     test("compile", (assert) => {
         const compiled = Abolish.compile(schema.name);
         assert.isFalse(compiled.isObject);
@@ -67,6 +56,7 @@ test.group("Compiler", (group) => {
 
     test("Validate Variable", (assert) => {
         const compiled = Abolish.compile(schema.name);
+        assert.hasAllKeys(compiled.data, ["variable"]);
 
         // pass
         const result = compiled.validate("A STRING");
@@ -82,7 +72,7 @@ test.group("Compiler", (group) => {
     });
 });
 
-test.group("Compiler Super Fields", (group) => {
+test.group("Compiler Super Fields", () => {
     test("Wildcards: *, $", (assert) => {
         const compiled = Abolish.compileObject({
             "*": "required|typeof:string",
@@ -134,7 +124,7 @@ test.group("Compiler Super Fields", (group) => {
     });
 });
 
-test.group("Compiler Super Rules", (group) => {
+test.group("Compiler Super Rules", () => {
     test("$skip", (assert) => {
         const compiled = Abolish.compileObject<AbolishSchemaTyped>({
             name: ["required|typeof:string", { $skip: true }],
@@ -171,5 +161,57 @@ test.group("Compiler Super Rules", (group) => {
         assert.isUndefined(e);
         assert.doesNotHaveAnyKeys(v, ["name"]);
         assert.hasAnyKeys(v, ["age"]);
+    });
+
+    test("Abolish.validate()", (assert) => {
+        const compiled = Abolish.compileObject<AbolishSchemaTyped>(schema);
+        // pass
+        const [e, v] = Abolish.validate<{ name: string; age: number }>(
+            { name: "My name", age: 1 },
+            compiled
+        );
+
+        assert.isUndefined(e);
+        assert.deepEqual(Object.keys(v), ["name", "age"]);
+
+        assert.equal(v.name, "My name");
+        assert.equal(v.age, 1);
+    });
+
+    test("Abolish.check()", (assert) => {
+        const compiled = Abolish.compile(schema.name);
+
+        // pass
+        const [e, v] = Abolish.check("My name", compiled);
+        assert.isUndefined(e);
+        assert.equal(v, "My name");
+
+        // fail
+        const [e2, v2] = Abolish.check(1, compiled);
+        assert.isDefined(e2);
+        assert.isUndefined(v2);
+        assert.equal(e2!.message, "Name is not a string");
+    });
+
+    test("Abolish.attempt()", (assert) => {
+        const compiled = Abolish.compile(schema.name);
+
+        // pass
+        const name = Abolish.attempt("My name", compiled);
+        assert.equal(name, "My name");
+
+        // fail
+        try {
+            const value = Abolish.attempt(1, compiled);
+            assert.isUndefined(value);
+        } catch (e: any) {
+            assert.equal(e.message, "Name is not a string");
+        }
+    });
+
+    test("Abolish.test()", (assert) => {
+        const compiled = Abolish.compile(schema.name);
+        assert.isTrue(Abolish.test("My name", compiled));
+        assert.isFalse(Abolish.test(1, compiled));
     });
 });
