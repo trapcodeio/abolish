@@ -1,8 +1,9 @@
 import { Abolish } from "../index";
 import { registerAllValidators } from "../src/ValidatorHelpers";
-import { RuleTyped } from "../src/functions";
+import { AbolishSchemaTyped, RuleTyped } from "../src/functions";
 import test from "japa";
 import { AbolishCompiled } from "../src/Compiler";
+import { SuperKeys } from "../src/Abolish";
 
 test.group("Compiler", (group) => {
     let schema: any;
@@ -79,12 +80,96 @@ test.group("Compiler", (group) => {
         // using custom error.
         assert.equal(result2[0]!.message, "Name is not a string");
     });
+});
 
-    test.only("Super Rules: *, $ and $include", () => {
+test.group("Compiler Super Fields", (group) => {
+    test("Wildcards: *, $", (assert) => {
         const compiled = Abolish.compileObject({
+            "*": "required|typeof:string",
+            name: "minLength:3|maxLength:10"
+        });
+
+        const compiled2 = Abolish.compileObject({
             $: "required|typeof:string",
             name: "minLength:3|maxLength:10"
         });
-        console.log(compiled);
+
+        // Make sure wildcards are not mistaken for fields
+        assert.isTrue(SuperKeys.Fields.every((key) => !compiled.fields.includes(key)));
+        assert.deepEqual(compiled.fields, ["name"]);
+        assert.deepEqual(compiled2.fields, ["name"]);
+
+        /**
+         * Check that all wildcards are added to compiled validators
+         */
+        for (const field in compiled.data) {
+            const validators = compiled.data[field].validators;
+            const validatorNames = validators.map((v) => v.name);
+            assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
+        }
+
+        for (const field in compiled2.data) {
+            const validators = compiled.data[field].validators;
+            const validatorNames = validators.map((v) => v.name);
+            assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
+        }
+    });
+
+    test("$include", (assert) => {
+        const compiled = Abolish.compileObject({
+            name: "minLength:3|maxLength:10",
+            $include: ["age"]
+        });
+
+        // check includedFields
+        assert.deepEqual(compiled.includedFields, ["age"]);
+
+        // check that includedFields are added to compiled fields
+        assert.isTrue(compiled.fields.includes("age"));
+
+        // validate
+        const [e, v] = compiled.validate({ name: "My name", age: 1 });
+        assert.isUndefined(e);
+        assert.equal(v.age, 1);
+    });
+});
+
+test.group("Compiler Super Rules", (group) => {
+    test("$skip", (assert) => {
+        const compiled = Abolish.compileObject<AbolishSchemaTyped>({
+            name: ["required|typeof:string", { $skip: true }],
+            age: ["required|typeof:number", { $skip: () => true }]
+        });
+
+        // check that $skip is added to compiled validator..
+        for (const field in compiled.data) {
+            const data = compiled.data[field];
+            assert.isDefined(data.$skip);
+        }
+
+        // validate
+        const [e, v] = compiled.validate({ name: "My name", age: 1 });
+        assert.isUndefined(e);
+        assert.isEmpty(v);
+    });
+
+    test("$skip & $include", (assert) => {
+        const compiled = Abolish.compileObject<AbolishSchemaTyped>({
+            name: ["required|typeof:string", { $skip: true }],
+            age: ["required|typeof:number", { $skip: () => true }],
+            $include: ["age"]
+        });
+
+        // check that $skip is added to compiled validator..
+        for (const field in compiled.data) {
+            const data = compiled.data[field];
+            assert.isDefined(data.$skip);
+        }
+
+        // validate
+        const [e, v] = compiled.validate({ name: "My name", age: 1 });
+        assert.isUndefined(e);
+        assert.doesNotHaveAnyKeys(v, ["name"]);
+        assert.hasAnyKeys(v, ["age"]);
     });
 });

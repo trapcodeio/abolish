@@ -8,17 +8,17 @@ registerAllValidators(Abolish);
 
 const abolish = new Abolish();
 
-const compiled = Abolish.compile({ typeof: "string", minLength: 5 });
+const compiled = Abolish.compile({ typeof: "string" });
 // const compiledValue = 18;
 const compiledValue = "A String";
 
 function Abolish_TypeOfString() {
-    // compiled.validateVariable(compiledValue);
-    abolish.check(compiledValue, compiled);
+    compiled.validateVariable(compiledValue);
+    // abolish.check(compiledValue, compiled);
 }
 
 // compile joi schema
-const joiSchema = Joi.string().min(5);
+const joiSchema = Joi.string();
 
 function Joi_TypeOfString() {
     joiSchema.validate(compiledValue);
@@ -26,7 +26,7 @@ function Joi_TypeOfString() {
 
 // compile yup schema
 
-const yupSchema = Yup.string().min(5);
+const yupSchema = Yup.string();
 
 function Yup_TypeOfString() {
     yupSchema.validateSync(compiledValue);

@@ -142,28 +142,6 @@ export class AbolishCompiled {
                         });
                     }
 
-                    // if ($error) {
-                    //     if (typeof $error === "function") {
-                    //         message = $error({
-                    //             code,
-                    //             validator: validatorName,
-                    //             data,
-                    //             value: objectValue
-                    //         });
-                    //     } else {
-                    //         message = $error;
-                    //     }
-                    // }
-                    //
-                    // if ($errors && $errors[validatorName]) {
-                    //     let customError = $errors[validatorName];
-                    //     if (typeof customError === "function") {
-                    //         message = customError({ code, data, value: objectValue });
-                    //     } else {
-                    //         message = customError;
-                    //     }
-                    // }
-
                     if (modifiedMessage) {
                         /**
                          * Replace :param with rule converted to upperCase
@@ -199,8 +177,8 @@ export class AbolishCompiled {
         if (fields.length === 1) {
             const onlyField = fields[0];
             result = { [onlyField]: validated[onlyField] } as R;
-        } else if (this.fields.length > 1) {
-            result = abolish_Pick(validated, this.fields, this.fieldsHasDotNotation) as R;
+        } else if (fields.length > 1) {
+            result = abolish_Pick(validated, fields, this.fieldsHasDotNotation) as R;
         } else {
             result = {} as R;
         }

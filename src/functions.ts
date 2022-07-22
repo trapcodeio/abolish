@@ -37,7 +37,8 @@ export function Rule(rules: AbolishRule): any {
     return generatedRule;
 }
 
-type AbolishRuleTyped = string | AV | Array<string | AV>;
+export type AbolishRuleTyped = string | AV | Array<string | AV>;
+export type AbolishSchemaTyped = Record<string, AbolishRuleTyped>;
 
 export function RuleTyped(rule: AbolishRuleTyped) {
     return Rule(rule);

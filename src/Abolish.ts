@@ -61,10 +61,13 @@ export class AttemptError extends Error {
     }
 }
 
-const SUPER = {
-    Keys: ["*", "$", "$include"],
+/**
+ * Abolish Super Rules and Keys
+ */
+export const SuperKeys = Object.freeze({
+    Fields: ["*", "$", "$include"],
     Rules: ["$name", "$skip", "$error", "$errors"]
-};
+});
 
 /**
  * Abolish Class
@@ -270,7 +273,7 @@ class Abolish {
 
         let keysToBeValidated = Object.keys(rules);
         // remove SUPER_RULES from keysToBeValidated
-        keysToBeValidated = keysToBeValidated.filter((key) => !SUPER.Keys.includes(key));
+        keysToBeValidated = keysToBeValidated.filter((key) => !SuperKeys.Fields.includes(key));
 
         // Loop through defined rules
         for (const rule of keysToBeValidated) {
@@ -355,7 +358,7 @@ class Abolish {
                 /**
                  * Append internal Wildcard data
                  */
-                ruleData = { ...internalWildcardRules, ...abolish_Omit(ruleData, SUPER.Rules) };
+                ruleData = { ...internalWildcardRules, ...abolish_Omit(ruleData, SuperKeys.Rules) };
 
                 /**
                  * Loop through ruleData to check if validators defined exists
@@ -862,7 +865,10 @@ class Abolish {
      * @param schema
      * @param CustomAbolish
      */
-    static compileObject(schema: Record<string, AbolishRule>, CustomAbolish?: typeof Abolish) {
+    static compileObject<Schema extends Record<string, AbolishRule>>(
+        schema: Schema,
+        CustomAbolish?: typeof Abolish
+    ) {
         const abolish = new (CustomAbolish || this)();
         const compiled = new AbolishCompiled();
 
@@ -891,7 +897,7 @@ class Abolish {
          * Loop Through each field and rule
          */
         for (const [field, rules] of Object.entries(schema)) {
-            if (SUPER.Keys.includes(field)) continue;
+            if (SuperKeys.Fields.includes(field)) continue;
 
             const compiledRule: CompiledRule = { validators: [] };
 
@@ -917,7 +923,7 @@ class Abolish {
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
-                if (!SUPER.Rules.includes(validatorName)) continue;
+                if (!SuperKeys.Rules.includes(validatorName)) continue;
 
                 if (validatorName === "$skip") {
                     // $skip = option as $skipRule;
@@ -952,7 +958,7 @@ class Abolish {
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
-                if (SUPER.Rules.includes(validatorName)) continue;
+                if (SuperKeys.Rules.includes(validatorName)) continue;
 
                 const validator = (abolish.validators[validatorName] ||
                     GlobalValidators[validatorName]) as AbolishValidator;
