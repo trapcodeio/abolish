@@ -76,6 +76,15 @@ test.group("Compiler", (group) => {
         const result2 = compiled.validate(1);
         assert.isDefined(result2[0]);
 
+        // using custom error.
         assert.equal(result2[0]!.message, "Name is not a string");
+    });
+
+    test.only("Super Rules: *, $ and $include", () => {
+        const compiled = Abolish.compileObject({
+            $: "required|typeof:string",
+            name: "minLength:3|maxLength:10"
+        });
+        console.log(compiled);
     });
 });

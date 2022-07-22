@@ -8,7 +8,7 @@ registerAllValidators(Abolish);
 
 const abolish = new Abolish();
 
-const compiled = Abolish.compile({ typeof: "string" });
+const compiled = Abolish.compile({ typeof: "string", minLength: 5 });
 // const compiledValue = 18;
 const compiledValue = "A String";
 
@@ -18,7 +18,7 @@ function Abolish_TypeOfString() {
 }
 
 // compile joi schema
-const joiSchema = Joi.string();
+const joiSchema = Joi.string().min(5);
 
 function Joi_TypeOfString() {
     joiSchema.validate(compiledValue);
@@ -26,7 +26,7 @@ function Joi_TypeOfString() {
 
 // compile yup schema
 
-const yupSchema = Yup.string();
+const yupSchema = Yup.string().min(5);
 
 function Yup_TypeOfString() {
     yupSchema.validateSync(compiledValue);
@@ -73,6 +73,7 @@ const arrayData = [
 
 const objData = { id: 1, name: "John" };
 const objSchema = Abolish.compileObject({
+    $: "required",
     id: { typeof: "number" },
     name: { typeof: "string" }
 });
@@ -92,8 +93,8 @@ function Abolish_ArrayValues() {
 }
 
 const joiObjSchema = Joi.object({
-    id: Joi.number(),
-    name: Joi.string()
+    id: Joi.number().required(),
+    name: Joi.string().required()
 });
 
 const joiArrayValues = Joi.array().items(joiObjSchema);

@@ -81,11 +81,13 @@ export class AbolishCompiled {
 
             // Check if skip rule is set
             if (compiled.$skip) {
-                if (typeof compiled.$skip === "function") {
-                    compiled.$skip = compiled.$skip(value, validated);
+                let $skip = compiled.$skip as $skipRule;
+
+                if (typeof $skip === "function") {
+                    $skip = $skip(value, validated);
                 }
 
-                if (compiled.$skip) {
+                if ($skip) {
                     // if field is not in included fields, remove it from fields
                     if (!this.includedFields.includes(field)) {
                         fields = fields.filter((f) => f !== field);
@@ -124,8 +126,8 @@ export class AbolishCompiled {
                     let modifiedMessage = false;
 
                     if (result instanceof AbolishError) {
-                        message = result.message;
                         modifiedMessage = true;
+                        message = result.message;
                         data = result.data;
                         code = result.code;
                     }
