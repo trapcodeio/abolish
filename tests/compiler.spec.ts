@@ -162,11 +162,28 @@ test.group("Compiler Super Rules", () => {
         assert.doesNotHaveAnyKeys(v, ["name"]);
         assert.hasAnyKeys(v, ["age"]);
     });
+});
 
+test.group("Using compiled rules with abolish", () => {
     test("Abolish.validate()", (assert) => {
         const compiled = Abolish.compileObject<AbolishSchemaTyped>(schema);
         // pass
         const [e, v] = Abolish.validate<{ name: string; age: number }>(
+            { name: "My name", age: 1 },
+            compiled
+        );
+
+        assert.isUndefined(e);
+        assert.deepEqual(Object.keys(v), ["name", "age"]);
+
+        assert.equal(v.name, "My name");
+        assert.equal(v.age, 1);
+    });
+
+    test("Abolish.validateAsync()", async (assert) => {
+        const compiled = Abolish.compileObject<AbolishSchemaTyped>(schema);
+        // pass
+        const [e, v] = await Abolish.validateAsync<{ name: string; age: number }>(
             { name: "My name", age: 1 },
             compiled
         );
@@ -193,6 +210,21 @@ test.group("Compiler Super Rules", () => {
         assert.equal(e2!.message, "Name is not a string");
     });
 
+    test("Abolish.checkAsync()", async (assert) => {
+        const compiled = Abolish.compile(schema.name);
+
+        // pass
+        const [e, v] = await Abolish.checkAsync("My name", compiled);
+        assert.isUndefined(e);
+        assert.equal(v, "My name");
+
+        // fail
+        const [e2, v2] = await Abolish.checkAsync(1, compiled);
+        assert.isDefined(e2);
+        assert.isUndefined(v2);
+        assert.equal(e2!.message, "Name is not a string");
+    });
+
     test("Abolish.attempt()", (assert) => {
         const compiled = Abolish.compile(schema.name);
 
@@ -209,9 +241,33 @@ test.group("Compiler Super Rules", () => {
         }
     });
 
+    test("Abolish.attemptAsync()", async (assert) => {
+        const compiled = Abolish.compile(schema.name);
+
+        // pass
+        const name = await Abolish.attemptAsync("My name", compiled);
+        assert.equal(name, "My name");
+
+        // fail
+        try {
+            const value = await Abolish.attemptAsync(1, compiled);
+            assert.isUndefined(value);
+        } catch (e: any) {
+            assert.equal(e.message, "Name is not a string");
+        }
+    });
+
     test("Abolish.test()", (assert) => {
         const compiled = Abolish.compile(schema.name);
+
         assert.isTrue(Abolish.test("My name", compiled));
         assert.isFalse(Abolish.test(1, compiled));
+    });
+
+    test("Abolish.testAsync()", async (assert) => {
+        const compiled = Abolish.compile(schema.name);
+
+        assert.isTrue(await Abolish.testAsync("My name", compiled));
+        assert.isFalse(await Abolish.testAsync(1, compiled));
     });
 });

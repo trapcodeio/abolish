@@ -579,8 +579,19 @@ class Abolish {
      */
     validateAsync<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: Record<keyof R | string, any>
+        rules: AbolishSchema<keyof R | string>
+    ): Promise<ValidationResult<R>>;
+    validateAsync<R extends Record<string, any>>(
+        object: Record<string, any>,
+        rules: AbolishCompiledObject
+    ): Promise<ValidationResult<R>>;
+    validateAsync<R = Record<string, any>>(
+        object: Record<string, any>,
+        rules: Record<string, any>
     ): Promise<ValidationResult<R>> {
+        if (rules instanceof AbolishCompiled) {
+            return rules.validateObjectAsync(object);
+        }
         /**
          * Get asyncData
          */
@@ -754,8 +765,23 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    async checkAsync<V = any>(variable: V, rules: AbolishRule): Promise<ValidationResult<V>> {
-        const [e, v] = await this.validateAsync<{ variable: V }>({ variable }, { variable: rules });
+    async checkAsync<V = any>(
+        variable: V,
+        rules: AbolishRule | AbolishCompiled
+    ): Promise<ValidationResult<V>> {
+        if (rules instanceof AbolishCompiled) {
+            return rules.validateVariableAsync(variable);
+        }
+
+        const [e, v] = await this.validateAsync<{ variable: V }>(
+            { variable },
+            {
+                variable: rules,
+                // variable is included in-case if skipped
+                $include: ["variable"]
+            }
+        );
+
         return [e, v?.variable];
     }
 
@@ -774,9 +800,9 @@ class Abolish {
      * @param rules
      */
     attempt<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): V {
-        const [e, v] = this.check<V>(variable, rules);
-        if (e) throw new AttemptError(e);
-        return v;
+        const data = this.check<V>(variable, rules);
+        if (data[0]) throw new AttemptError(data[0]);
+        return data[1];
     }
 
     /**
@@ -798,19 +824,12 @@ class Abolish {
      * @param variable
      * @param rules
      */
-    async attemptAsync<V = any>(variable: V, rules: AbolishRule): Promise<V> {
-        const [e, v] = await this.validateAsync<{ variable: V }>(
-            { variable },
-            {
-                variable: rules,
-                // variable is included in-case if skipped
-                $include: ["variable"]
-            }
-        );
+    async attemptAsync<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): Promise<V> {
+        const data = await this.checkAsync(variable, rules);
 
-        if (e) throw new AttemptError(e);
+        if (data[0]) throw new AttemptError(data[0]);
 
-        return v.variable;
+        return data[1];
     }
 
     /**
@@ -828,8 +847,8 @@ class Abolish {
      * @param rules
      */
     test<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): boolean {
-        const [e] = this.check(variable, rules);
-        return !e;
+        const data = this.check(variable, rules);
+        return !data[0];
     }
 
     /**
@@ -847,8 +866,8 @@ class Abolish {
      * @param rules
      */
     async testAsync<V = any>(variable: V, rules: AbolishRule): Promise<boolean> {
-        const [e] = await this.checkAsync(variable, rules);
-        return !e;
+        const data = await this.checkAsync(variable, rules);
+        return !data[0];
     }
 
     /**
@@ -965,6 +984,8 @@ class Abolish {
 
                 if (!validator) throw new Error(`Validator ${validatorName} not found`);
 
+                if (validator.isAsync) compiled.async = true;
+
                 /**
                  * Check if option is stringAble
                  * This is required because a rule option could an array or an object
@@ -1025,7 +1046,7 @@ class Abolish {
                     name: validatorName,
                     option: option,
                     error: error,
-
+                    async: validator.isAsync === true,
                     func: (value: any, data: Record<string, any>) => {
                         if (!ctx.modifier.hasData) ctx.modifier.setData(data);
                         return validator.validator(value, option, ctx);

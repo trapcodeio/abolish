@@ -12,7 +12,7 @@ es.buildSync({
     bundle: true,
     legalComments: "none",
     minify: true,
-    external: ["joi"],
+    external: ["joi", "yup"],
     globalName: "AbolishBrowser"
 });
 
@@ -25,7 +25,7 @@ es.buildSync({
     legalComments: "none",
     treeShaking: true,
     minify: true,
-    external: ["joi"]
+    external: ["joi", "yup"]
 });
 
 // log the file size of bundled file `./browser.js`
@@ -54,7 +54,7 @@ for (const f of validatorFolders) {
         outfile: to,
         bundle: true,
         minify: true,
-        external: ["joi", "abolish"],
+        external: ["joi", "abolish", "yup"],
         globalName: name
     });
 

@@ -1,5 +1,5 @@
 import StringToRules from "./StringToRules";
-import type { AbolishRule } from "./types";
+import type { AbolishRule, AbolishSchema } from "./types";
 import type { AV } from "./validator";
 
 /**
@@ -54,7 +54,7 @@ export function RuleTyped(rule: AbolishRuleTyped) {
  * @param rules
  * @constructor
  */
-export function Schema<Rules = Record<string, any>>(rules: Record<keyof Rules | string, any>) {
+export function Schema(rules: AbolishSchema) {
     /**
      * Stores generated rules
      */
@@ -76,7 +76,7 @@ export function Schema<Rules = Record<string, any>>(rules: Record<keyof Rules | 
             generatedRule[key] = rule;
         } else {
             if ((typeof rule as string) === "string") {
-                rule = StringToRules(rule);
+                rule = StringToRules(rule as string);
             } else if (Array.isArray(rule)) {
                 rule = Rule(rule);
             }
@@ -85,7 +85,7 @@ export function Schema<Rules = Record<string, any>>(rules: Record<keyof Rules | 
         }
     }
 
-    return generatedRule as Rules;
+    return generatedRule as AbolishSchema;
 }
 
 /**

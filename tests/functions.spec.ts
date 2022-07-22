@@ -1,5 +1,5 @@
 import test from "japa";
-import { ParseRulesTyped, Rule } from "../src/functions";
+import { Schema, Rule } from "../src/functions";
 import { skipIfNotDefined } from "../src/helpers";
 import { Abolish } from "../index";
 import { registerAllValidators } from "../src/ValidatorHelpers";
@@ -40,7 +40,7 @@ test.group("Functions", (group) => {
 
         const rules = { stringRequired };
 
-        const rule = ParseRulesTyped({
+        const rule = Schema({
             $: "required",
             description: skipIfNotDefined(["$name:Desc", rules.stringRequired]),
             url: ["required|typeof:string", { url: true }],
