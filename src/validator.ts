@@ -1,7 +1,13 @@
 /**
  * This is not an automatically generated file.
  */
-import type { $errorRule, $errorsRule, AbolishInlineValidator, AbolishRule } from "./types";
+import type {
+    $errorRule,
+    $errorsRule,
+    $skipRule,
+    AbolishInlineValidator,
+    AbolishRule
+} from "./types";
 
 export declare module AvailableValidators {
     export interface Options {
@@ -9,7 +15,7 @@ export declare module AvailableValidators {
         $error: $errorRule;
         $errors: $errorsRule;
         $inline: AbolishInlineValidator;
-        $skip: boolean | ((value: any) => boolean);
+        $skip: $skipRule;
 
         default: any;
         required: boolean;

@@ -320,7 +320,7 @@ class Abolish {
                 // delete ruleData["$skip"];
 
                 if (typeof $skip === "function") {
-                    $skip = $skip(validated[rule]);
+                    $skip = $skip(validated[rule], validated);
                 }
 
                 if (typeof $skip !== "boolean") {
