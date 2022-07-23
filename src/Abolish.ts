@@ -975,11 +975,6 @@ class Abolish {
             const modifier = new ObjectModifier({}, field).flagNoData();
 
             /**
-             *  Hold Skip Rule.
-             */
-            // let $skip: $skipRule | undefined = undefined;
-
-            /**
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
