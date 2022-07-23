@@ -35,6 +35,7 @@ export interface AbolishCompiledObject extends AbolishCompiled {
  */
 export interface CompiledRule {
     $skip?: $skipRule;
+    $name?: string;
     validators: CompiledValidator[];
 }
 
@@ -43,13 +44,7 @@ export class AbolishCompiled {
     /**
      * Hold Compiled Object
      */
-    public data: Record<
-        string,
-        {
-            $skip?: $skipRule;
-            validators: CompiledValidator[];
-        }
-    > = {};
+    public data: Record<string, CompiledRule> = {};
 
     /**
      * Schema Keys and Included Fields
@@ -166,7 +161,8 @@ export class AbolishCompiled {
                         field,
                         value,
                         result,
-                        validator
+                        validator,
+                        compiled.$name
                     ) as ValidationResult<R>;
                 }
             }
@@ -274,7 +270,8 @@ export class AbolishCompiled {
                         field,
                         value,
                         result,
-                        validator
+                        validator,
+                        compiled.$name
                     ) as ValidationResult<R>;
                 }
             }
@@ -361,7 +358,8 @@ function parseErrorMessage(
     field: string,
     value: any,
     result: AbolishValidatorFunctionResult,
-    validator: CompiledValidator
+    validator: CompiledValidator,
+    $name?: string
 ) {
     let message = validator.error;
     let data: Record<string, any> | null = null;
@@ -392,7 +390,7 @@ function parseErrorMessage(
          */
         if (message.includes(":param")) {
             // Replace all :param with field name
-            message = message.replace(":param", field);
+            message = message.replace(":param", $name || field);
         }
 
         if (validator.optionString && message.includes(":option"))

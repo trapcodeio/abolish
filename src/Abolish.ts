@@ -70,16 +70,18 @@ export const SuperKeys = Object.freeze({
     Rules: ["$name", "$skip", "$error", "$errors"]
 });
 
+interface AbolishConfig {
+    useStartCaseInErrors?: boolean;
+}
+
 /**
  * Abolish Class
  * @class
  */
 class Abolish {
-    validators: {
-        [key: string]: AbolishValidator;
-    } = {};
+    validators: Record<string, AbolishValidator> = {};
 
-    config: { useStartCaseInErrors: boolean } = { useStartCaseInErrors: true };
+    config: AbolishConfig = { useStartCaseInErrors: true };
 
     /**
      * Get global validators
@@ -944,21 +946,27 @@ class Abolish {
             for (const [validatorName, option] of Object.entries(parsedRules)) {
                 if (!SuperKeys.Rules.includes(validatorName)) continue;
 
+                if (validatorName === "$name") {
+                    assertType(option, ["string"], "$name");
+                    compiledRule.$name = option as string;
+                } else {
+                    if (abolish.config.useStartCaseInErrors) {
+                        compiledRule.$name = abolish_StartCase(validatorName);
+                    }
+                }
+
                 if (validatorName === "$skip") {
                     // $skip = option as $skipRule;
                     assertType(option, ["boolean", "function"], "$skip");
-
                     // set skip
                     compiledRule.$skip = option as $skipRule;
                 } else if (validatorName === "$error") {
                     // $error = option as $errorRule;
                     assertType(option, ["string", "function"], "$error");
-
                     $error = option as $errorRule;
                 } else if (validatorName === "$errors") {
                     // $errors = option as Record<string, $errorRule>;
                     assertType(option, ["object"], "$errors");
-
                     $errors = option as $errorsRule;
                 }
             }
@@ -1039,7 +1047,7 @@ class Abolish {
 
                 if (error.includes(":param")) {
                     // replace all :param with field name
-                    error = error.replace(/:param/g, field);
+                    error = error.replace(/:param/g, compiledRule.$name || field);
                 }
 
                 const data: CompiledValidator = {

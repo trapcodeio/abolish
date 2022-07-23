@@ -125,6 +125,21 @@ test.group("Compiler Super Fields", () => {
 });
 
 test.group("Compiler Super Rules", () => {
+    test("$name", (assert) => {
+        const compiled = Abolish.compileObject({
+            name: [{ $name: "Your Name" }, "minLength:3|maxLength:10"]
+        });
+
+        // check that compiled validators have correct name
+        assert.isDefined(compiled.data.name.$name);
+        assert.equal(compiled.data.name.$name, "Your Name");
+
+        // check that error message has name
+        const [e, v] = compiled.validate({ name: "a" });
+        assert.isDefined(e);
+        assert.equal(e!.message, "Your Name is too short. (Min. 3 characters)");
+    });
+
     test("$skip", (assert) => {
         const compiled = Abolish.compileObject<AbolishSchemaTyped>({
             name: ["required|typeof:string", { $skip: true }],
