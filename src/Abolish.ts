@@ -949,13 +949,7 @@ class Abolish {
                 if (validatorName === "$name") {
                     assertType(option, ["string"], "$name");
                     compiledRule.$name = option as string;
-                } else {
-                    if (abolish.config.useStartCaseInErrors) {
-                        compiledRule.$name = abolish_StartCase(validatorName);
-                    }
-                }
-
-                if (validatorName === "$skip") {
+                } else if (validatorName === "$skip") {
                     // $skip = option as $skipRule;
                     assertType(option, ["boolean", "function"], "$skip");
                     // set skip
@@ -969,6 +963,10 @@ class Abolish {
                     assertType(option, ["object"], "$errors");
                     $errors = option as $errorsRule;
                 }
+            }
+
+            if (!compiledRule.$name && abolish.config.useStartCaseInErrors) {
+                compiledRule.$name = abolish_StartCase(field);
             }
 
             /**
