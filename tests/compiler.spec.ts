@@ -23,10 +23,10 @@ test.group("Compiler", () => {
 
         const compiledKeys = Object.keys(compiled.data);
 
-        // check that schema matches compiled schema
-        assert.deepEqual(schema.name, compiled.schema.variable);
+        // check that input matches compiled input
+        assert.deepEqual(schema.name, compiled.input);
 
-        // check that schema value is instanceOf AbolishCompiled
+        // check that input value is instanceOf AbolishCompiled
         assert.instanceOf(compiled, AbolishCompiled);
 
         // check that compiled fields has every key in compiled.data
@@ -43,13 +43,13 @@ test.group("Compiler", () => {
         const schemaKeys = Object.keys(schema);
         const compiledKeys = Object.keys(compiled.data);
 
-        // check that schema matches compiled schema
-        assert.deepEqual(schema, compiled.schema);
+        // check that input matches compiled input
+        assert.deepEqual(schema, compiled.input);
 
-        // check that schema value is instanceOf AbolishCompiled
+        // check that input value is instanceOf AbolishCompiled
         assert.instanceOf(compiled, AbolishCompiled);
 
-        // check that every compiled key belongs to the schema object
+        // check that every compiled key belongs to the input object
         assert.isTrue(compiledKeys.every((key) => schemaKeys.includes(key)));
 
         // check that compiled fields has every key in compiled.data

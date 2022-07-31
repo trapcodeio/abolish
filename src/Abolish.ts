@@ -882,7 +882,7 @@ class Abolish {
     }
 
     /**
-     * Compile a schema
+     * Compile a input
      * @param schema
      * @param CustomAbolish
      */
@@ -1093,10 +1093,17 @@ class Abolish {
      * @param rule
      */
     static compile(rule: AbolishRule) {
+        // process rules;
+        rule = Rule(rule);
+
+        // compile
         const compiled = this.compileObject({
             variable: rule,
             $include: ["variable"]
         }) as AbolishCompiled;
+
+        // set exact rules received
+        compiled.input = rule;
 
         // set object to false.
         compiled.isObject = false;

@@ -31,7 +31,7 @@ export function $yup<T extends Yup.BaseSchema>(
     schema: T | YupHelper<T>,
     options?: ValidateOptions
 ) {
-    // if schema is a function, call it
+    // if input is a function, call it
     if (typeof schema === "function") {
         schema = schema(Yup) as T;
     }
@@ -62,7 +62,7 @@ export function $yupAsync<T extends Yup.BaseSchema>(
 }
 
 /**
- * Check if this is a yup schema option
+ * Check if this is a yup input option
  * @param schema
  */
 function isSchemaOption(schema: Yup.BaseSchema | YupSchemaOption<Yup.BaseSchema>) {

@@ -17,14 +17,14 @@ function Abolish_TypeOfString() {
     // abolish.check(compiledValue, compiled);
 }
 
-// compile joi schema
+// compile joi input
 const joiSchema = Joi.string();
 
 function Joi_TypeOfString() {
     joiSchema.validate(compiledValue);
 }
 
-// compile yup schema
+// compile yup input
 
 const yupSchema = Yup.string();
 
@@ -107,5 +107,5 @@ function Joi_ArrayValues() {
     joiArrayValues.validate(arrayData);
 }
 
-// benchmarkFunctions("Object", [Abolish_Object, Joi_Object]).run();
-// benchmarkFunctions("ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();
+benchmarkFunctions("Object", [Abolish_Object, Joi_Object]).run();
+benchmarkFunctions("ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();

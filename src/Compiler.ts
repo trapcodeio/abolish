@@ -1,5 +1,6 @@
 import type {
     $skipRule,
+    AbolishRule,
     AbolishSchema,
     AbolishValidatorFunctionResult,
     ValidationError,
@@ -73,9 +74,9 @@ export class AbolishCompiled {
 
     /**
      * Constructor
-     * @param schema
+     * @param input
      */
-    constructor(public schema: AbolishSchema) {}
+    constructor(public input: AbolishRule | AbolishSchema) {}
 
     /**
      * Validate Compiled Schema
@@ -83,16 +84,16 @@ export class AbolishCompiled {
      */
     public validateObject<R = Record<string, any>>(data: Record<string, any>): ValidationResult<R> {
         /**
-         * If this compiled schema is not an object, throw error
+         * If this compiled input is not an object, throw error
          */
         if (!this.isObject) {
             throw new Error(
-                "Variable compiled schema cannot be used to validate an object, use object compiled schema!"
+                "Variable compiled input cannot be used to validate an object, use object compiled input!"
             );
         }
 
         /**
-         * If this compiled schema is async, throw error
+         * If this compiled input is async, throw error
          */
         if (this.async) {
             throw new Error("Rules contains an async validator, use validateObjectAsync instead!");
@@ -105,12 +106,12 @@ export class AbolishCompiled {
 
         /**
          * Hold current fields
-         * This will be used in the skip section to remove fields that are not included in the schema
+         * This will be used in the skip section to remove fields that are not included in the input
          */
         let fields = this.fields;
 
         /**
-         * Loop through all the fields in the schema
+         * Loop through all the fields in the input
          */
         for (const field in this.data) {
             const compiled = this.data[field];
@@ -192,11 +193,11 @@ export class AbolishCompiled {
         data: Record<string, any>
     ): Promise<ValidationResult<R>> {
         /**
-         * If this compiled schema is not an object, throw error
+         * If this compiled input is not an object, throw error
          */
         if (!this.isObject) {
             throw new Error(
-                "Variable compiled schema cannot be used to validate an object, use object compiled schema!"
+                "Variable compiled input cannot be used to validate an object, use object compiled input!"
             );
         }
 
@@ -207,12 +208,12 @@ export class AbolishCompiled {
 
         /**
          * Hold current fields
-         * This will be used in the skip section to remove fields that are not included in the schema
+         * This will be used in the skip section to remove fields that are not included in the input
          */
         let fields = this.fields;
 
         /**
-         * Loop through all the fields in the schema
+         * Loop through all the fields in the input
          */
         for (const field in this.data) {
             const compiled = this.data[field];
@@ -298,14 +299,14 @@ export class AbolishCompiled {
     }
 
     /**
-     * Validate a variable using a variable compiled schema
+     * Validate a variable using a variable compiled input
      * @param variable Variable to validate
      * @returns
      */
     public validateVariable<T>(variable: T) {
         if (this.isObject) {
             throw new Error(
-                "Object compiled cannot be used to validate a variable, use regular compiled schema!"
+                "Object compiled cannot be used to validate a variable, use regular compiled input!"
             );
         }
 
@@ -327,7 +328,7 @@ export class AbolishCompiled {
     public async validateVariableAsync<T>(variable: T) {
         if (this.isObject) {
             throw new Error(
-                "Object compiled cannot be used to validate a variable, use regular compiled schema!"
+                "Object compiled cannot be used to validate a variable, use regular compiled input!"
             );
         }
 
@@ -349,6 +350,20 @@ export class AbolishCompiled {
         return this.isObject
             ? this.validateObjectAsync<T>(value)
             : this.validateVariableAsync(value);
+    }
+
+    /**
+     * Get `this.input` as AbolishRule
+     */
+    public getInputRule() {
+        return this.input as AbolishRule;
+    }
+
+    /**
+     * Get `this.input` as AbolishSchema
+     */
+    public getInputSchema() {
+        return this.input as AbolishSchema;
     }
 }
 

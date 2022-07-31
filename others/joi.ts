@@ -4,7 +4,7 @@ import type { AbolishValidator } from "../src/types";
 import { AddValidatorToClassOrInstance } from "./index";
 
 /**
- * $joi schema helper
+ * $joi input helper
  * @param schema
  */
 export const $joi = (schema: Joi.Schema | ((joi: Joi.Root) => Joi.Schema)) => {
@@ -29,7 +29,7 @@ export function useJoi(abolish: TypeOfAbolishOrInstance, joi?: Joi.Root) {
         name: "$joi",
         validator(value, joiSchema: Joi.Schema, { error, modifier }) {
             /**
-             * Check if schema is Joi Schema
+             * Check if input is Joi Schema
              */
             if (!joi!.isSchema(joiSchema)) {
                 return error(`Invalid JOI schema provided for :param`);
