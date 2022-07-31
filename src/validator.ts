@@ -26,8 +26,8 @@ export declare module AvailableValidators {
         minLength: number;
         maxLength: number;
         size: number | number[];
-        object: Record<string, AbolishRule>;
-        objectAsync: Record<string, AbolishRule>;
+        object: Record<string, AbolishRule> | AbolishCompiledObject;
+        objectAsync: Record<string, AbolishRule> | AbolishCompiledObject;
     }
 }
 
@@ -41,3 +41,4 @@ export type AV = Partial<AvailableValidators.Options>;
  * Import all additional validators
  */
 import "../validators/validators";
+import { AbolishCompiledObject } from "./Compiler";

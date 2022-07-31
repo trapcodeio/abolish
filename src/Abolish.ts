@@ -19,7 +19,7 @@ import {
     abolish_StartCase,
     hasDotNotation
 } from "./inbuilt.fn";
-import { Rule } from "./functions";
+import { Rule, Schema } from "./functions";
 import AbolishError from "./AbolishError";
 import ObjectModifier from "./ObjectModifier";
 import { AbolishValidatorFunctionHelper } from "./types";
@@ -886,12 +886,9 @@ class Abolish {
      * @param schema
      * @param CustomAbolish
      */
-    static compileObject<Schema extends Record<string, AbolishRule>>(
-        schema: Schema,
-        CustomAbolish?: typeof Abolish
-    ) {
+    static compileObject<S extends AbolishSchema>(schema: S, CustomAbolish?: typeof Abolish) {
         const abolish = new (CustomAbolish || this)();
-        const compiled = new AbolishCompiled();
+        const compiled = new AbolishCompiled(Schema(schema));
 
         let internalWildcardRules: AbolishRule | undefined;
         let includeFields: string[] = [];

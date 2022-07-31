@@ -23,6 +23,9 @@ test.group("Compiler", () => {
 
         const compiledKeys = Object.keys(compiled.data);
 
+        // check that schema matches compiled schema
+        assert.deepEqual(schema.name, compiled.schema.variable);
+
         // check that schema value is instanceOf AbolishCompiled
         assert.instanceOf(compiled, AbolishCompiled);
 
@@ -39,6 +42,9 @@ test.group("Compiler", () => {
 
         const schemaKeys = Object.keys(schema);
         const compiledKeys = Object.keys(compiled.data);
+
+        // check that schema matches compiled schema
+        assert.deepEqual(schema, compiled.schema);
 
         // check that schema value is instanceOf AbolishCompiled
         assert.instanceOf(compiled, AbolishCompiled);
@@ -135,7 +141,7 @@ test.group("Compiler Super Rules", () => {
         assert.equal(compiled.data.name.$name, "Your Name");
 
         // check that error message has name
-        const [e, v] = compiled.validate({ name: "a" });
+        const [e] = compiled.validate({ name: "a" });
         assert.isDefined(e);
         assert.equal(e!.message, "Your Name is too short. (Min. 3 characters)");
     });

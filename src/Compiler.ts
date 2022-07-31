@@ -1,5 +1,6 @@
 import type {
     $skipRule,
+    AbolishSchema,
     AbolishValidatorFunctionResult,
     ValidationError,
     ValidationResult
@@ -40,7 +41,6 @@ export interface CompiledRule {
 }
 
 export class AbolishCompiled {
-    // constructor(public abolish: Abolish) {}
     /**
      * Hold Compiled Object
      */
@@ -70,6 +70,12 @@ export class AbolishCompiled {
      * if there is an async validator, set to true
      */
     public async = false;
+
+    /**
+     * Constructor
+     * @param schema
+     */
+    constructor(public schema: AbolishSchema) {}
 
     /**
      * Validate Compiled Schema
@@ -352,6 +358,7 @@ export class AbolishCompiled {
  * @param value - Value
  * @param result - Result
  * @param validator - Validator
+ * @param $name - Name of field
  * @returns
  */
 function parseErrorMessage(

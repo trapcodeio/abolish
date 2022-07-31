@@ -1,6 +1,7 @@
 import type { AbolishRule, AbolishValidator } from "../../src/types";
 import { Rule } from "../../src/functions";
 import { assertType } from "../../src/types-checker";
+import type { AbolishCompiled } from "../../src/Compiler";
 
 export = <AbolishValidator>{
     name: "arrayValues",
@@ -30,7 +31,7 @@ export = <AbolishValidator>{
 declare module "../../src/validator" {
     module AvailableValidators {
         interface Options {
-            arrayValues: AbolishRule;
+            arrayValues: AbolishRule | AbolishCompiled;
         }
     }
 }
