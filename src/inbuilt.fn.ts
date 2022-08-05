@@ -1,5 +1,5 @@
 import { startCase, set, get } from "lodash";
-import Abolish from "./Abolish";
+import type Abolish from "./Abolish";
 
 /**
  * Change to string to upperFirst

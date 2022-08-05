@@ -886,8 +886,16 @@ class Abolish {
      * @param schema
      * @param CustomAbolish
      */
-    static compileObject<S extends AbolishSchema>(schema: S, CustomAbolish?: typeof Abolish) {
-        const abolish = new (CustomAbolish || this)();
+    static compileObject<S extends AbolishSchema>(
+        schema: S,
+        CustomAbolish?: TypeOfAbolishOrInstance
+    ) {
+        const abolish = CustomAbolish
+            ? isAbolishInstance(CustomAbolish)
+                ? (CustomAbolish as Abolish)
+                : new (CustomAbolish as typeof Abolish)()
+            : new Abolish();
+
         const compiled = new AbolishCompiled(Schema(schema));
 
         let internalWildcardRules: AbolishRule | undefined;
@@ -1091,16 +1099,20 @@ class Abolish {
     /**
      * Compile for a variable
      * @param rule
+     * @param CustomAbolish
      */
-    static compile(rule: AbolishRule) {
+    static compile(rule: AbolishRule, CustomAbolish?: TypeOfAbolishOrInstance) {
         // process rules;
         rule = Rule(rule);
 
         // compile
-        const compiled = this.compileObject({
-            variable: rule,
-            $include: ["variable"]
-        }) as AbolishCompiled;
+        const compiled = this.compileObject(
+            {
+                variable: rule,
+                $include: ["variable"]
+            },
+            CustomAbolish
+        ) as AbolishCompiled;
 
         // set exact rules received
         compiled.input = rule;
@@ -1113,5 +1125,24 @@ class Abolish {
 }
 
 export type TypeOfAbolishOrInstance = typeof Abolish | InstanceType<typeof Abolish>;
+
+/**
+ * Check if a variable can be considered as an Abolish Class
+ * @param $class
+ */
+export function isAbolishClass($class: any) {
+    return typeof $class === "function" && typeof $class["addGlobalValidator"] === "function";
+}
+
+/**
+ * Check if a variable can be considered as an Abolish Instance
+ * @param instance
+ */
+export function isAbolishInstance(instance: any) {
+    return (
+        typeof instance === "object" &&
+        (instance instanceof Abolish || typeof instance["addValidator"] === "function")
+    );
+}
 
 export default Abolish;
