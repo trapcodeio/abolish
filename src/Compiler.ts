@@ -19,6 +19,7 @@ export interface CompiledValidator {
     error: string;
     async: boolean;
     errorFn?: (e: Pick<ValidationError, "code" | "data" | "validator"> & { value: any }) => string;
+    customError?: boolean;
     func: (
         value: any,
         option: any
@@ -72,11 +73,19 @@ export class AbolishCompiled {
      */
     public async = false;
 
+    public input!: AbolishRule | AbolishSchema;
+
     /**
      * Constructor
      * @param input
      */
-    constructor(public input: AbolishRule | AbolishSchema) {}
+    constructor(input: AbolishRule | AbolishSchema) {
+        Object.defineProperty(this, "input", {
+            value: input,
+            enumerable: false,
+            writable: true
+        });
+    }
 
     /**
      * Validate Compiled Schema
@@ -388,21 +397,23 @@ function parseErrorMessage(
     let code = "default";
     let modifiedMessage = false;
 
-    if (result instanceof AbolishError) {
-        modifiedMessage = true;
-        message = result.message;
-        data = result.data;
-        code = result.code;
-    }
-
-    if (validator.errorFn) {
-        modifiedMessage = true;
-        message = validator.errorFn({
-            code,
-            data,
-            validator: validator.name,
-            value
-        });
+    if (validator.customError) {
+        if (validator.errorFn) {
+            modifiedMessage = true;
+            message = validator.errorFn({
+                code,
+                data,
+                validator: validator.name,
+                value
+            });
+        }
+    } else {
+        if (result instanceof AbolishError) {
+            modifiedMessage = true;
+            message = result.message;
+            data = result.data;
+            code = result.code;
+        }
     }
 
     if (modifiedMessage) {

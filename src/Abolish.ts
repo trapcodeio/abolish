@@ -1020,6 +1020,7 @@ class Abolish {
                  */
                 let error = validator.error;
                 let errorFn: CompiledValidator["errorFn"];
+                let customError: boolean | undefined;
 
                 /**
                  * Process $error
@@ -1029,8 +1030,10 @@ class Abolish {
                 if ($error) {
                     if (typeof $error === "string") {
                         error = $error;
+                        customError = true;
                     } else if (typeof $error === "function") {
                         errorFn = $error;
+                        customError = true;
                     }
                 }
 
@@ -1038,8 +1041,10 @@ class Abolish {
                     const errorMessage = $errors[validatorName];
                     if (typeof errorMessage === "string") {
                         error = errorMessage;
+                        customError = true;
                     } else if (typeof errorMessage === "function") {
                         errorFn = errorMessage;
+                        customError = true;
                     }
                 }
 
@@ -1059,6 +1064,7 @@ class Abolish {
                     }
                 };
 
+                if (customError) data.customError = true;
                 if (errorFn) data.errorFn = errorFn;
 
                 if (optionIsStringAble) {
