@@ -1,9 +1,10 @@
 import type { AbolishValidator } from "../../src/types";
+import { InstanceOf } from "../../src/inbuilt.fn";
 
 export = <AbolishValidator>{
     name: "date",
     validator: (v, o: "cast" | { cast: true }, { modifier }) => {
-        if (v instanceof Date) {
+        if (InstanceOf(Date, v)) {
             return true;
         } else if (typeof v === "string") {
             const date = new Date(v);

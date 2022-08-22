@@ -14,6 +14,7 @@ import StringToRules from "./StringToRules";
 import GlobalValidators from "./GlobalValidators";
 import {
     abolish_Get,
+    InstanceOf,
     abolish_Omit,
     abolish_Pick,
     abolish_StartCase,
@@ -58,7 +59,7 @@ export class AttemptError extends Error {
     }
 
     static instanceOf(e: any) {
-        return e instanceof AttemptError;
+        return InstanceOf(this, e);
     }
 }
 
@@ -476,13 +477,13 @@ class Abolish {
 
                         if (
                             validationResult === false ||
-                            validationResult instanceof AbolishError
+                            InstanceOf(AbolishError, validationResult)
                         ) {
                             let message: string | undefined;
                             let data: Record<string, any> | null = null;
                             let code = "default";
 
-                            if (validationResult instanceof AbolishError) {
+                            if (InstanceOf(AbolishError, validationResult)) {
                                 message = validationResult.message;
                                 data = validationResult.data;
                                 code = validationResult.code;
@@ -649,12 +650,12 @@ class Abolish {
                     ]);
                 }
 
-                if (validationResult === false || validationResult instanceof AbolishError) {
+                if (validationResult === false || InstanceOf(AbolishError, validationResult)) {
                     let message: string | undefined;
                     let data: Record<string, any> | null = null;
                     let code = "default";
 
-                    if (validationResult instanceof AbolishError) {
+                    if (InstanceOf(AbolishError, validationResult)) {
                         message = validationResult.message;
                         data = validationResult.data;
                         code = validationResult.code;

@@ -7,7 +7,7 @@ import type {
     ValidationResult
 } from "./types";
 import AbolishError from "./AbolishError";
-import { abolish_Get, abolish_Pick } from "./inbuilt.fn";
+import { abolish_Get, InstanceOf, abolish_Pick } from "./inbuilt.fn";
 
 /**
  * Compiled Validator Type
@@ -171,7 +171,7 @@ export class AbolishCompiled {
 
                 if (
                     typeof result !== undefined &&
-                    (result === false || result instanceof AbolishError)
+                    (result === false || InstanceOf(AbolishError, result))
                 ) {
                     return parseErrorMessage(
                         field,
@@ -280,7 +280,7 @@ export class AbolishCompiled {
 
                 if (
                     typeof result !== undefined &&
-                    (result === false || result instanceof AbolishError)
+                    (result === false || InstanceOf(AbolishError, result))
                 ) {
                     return parseErrorMessage(
                         field,
@@ -408,7 +408,9 @@ function parseErrorMessage(
             });
         }
     } else {
-        if (result instanceof AbolishError) {
+        // noinspection SuspiciousTypeOfGuard
+        if (InstanceOf(AbolishError, result)) {
+            result = result as AbolishError;
             modifiedMessage = true;
             message = result.message;
             data = result.data;

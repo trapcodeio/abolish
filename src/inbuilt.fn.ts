@@ -103,3 +103,12 @@ export function abolish_Get(obj: any, path: string, $hasDotNotation?: boolean) {
 export function hasDotNotation(path: string) {
     return path.indexOf(".") !== -1;
 }
+
+/**
+ * Instanceof
+ * After running some tests with instanceof, we decided to use this instead.
+ */
+
+export function InstanceOf(type: Function, obj: any) {
+    return typeof obj === "object" && obj instanceof type;
+}
