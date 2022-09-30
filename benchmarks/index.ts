@@ -32,7 +32,7 @@ function Yup_TypeOfString() {
     yupSchema.validateSync(compiledValue);
 }
 //
-benchmarkFunctions("TypeOfString", [
+benchmarkFunctions("Validate: Variable is typeof string", [
     Abolish_TypeOfString,
     Joi_TypeOfString,
     Yup_TypeOfString
@@ -72,6 +72,7 @@ const arrayData = [
 ];
 
 const objData = { id: 1, name: "John" };
+
 const objSchema = Abolish.compileObject({
     $: "required",
     id: { typeof: "number" },
@@ -107,5 +108,5 @@ function Joi_ArrayValues() {
     joiArrayValues.validate(arrayData);
 }
 
-benchmarkFunctions("Object", [Abolish_Object, Joi_Object]).run();
-benchmarkFunctions("ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();
+benchmarkFunctions("Validate: Object", [Abolish_Object, Joi_Object]).run();
+benchmarkFunctions("Validate: ArrayValues", [Abolish_ArrayValues, Joi_ArrayValues]).run();
