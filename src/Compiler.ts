@@ -352,12 +352,14 @@ export class AbolishCompiled {
     }
 
     public validate<T>(value: T) {
-        return this.isObject ? this.validateObject<T>(value) : this.validateVariable(value);
+        return this.isObject
+            ? this.validateObject<T>(value as object)
+            : this.validateVariable(value);
     }
 
     public async validateAsync<T>(value: T) {
         return this.isObject
-            ? this.validateObjectAsync<T>(value)
+            ? this.validateObjectAsync<T>(value as object)
             : this.validateVariableAsync(value);
     }
 

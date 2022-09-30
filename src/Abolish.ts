@@ -199,7 +199,7 @@ class Abolish {
      * @param {object} object
      * @param {object} rules
      */
-    static validate<R = Record<string, any>>(
+    static validate<R extends Record<string, any> = Record<string, any>>(
         object: Record<string, any>,
         rules: AbolishSchema<R>
     ): ValidationResult<R>;
@@ -207,7 +207,7 @@ class Abolish {
         object: Record<string, any>,
         rules: AbolishCompiledObject
     ): ValidationResult<R>;
-    static validate<R = Record<string, any>>(
+    static validate<R extends Record<string, any> = Record<string, any>>(
         object: Record<string, any>,
         rules: Record<string, any>
     ): ValidationResult<R> {
@@ -222,7 +222,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    static validateAsync<R = Record<string, any>>(
+    static validateAsync<R extends Record<string, any> = Record<string, any>>(
         object: Record<string, any>,
         rules: Record<keyof R | string, any>
     ): Promise<ValidationResult<R>> {
@@ -237,7 +237,7 @@ class Abolish {
      * @param {object} rules
      * @param {boolean} isAsync
      */
-    validate<R = Record<string, any>>(
+    validate<R extends Record<string, any> = Record<string, any>>(
         object: Record<string, any>,
         rules: AbolishSchema<R>,
         isAsync?: boolean
@@ -580,7 +580,7 @@ class Abolish {
      * @param rules
      * @return {Promise<ValidationResult>}
      */
-    validateAsync<R = Record<string, any>>(
+    validateAsync<R extends Record<string, any> = Record<string, any>>(
         object: Record<string, any>,
         rules: AbolishSchema<R>
     ): Promise<ValidationResult<R>>;
