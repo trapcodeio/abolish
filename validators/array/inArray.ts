@@ -6,7 +6,7 @@ type inArrayOption = any[] | ((v?: any) => any[] | true);
 export = <AbolishValidator>{
     name: "inArray",
     description: "Check that a value is in an array",
-    error: ":param does not exists in the given array",
+    error: ":param does not exists in array [:option]",
     validator: (value: any, option: inArrayOption) => {
         assertType(option, ["array", "function"]);
 
