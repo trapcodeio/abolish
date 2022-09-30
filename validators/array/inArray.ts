@@ -2,12 +2,13 @@ import type { AbolishValidator } from "../../src/types";
 import { assertType } from "../../src/types-checker";
 
 type inArrayOption = any[] | ((v?: any) => any[] | true);
+
 export = <AbolishValidator>{
     name: "inArray",
     description: "Check that a value is in an array",
-    validator: (value: any, option: inArrayOption, { error }) => {
+    error: ":param does not exists in the given array",
+    validator: (value: any, option: inArrayOption) => {
         assertType(option, ["array", "function"]);
-        const err = error(`:param does not exists in the given array`);
 
         /**
          * if option is a function
@@ -16,7 +17,7 @@ export = <AbolishValidator>{
         if (typeof option === "function") {
             const result = option(value);
 
-            if (typeof result === "boolean") return result ? true : err;
+            if (typeof result === "boolean") return result;
             else if (Array.isArray(result)) {
                 option = result; // We replace the option with the result
             }
@@ -28,7 +29,7 @@ export = <AbolishValidator>{
             if ((option as any)[i] === value) return true;
         }
 
-        return err;
+        return false;
     }
 };
 

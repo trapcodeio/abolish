@@ -201,7 +201,7 @@ class Abolish {
      */
     static validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: AbolishSchema<keyof R | string>
+        rules: AbolishSchema<R>
     ): ValidationResult<R>;
     static validate<R extends Record<string, any>>(
         object: Record<string, any>,
@@ -211,7 +211,7 @@ class Abolish {
         object: Record<string, any>,
         rules: Record<string, any>
     ): ValidationResult<R> {
-        return new this().validate<R>(object, rules as AbolishSchema<keyof R | string>);
+        return new this().validate<R>(object, rules as AbolishSchema<R>);
     }
 
     /**
@@ -239,7 +239,7 @@ class Abolish {
      */
     validate<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: AbolishSchema<keyof R | string>,
+        rules: AbolishSchema<R>,
         isAsync?: boolean
     ): ValidationResult<R>;
     validate<R extends Record<string, any>>(
@@ -582,7 +582,7 @@ class Abolish {
      */
     validateAsync<R = Record<string, any>>(
         object: Record<string, any>,
-        rules: AbolishSchema<keyof R | string>
+        rules: AbolishSchema<R>
     ): Promise<ValidationResult<R>>;
     validateAsync<R extends Record<string, any>>(
         object: Record<string, any>,
