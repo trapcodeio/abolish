@@ -978,7 +978,7 @@ class Abolish {
             /**
              * Object modifier
              */
-            const modifier = new ObjectModifier({}, field).flagNoData();
+            const modifier = new ObjectModifier({}, field);
 
             /**
              * Loop Through each rule and generate validator

@@ -9,7 +9,6 @@ class ObjectModifier {
     data: any;
     path: any;
     name: string | false;
-    private $hasData = true;
     private readonly pathHasDotNotation;
 
     constructor(data: any, param: string, name: string | false = false) {
@@ -20,14 +19,14 @@ class ObjectModifier {
         return this;
     }
 
-    flagNoData() {
-        this.$hasData = false;
-        return this;
-    }
+    // flagNoData() {
+    //     this.$hasData = false;
+    //     return this;
+    // }
 
     setData(data: any) {
         this.data = data;
-        this.$hasData = true;
+        // this.$hasData = true;
         return this;
     }
 
