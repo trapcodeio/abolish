@@ -1060,7 +1060,7 @@ class Abolish {
                     error: error,
                     async: validator.isAsync === true,
                     func: (value: any, data: Record<string, any>) => {
-                        if (!ctx.modifier.hasData) ctx.modifier.setData(data);
+                        ctx.modifier.setData(data);
                         return validator.validator(value, option, ctx);
                     }
                 };

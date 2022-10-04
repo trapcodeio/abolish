@@ -28,4 +28,23 @@ test.group("Utils Validators", (group) => {
 
         // Error: Confirm Password must be the same as password.
     });
+
+    // test.only("same compiled", () => {
+    //     const schema = Abolish.compileObject({
+    //         password: "required|string",
+    //         confirmPassword: "required|string|same:password"
+    //     });
+    //
+    //     schema.validateObject({
+    //         password: "hello",
+    //         confirmPassword: "hello"
+    //     });
+    //
+    //     schema.validateObject({
+    //         password: "web",
+    //         confirmPassword: "web"
+    //     });
+    //
+    //     // Error: Confirm Password must be the same as password.
+    // });
 });

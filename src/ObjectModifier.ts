@@ -31,9 +31,9 @@ class ObjectModifier {
         return this;
     }
 
-    get hasData() {
-        return this.$hasData;
-    }
+    // get hasData() {
+    //     return this.$hasData;
+    // }
 
     /**
      * Get path of object or return
