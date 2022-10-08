@@ -5,8 +5,9 @@ import type Abolish from "./Abolish";
  * @param abolish
  */
 export function registerAllValidators<T extends typeof Abolish>(abolish: T) {
-    registerValidators(abolish, "string");
     registerValidators(abolish, "array");
+    registerValidators(abolish, "object");
+    registerValidators(abolish, "string");
     registerValidators(abolish, "utils");
 
     return abolish;
@@ -19,7 +20,7 @@ export function registerAllValidators<T extends typeof Abolish>(abolish: T) {
  */
 export function registerValidators<T extends typeof Abolish>(
     abolish: T,
-    validators: "string" | "array" | "utils"
+    validators: "string" | "array" | "utils" | "object"
 ) {
     switch (validators) {
         case "string":
@@ -28,5 +29,7 @@ export function registerValidators<T extends typeof Abolish>(
             return abolish.addGlobalValidators(require("../validators/array"));
         case "utils":
             return abolish.addGlobalValidators(require("../validators/utils"));
+        case "object":
+            return abolish.addGlobalValidators(require("../validators/object"));
     }
 }

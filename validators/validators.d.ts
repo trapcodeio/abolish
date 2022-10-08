@@ -7,6 +7,11 @@ import "./array/arrayValuesAsync";
 import "./array/inArray";
 import "./array/notInArray";
 
+// Objects
+import "./object/objectValues";
+import "./object/objectValuesAsync";
+import "./object/objectValuesType";
+
 // Strings
 import "./string/alphaNumeric";
 import "./string/boolean";
