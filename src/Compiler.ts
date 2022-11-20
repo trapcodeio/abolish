@@ -39,7 +39,7 @@ export interface AbolishCompiledObject extends AbolishCompiled {
 export interface CompiledRule {
     $skip?: $skipRule;
     $name?: string;
-    validators: CompiledValidator[];
+    validators: Record<string, CompiledValidator>;
 }
 
 export class AbolishCompiled {
@@ -150,7 +150,8 @@ export class AbolishCompiled {
             /**
              * Loop through all compiled validators
              */
-            for (const validator of compiled.validators) {
+            for (const validatorName in compiled.validators) {
+                const validator = compiled.validators[validatorName];
                 let result: AbolishValidatorFunctionResult = false;
 
                 try {
@@ -161,7 +162,7 @@ export class AbolishCompiled {
                             code: "default",
                             key: field,
                             type: "internal",
-                            validator: validator.name,
+                            validator: validatorName,
                             message: e.message,
                             data: e.stack
                         },
@@ -252,7 +253,8 @@ export class AbolishCompiled {
             /**
              * Loop through all compiled validators
              */
-            for (const validator of compiled.validators) {
+            for (const validatorName in compiled.validators) {
+                const validator = compiled.validators[validatorName];
                 let result: AbolishValidatorFunctionResult = false;
 
                 try {

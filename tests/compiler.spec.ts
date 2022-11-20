@@ -100,13 +100,13 @@ test.group("Compiler Super Fields", () => {
          */
         for (const field in compiled.data) {
             const validators = compiled.data[field].validators;
-            const validatorNames = validators.map((v) => v.name);
+            const validatorNames = Object.keys(validators);
             assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
         }
 
         for (const field in compiled2.data) {
             const validators = compiled.data[field].validators;
-            const validatorNames = validators.map((v) => v.name);
+            const validatorNames = Object.keys(validators);
             assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
         }
     });
