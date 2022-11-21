@@ -1059,9 +1059,9 @@ class Abolish {
                     option: option,
                     error: error,
                     async: validator.isAsync === true,
-                    func: (value: any, data: Record<string, any>) => {
-                        ctx.modifier.setData(data);
-                        return validator.validator(value, option, ctx);
+                    func(value: any, validated: Record<string, any>) {
+                        ctx.modifier.setData(validated);
+                        return validator.validator(value, this.option, ctx);
                     }
                 };
 
