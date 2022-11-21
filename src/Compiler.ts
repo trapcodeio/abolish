@@ -39,7 +39,7 @@ export interface AbolishCompiledObject extends AbolishCompiled {
 export interface CompiledRule {
     $skip?: $skipRule;
     $name?: string;
-    validators: CompiledValidator[];
+    validators: Record<string, CompiledValidator>;
 }
 
 export class AbolishCompiled {
@@ -150,7 +150,8 @@ export class AbolishCompiled {
             /**
              * Loop through all compiled validators
              */
-            for (const validator of compiled.validators) {
+            for (const validatorName in compiled.validators) {
+                const validator = compiled.validators[validatorName];
                 let result: AbolishValidatorFunctionResult = false;
 
                 try {
@@ -161,7 +162,7 @@ export class AbolishCompiled {
                             code: "default",
                             key: field,
                             type: "internal",
-                            validator: validator.name,
+                            validator: validatorName,
                             message: e.message,
                             data: e.stack
                         },
@@ -252,7 +253,8 @@ export class AbolishCompiled {
             /**
              * Loop through all compiled validators
              */
-            for (const validator of compiled.validators) {
+            for (const validatorName in compiled.validators) {
+                const validator = compiled.validators[validatorName];
                 let result: AbolishValidatorFunctionResult = false;
 
                 try {
@@ -375,6 +377,66 @@ export class AbolishCompiled {
      */
     public getInputSchema() {
         return this.input as AbolishSchema;
+    }
+
+    /**
+     * Change a fields validator option
+     * @param fieldName
+     * @param validatorName
+     * @param option
+     */
+    public setValidatorOption(validatorName: string, option: any, fieldName?: string) {
+        if (!fieldName) {
+            if (this.isObject) {
+                throw new Error("Field name is required when using object compiled input!");
+            } else {
+                fieldName = "variable";
+            }
+        } else if (fieldName && !this.isObject) {
+            throw new Error("Field name is not allowed when using variable compiled input!");
+        }
+
+        if (this.data[fieldName] && this.data[fieldName].validators[validatorName]) {
+            this.data[fieldName].validators[validatorName].option = option;
+        }
+
+        return this;
+    }
+
+    /**
+     * Copy current compiled instance
+     * This is useful when you want to use the same compiled input for multiple validation
+     * It prevents memory leak
+     */
+    public copy(): this {
+        const copy = new AbolishCompiled(this.input);
+
+        // set other properties
+        copy.fields = this.fields;
+        copy.includedFields = this.includedFields;
+        copy.fieldsHasDotNotation = this.fieldsHasDotNotation;
+        copy.isObject = this.isObject;
+        copy.async = this.async;
+        copy.data = {};
+
+        // copy data
+        for (const field in this.data) {
+            // copy validators
+            const validators: Record<string, CompiledValidator> = {};
+            for (const validatorName in this.data[field].validators) {
+                validators[validatorName] = {
+                    ...this.data[field].validators[validatorName]
+                };
+            }
+
+            copy.data[field] = {
+                $name: this.data[field].$name,
+                $skip: this.data[field].$skip,
+                validators
+            };
+        }
+
+        return copy as this;
     }
 }
 

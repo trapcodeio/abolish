@@ -926,7 +926,7 @@ class Abolish {
         for (const [field, rules] of Object.entries(schema)) {
             if (SuperKeys.Fields.includes(field)) continue;
 
-            const compiledRule: CompiledRule = { validators: [] };
+            const compiledRule: CompiledRule = { validators: {} };
 
             /**
              * Convert ruleData to object if string
@@ -1059,9 +1059,9 @@ class Abolish {
                     option: option,
                     error: error,
                     async: validator.isAsync === true,
-                    func: (value: any, data: Record<string, any>) => {
-                        ctx.modifier.setData(data);
-                        return validator.validator(value, option, ctx);
+                    func(value: any, validated: Record<string, any>) {
+                        ctx.modifier.setData(validated);
+                        return validator.validator(value, this.option, ctx);
                     }
                 };
 
@@ -1078,7 +1078,7 @@ class Abolish {
                     value: `Wrapped(${validatorName})`
                 });
 
-                compiledRule.validators.push(data);
+                compiledRule.validators[validatorName] = data;
             }
 
             compiled.data[field] = compiledRule;

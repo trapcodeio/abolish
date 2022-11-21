@@ -100,13 +100,13 @@ test.group("Compiler Super Fields", () => {
          */
         for (const field in compiled.data) {
             const validators = compiled.data[field].validators;
-            const validatorNames = validators.map((v) => v.name);
+            const validatorNames = Object.keys(validators);
             assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
         }
 
         for (const field in compiled2.data) {
             const validators = compiled.data[field].validators;
-            const validatorNames = validators.map((v) => v.name);
+            const validatorNames = Object.keys(validators);
             assert.isTrue(["required", "typeof"].every((v) => validatorNames.includes(v)));
         }
     });
@@ -290,5 +290,72 @@ test.group("Using compiled rules with abolish", () => {
 
         assert.isTrue(await Abolish.testAsync("My name", compiled));
         assert.isFalse(await Abolish.testAsync(1, compiled));
+    });
+});
+
+test.group("Copy compiled rules", () => {
+    test("compiled.copy()", (assert) => {
+        const compiled = Abolish.compileObject(schema);
+        const copied = compiled.copy();
+
+        assert.deepEqual(copied, compiled);
+        assert.notEqual(copied, compiled);
+    });
+
+    test("test copy usage with abolish object", (assert) => {
+        // exact needs an option that will be changed in the copy
+        const compiled = Abolish.compileObject({
+            name: "required|typeof:string|exact"
+        });
+
+        function validateObject(name: string, exact: string) {
+            const rules = compiled.copy().setValidatorOption("exact", exact, "name");
+
+            // check that compiled rules are not changed
+            const option1 = compiled.data.name.validators.exact.option;
+            const option2 = rules.data.name.validators.exact.option;
+
+            assert.equal(option1, true);
+            assert.equal(option2, exact);
+            assert.notEqual(option1, option2);
+
+            const [e, v] = rules.validateObject({ name });
+
+            assert.isUndefined(e);
+            assert.deepEqual(Object.keys(v), ["name"]);
+        }
+
+        validateObject("My name", "My name");
+
+        test.failing("test copy usage with abolish", () => {
+            validateObject("My name", "My name 2");
+        });
+    });
+
+    test("test copy usage with abolish variable", (assert) => {
+        const compiled = Abolish.compile("required|typeof:string|exact");
+
+        function validateVariable(name: string, exact: string) {
+            const rules = compiled.copy().setValidatorOption("exact", exact);
+
+            // check that compiled rules are not changed
+            const option1 = compiled.data.variable.validators.exact.option;
+            const option2 = rules.data.variable.validators.exact.option;
+
+            assert.equal(option1, true);
+            assert.equal(option2, exact);
+            assert.notEqual(option1, option2);
+
+            const [e, v] = rules.validateVariable(name);
+
+            assert.isUndefined(e);
+            console.assert(v === name);
+        }
+
+        validateVariable("My name", "My name");
+
+        test.failing("test copy usage with abolish", () => {
+            validateVariable("My name", "My name 2");
+        });
     });
 });
