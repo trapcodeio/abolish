@@ -203,10 +203,16 @@ const GlobalValidators: Record<string, AbolishValidator> = {
     $inline: {
         name: "$inline",
         error: ":param failed inline validation.",
-        validator: (v: any, o: AbolishInlineValidator, helpers) => {
-            return o(v, helpers);
-        },
+        validator: (v: any, o: AbolishInlineValidator, helpers) => o(v, helpers),
         description: "Register a custom validation function inline."
+    },
+
+    $inlineAsync: {
+        name: "$inlineAsync",
+        isAsync: true,
+        error: ":param failed inline validation.",
+        validator: (v: any, o: AbolishInlineValidator, helpers) => o(v, helpers),
+        description: "Register a custom async validation function inline."
     }
 
     /**

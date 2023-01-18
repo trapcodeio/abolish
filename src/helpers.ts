@@ -10,6 +10,13 @@ export const $inline = (fn: AbolishInlineValidator, $error?: string) => {
 };
 
 /**
+ * $inLineAsync object generator
+ */
+export const $inlineAsync = (fn: AbolishInlineValidator, $error?: string) => {
+    return $error ? { $inlineAsync: fn, $error } : { $inlineAsync: fn };
+};
+
+/**
  * Skip if undefined
  * @param rule
  */

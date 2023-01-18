@@ -1,6 +1,8 @@
 import test from "japa";
 import { Abolish } from "../../index";
-import { $inline } from "../../src/helpers";
+import { $inline, $inlineAsync } from "../../src/helpers";
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 test.group("Default Validators", () => {
     test("default", (assert) => {
@@ -252,6 +254,16 @@ test.group("Default Validators", () => {
         Abolish.attempt("password", {
             $name: "Password",
             ...$inline((password) => password === "123456", ":param must be 123456")
+        });
+    });
+
+    test.failing("$inlineAsync", async () => {
+        await Abolish.attemptAsync("password", {
+            $name: "Password",
+            ...$inlineAsync(async (password) => {
+                await sleep(1500);
+                return password === "123456";
+            }, ":param must be 123456")
         });
     });
 });
