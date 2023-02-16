@@ -7,6 +7,9 @@ import "./array/arrayValuesAsync";
 import "./array/inArray";
 import "./array/notInArray";
 
+// Dates
+import "./date/age";
+
 // Objects
 import "./object/objectValues";
 import "./object/objectValuesAsync";
