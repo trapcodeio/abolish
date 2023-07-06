@@ -109,7 +109,9 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         name: "minLength",
         error: ":param is too short. (Min. :option characters)",
         description: "Value length is >= :option",
-        validator: (value: any, option: number | string, { error }) => {
+        validator: (value: any, option: number | string, { error, modifier }) => {
+            value = modifier.getThis() ?? value;
+
             if (typeof value === "string") {
                 return value.trim().length >= Number(option);
             } else if (Array.isArray(value)) {
@@ -126,7 +128,9 @@ const GlobalValidators: Record<string, AbolishValidator> = {
         name: "maxLength",
         error: ":param is too long. (Max. :option characters)",
         description: "Value length is <= :option",
-        validator: (value: any, option: number | string, { error }) => {
+        validator: (value: any, option: number | string, { error, modifier }) => {
+            value = modifier.getThis() ?? value;
+
             if (typeof value === "string") {
                 return value.trim().length <= Number(option);
             } else if (Array.isArray(value)) {
