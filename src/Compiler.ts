@@ -56,7 +56,12 @@ export class AbolishCompiled {
     /**
      * Fields included
      */
-    public includedFields: string[] = [];
+    public includedFields?: string[];
+
+    /**
+     * Allowed Fields when $strict rule is used
+     */
+    public allowedFields?: string[];
 
     /**
      * If fields has any dot notation set to true
@@ -113,6 +118,25 @@ export class AbolishCompiled {
          */
         const validated: Record<string, any> = { ...data };
 
+        if (this.allowedFields) {
+            const objKeys = Object.keys(validated);
+            const unknownKeys = objKeys.filter((key) => !this.allowedFields!.includes(key));
+
+            if (unknownKeys.length) {
+                return [
+                    {
+                        code: "object.unknown",
+                        type: "internal",
+                        key: "$strict",
+                        validator: "$strict",
+                        message: "Data contains unknown fields!",
+                        data: { unknown: unknownKeys }
+                    },
+                    {} as R
+                ];
+            }
+        }
+
         /**
          * Hold current fields
          * This will be used in the skip section to remove fields that are not included in the input
@@ -139,7 +163,7 @@ export class AbolishCompiled {
 
                 if ($skip) {
                     // if field is not in included fields, remove it from fields
-                    if (!this.includedFields.includes(field)) {
+                    if (this.includedFields && !this.includedFields.includes(field)) {
                         fields = fields.filter((f) => f !== field);
                     }
 
@@ -216,6 +240,25 @@ export class AbolishCompiled {
          */
         const validated: Record<string, any> = { ...data };
 
+        if (this.allowedFields) {
+            const objKeys = Object.keys(validated);
+            const unknownKeys = objKeys.filter((key) => !this.allowedFields!.includes(key));
+
+            if (unknownKeys.length) {
+                return [
+                    {
+                        code: "object.unknown",
+                        type: "internal",
+                        key: "$strict",
+                        validator: "$strict",
+                        message: "Data contains unknown fields!",
+                        data: { unknown: unknownKeys }
+                    },
+                    {} as R
+                ];
+            }
+        }
+
         /**
          * Hold current fields
          * This will be used in the skip section to remove fields that are not included in the input
@@ -242,7 +285,7 @@ export class AbolishCompiled {
 
                 if ($skip) {
                     // if field is not in included fields, remove it from fields
-                    if (!this.includedFields.includes(field)) {
+                    if (this.includedFields && !this.includedFields.includes(field)) {
                         fields = fields.filter((f) => f !== field);
                     }
 

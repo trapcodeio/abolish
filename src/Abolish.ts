@@ -31,6 +31,7 @@ import {
     CompiledValidator
 } from "./Compiler";
 import { assertType } from "./types-checker";
+import { string } from "joi";
 
 type Job = {
     $name: string | false;
@@ -68,7 +69,7 @@ export class AttemptError extends Error {
  */
 export const SuperKeys = Object.freeze({
     Wildcards: new Set(["*", "$"]),
-    Fields: new Set(["*", "$", "$include"]),
+    Fields: new Set(["*", "$", "$include", "$strict"]),
     Rules: new Set(["$name", "$skip", "$error", "$errors"])
 });
 
@@ -294,10 +295,46 @@ class Abolish {
             if (!Array.isArray(includeKeys)) throw new Error(`$include has to be an array!`);
         }
 
-        let keysToBeValidated = Object.keys(rules);
-
         // remove SUPER_RULES from keysToBeValidated
-        keysToBeValidated = keysToBeValidated.filter((key) => !SuperKeys.Fields.has(key));
+        let keysToBeValidated = Object.keys(rules).filter((key) => !SuperKeys.Fields.has(key));
+
+        let allowedKeys: string[] | undefined = undefined;
+
+        if (rules.hasOwnProperty("$strict")) {
+            if (rules["$strict"] === true) {
+                allowedKeys = keysToBeValidated;
+            } else if (Array.isArray(rules["$strict"])) {
+                // if strict is an array, then append it to allowedKeys
+                allowedKeys = rules["$strict"];
+
+                for (const key of keysToBeValidated) {
+                    if (!allowedKeys.includes(key)) allowedKeys.push(key);
+                }
+            } else {
+                throw new Error(`$strict must be a boolean or an array of allowed keys.`);
+            }
+
+            // add $include keys to allowedKeys
+            allowedKeys = allowedKeys.concat(includeKeys);
+
+            // check if all keys in object are allowed
+            const objectKeys = Object.keys(validated);
+            const unknownKeys = objectKeys.filter((key) => !allowedKeys!.includes(key));
+
+            if (unknownKeys.length > 0) {
+                return [
+                    {
+                        code: "object.unknown",
+                        type: "internal",
+                        key: "$strict",
+                        validator: "$strict",
+                        message: "Data contains unknown fields!",
+                        data: { unknown: unknownKeys }
+                    },
+                    {} as R
+                ];
+            }
+        }
 
         // Loop through defined rules
         for (const rule of keysToBeValidated) {
@@ -903,10 +940,12 @@ class Abolish {
 
         const compiled = new AbolishCompiled(Schema(schema));
 
-        let internalWildcardRules: AbolishRule | undefined;
+        let internalWildcardRules: AbolishRule | boolean | undefined;
         let includeFields: string[] = [];
+        let allowedKeys: string[] | undefined = undefined;
+        let schemaEntries = Object.entries(schema);
 
-        for (const [field, rules] of Object.entries(schema)) {
+        for (const [field, rules] of schemaEntries) {
             /**
              * Check for wildcard rules (*, $)
              */
@@ -919,15 +958,27 @@ class Abolish {
                  */
                 if (typeof internalWildcardRules === "string")
                     internalWildcardRules = StringToRules(internalWildcardRules);
-            } else if (field === "$include") {
+            }
+
+            if (field === "$include") {
                 includeFields = rules as string[];
+            }
+
+            if (field === "$strict") {
+                if (rules === true) {
+                    allowedKeys = Object.keys(schema);
+                } else if (Array.isArray(rules)) {
+                    allowedKeys = rules as string[];
+                } else {
+                    throw new Error(`$strict must be a boolean or an array of allowed keys.`);
+                }
             }
         }
 
         /**
          * Loop Through each field and rule
          */
-        for (const [field, rules] of Object.entries(schema)) {
+        for (const [field, rules] of schemaEntries) {
             if (SuperKeys.Fields.has(field)) continue;
 
             const compiledRule: CompiledRule = { validators: {} };
@@ -1103,6 +1154,17 @@ class Abolish {
 
         // Check if any field has dot notation
         compiled.fieldsHasDotNotation = compiled.fields.some(hasDotNotation);
+
+        // add allowedKeys
+        if (allowedKeys) {
+            // add $include keys to allowedKeys
+            allowedKeys = compiled.fields.concat(includeFields).concat(allowedKeys);
+
+            // remove SUPER_RULES from allowedKeys
+            allowedKeys = allowedKeys.filter((key) => !SuperKeys.Fields.has(key));
+
+            compiled.allowedFields = allowedKeys;
+        }
 
         return compiled as AbolishCompiledObject;
     }

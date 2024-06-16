@@ -33,7 +33,8 @@ test.group("Compiler", () => {
         assert.isTrue(compiledKeys.every((key) => compiled.fields.includes(key)));
 
         // check that fields has included fields
-        assert.isTrue(compiled.includedFields.every((key) => compiled.fields.includes(key)));
+        if (compiled.includedFields)
+            assert.isTrue(compiled.includedFields.every((key) => compiled.fields.includes(key)));
     });
 
     test("compileObject", (assert) => {
@@ -57,7 +58,8 @@ test.group("Compiler", () => {
 
         // check that fields has included fields
         assert.deepEqual(compiled.includedFields, ["age"]);
-        assert.isTrue(compiled.includedFields.every((key) => compiled.fields.includes(key)));
+        if (compiled.includedFields)
+            assert.isTrue(compiled.includedFields.every((key) => compiled.fields.includes(key)));
     });
 
     test("Validate Variable", (assert) => {
