@@ -2,16 +2,16 @@ import * as Yup from "yup";
 import type { TypeOfAbolishOrInstance } from "../src/Abolish";
 import type { AbolishValidator } from "../src/types";
 import { AddValidatorToClassOrInstance } from "./index";
-import type { ValidateOptions } from "yup/es/types";
+import type { ValidateOptions, AnySchema } from "yup";
 
-export type YupSchemaOption<T extends Yup.BaseSchema> = { schema: T; options?: ValidateOptions };
+export type YupSchemaOption<T extends Yup.AnySchema> = { schema: T; options?: ValidateOptions };
 type YupHelper<T> = (y: typeof Yup) => T;
 
 declare module "../src/validator" {
     module AvailableValidators {
         interface Options {
-            $yup: Yup.BaseSchema | YupSchemaOption<any>;
-            $yupAsync: Yup.BaseSchema | YupSchemaOption<any>;
+            $yup: Yup.AnySchema | YupSchemaOption<any>;
+            $yupAsync: Yup.AnySchema | YupSchemaOption<any>;
         }
     }
 }
@@ -19,18 +19,15 @@ declare module "../src/validator" {
 /**
  * $yup Schema Helper
  */
-export function $yup<T extends Yup.BaseSchema>(
+export function $yup<T extends Yup.AnySchema>(
     schema: YupHelper<T>,
     options?: ValidateOptions
 ): Record<"$yup", YupSchemaOption<T>>;
-export function $yup<T extends Yup.BaseSchema>(
+export function $yup<T extends Yup.AnySchema>(
     schema: T,
     options?: ValidateOptions
 ): Record<"$yup", YupSchemaOption<T>>;
-export function $yup<T extends Yup.BaseSchema>(
-    schema: T | YupHelper<T>,
-    options?: ValidateOptions
-) {
+export function $yup<T extends Yup.AnySchema>(schema: T | YupHelper<T>, options?: ValidateOptions) {
     // if input is a function, call it
     if (typeof schema === "function") {
         schema = schema(Yup) as T;
@@ -42,15 +39,15 @@ export function $yup<T extends Yup.BaseSchema>(
 /**
  * $yup Async Helper
  */
-export function $yupAsync<T extends Yup.BaseSchema>(
+export function $yupAsync<T extends Yup.AnySchema>(
     schema: YupHelper<T>,
     options?: ValidateOptions
 ): Record<"$yupAsync", YupSchemaOption<T>>;
-export function $yupAsync<T extends Yup.BaseSchema>(
+export function $yupAsync<T extends Yup.AnySchema>(
     schema: T,
     options?: ValidateOptions
 ): Record<"$yupAsync", YupSchemaOption<T>>;
-export function $yupAsync<T extends Yup.BaseSchema>(
+export function $yupAsync<T extends Yup.AnySchema>(
     schema: T | YupHelper<T>,
     options?: ValidateOptions
 ) {
@@ -65,7 +62,7 @@ export function $yupAsync<T extends Yup.BaseSchema>(
  * Check if this is a yup input option
  * @param schema
  */
-function isSchemaOption(schema: Yup.BaseSchema | YupSchemaOption<Yup.BaseSchema>) {
+function isSchemaOption(schema: Yup.AnySchema | YupSchemaOption<Yup.AnySchema>) {
     const keys = Object.keys(schema);
     return keys.includes("schema");
 }
