@@ -67,8 +67,9 @@ export class AttemptError extends Error {
  * Abolish Super Rules and Keys
  */
 export const SuperKeys = Object.freeze({
-    Fields: ["*", "$", "$include"],
-    Rules: ["$name", "$skip", "$error", "$errors"]
+    Wildcards: new Set(["*", "$"]),
+    Fields: new Set(["*", "$", "$include"]),
+    Rules: new Set(["$name", "$skip", "$error", "$errors"])
 });
 
 interface AbolishConfig {
@@ -296,7 +297,7 @@ class Abolish {
         let keysToBeValidated = Object.keys(rules);
 
         // remove SUPER_RULES from keysToBeValidated
-        keysToBeValidated = keysToBeValidated.filter((key) => !SuperKeys.Fields.includes(key));
+        keysToBeValidated = keysToBeValidated.filter((key) => !SuperKeys.Fields.has(key));
 
         // Loop through defined rules
         for (const rule of keysToBeValidated) {
@@ -381,7 +382,10 @@ class Abolish {
                 /**
                  * Append internal Wildcard data
                  */
-                ruleData = { ...internalWildcardRules, ...abolish_Omit(ruleData, SuperKeys.Rules) };
+                ruleData = {
+                    ...internalWildcardRules,
+                    ...abolish_Omit(ruleData, [...SuperKeys.Rules])
+                };
 
                 /**
                  * Loop through ruleData to check if validators defined exists
@@ -906,7 +910,7 @@ class Abolish {
             /**
              * Check for wildcard rules (*, $)
              */
-            if (["*", "$"].includes(field)) {
+            if (SuperKeys.Wildcards.has(field)) {
                 internalWildcardRules = rules;
 
                 /**
@@ -924,7 +928,7 @@ class Abolish {
          * Loop Through each field and rule
          */
         for (const [field, rules] of Object.entries(schema)) {
-            if (SuperKeys.Fields.includes(field)) continue;
+            if (SuperKeys.Fields.has(field)) continue;
 
             const compiledRule: CompiledRule = { validators: {} };
 
@@ -950,7 +954,7 @@ class Abolish {
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
-                if (!SuperKeys.Rules.includes(validatorName)) continue;
+                if (!SuperKeys.Rules.has(validatorName)) continue;
 
                 if (validatorName === "$name") {
                     assertType(option, ["string"], "$name");
@@ -984,7 +988,7 @@ class Abolish {
              * Loop Through each rule and generate validator
              */
             for (const [validatorName, option] of Object.entries(parsedRules)) {
-                if (SuperKeys.Rules.includes(validatorName)) continue;
+                if (SuperKeys.Rules.has(validatorName)) continue;
 
                 const validator = (abolish.validators[validatorName] ||
                     GlobalValidators[validatorName]) as AbolishValidator;

@@ -91,7 +91,7 @@ test.group("Compiler Super Fields", () => {
         });
 
         // Make sure wildcards are not mistaken for fields
-        assert.isTrue(SuperKeys.Fields.every((key) => !compiled.fields.includes(key)));
+        assert.isTrue(Array.from(SuperKeys.Fields).every((key) => !compiled.fields.includes(key)));
         assert.deepEqual(compiled.fields, ["name"]);
         assert.deepEqual(compiled2.fields, ["name"]);
 
