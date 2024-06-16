@@ -305,17 +305,13 @@ class Abolish {
                 allowedKeys = keysToBeValidated;
             } else if (Array.isArray(rules["$strict"])) {
                 // if strict is an array, then append it to allowedKeys
-                allowedKeys = rules["$strict"];
-
-                for (const key of keysToBeValidated) {
-                    if (!allowedKeys.includes(key)) allowedKeys.push(key);
-                }
+                allowedKeys = keysToBeValidated.concat(rules["$strict"] as string[]);
             } else {
                 throw new Error(`$strict must be a boolean or an array of allowed keys.`);
             }
 
             // add $include keys to allowedKeys
-            allowedKeys = allowedKeys.concat(includeKeys);
+            allowedKeys = Array.from(new Set(allowedKeys.concat(includeKeys)));
 
             // check if all keys in object are allowed
             const objectKeys = Object.keys(validated);
@@ -1163,7 +1159,8 @@ class Abolish {
             // remove SUPER_RULES from allowedKeys
             allowedKeys = allowedKeys.filter((key) => !SuperKeys.Fields.has(key));
 
-            compiled.allowedFields = allowedKeys;
+            // make sure allowedKeys are unique
+            compiled.allowedFields = Array.from(new Set(allowedKeys));
         }
 
         return compiled as AbolishCompiledObject;
