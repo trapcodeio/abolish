@@ -24,7 +24,7 @@
     "play:dev": "npx nodemon dev/play.js",
     "test-browser": "npx vite --host",
     "test": "npm run build && node japaFile.js",
-    "test-dev": "npx nodemon japaFile.js --watch '*/**' --ext 'ts'",
+    "test-dev": "npx nodemon japaFile.js --watch '*/* *' --ext 'ts'",
     "benchmark": "node benchmarks"
   },
   "dependencies": {
