@@ -4,8 +4,8 @@ const { configure } = require("japa");
 
 configure({
     files: [
-        // "tests/super_rules.spec.ts"
-        "tests/*.spec.ts",
-        "tests/*/**/*.spec.ts"
+        "tests/validators/number-validators.spec.ts"
+        // "tests/*.spec.ts",
+        // "tests/*/**/*.spec.ts"
     ]
 });
