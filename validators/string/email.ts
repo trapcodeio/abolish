@@ -8,7 +8,7 @@ export = <AbolishValidator>{
         if (action === false) return true;
 
         // Check if email is valid
-        const isValidMail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+        const isValidMail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,6})+$/.test(email);
 
         // Convert to lowercase if action is set to lowercase
         if (isValidMail && action === "lowercase" && modifier) {

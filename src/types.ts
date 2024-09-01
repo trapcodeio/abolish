@@ -74,5 +74,5 @@ export type AbolishRule = string | string[] | Record<string, any> | AbolishRule[
 // >;
 export type AbolishSchema<Keys extends Record<string, any> = Record<string, any>> = Record<
     keyof Keys | string,
-    AbolishRule
+    AbolishRule | boolean
 >;

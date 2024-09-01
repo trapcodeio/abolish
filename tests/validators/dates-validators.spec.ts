@@ -53,4 +53,22 @@ test.group("Date Validators", (group) => {
     test.failing("Fail: Between Age", () => {
         Abolish.attempt(seventeenYearsAgo, RuleTyped({ age: "18-19" }));
     });
+
+    test("Pass: Gte Age", () => {
+        Abolish.attempt(eighteenYearsAgo, RuleTyped({ age: ">=18" }));
+    });
+
+    test.failing("Fail: Gte Age", () => {
+        Abolish.attempt(seventeenYearsAgo, RuleTyped({ age: ">=18" }));
+    });
+
+    test("Pass: Lte Age", () => {
+        Abolish.attempt(eighteenYearsAgo, RuleTyped({ age: "<=18" }));
+    });
+
+    test.failing("Fail: Lte Age", () => {
+        Abolish.attempt(nineteenYearsAgo, RuleTyped({ age: "<=18" }));
+    });
+
+
 });
