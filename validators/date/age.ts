@@ -1,6 +1,14 @@
 import type { AbolishValidator } from "../../src/types";
 
-type AgeString = `>${number}` | `<${number}` | `=${string}` | `${string}-${string}`;
+type Gt = `>${number}`;
+type Lt = `<${number}`;
+type Gte = `>=${number}`;
+type Lte = `<=${number}`;
+type Eq = `=${number}`;
+type Between = `${number}-${number}`;
+
+
+type AgeString = Gt | Lt | Gte | Lte | Eq | Between;
 
 export = <AbolishValidator>{
     name: "age",
@@ -30,10 +38,20 @@ export = <AbolishValidator>{
                 ? true
                 : error(`:param is not ${ageString} years old!`);
         }
+        // check if age is >=
+        else if (o.startsWith(">=")) {
+            const minAge = Number(o.slice(2));
+            return age >= minAge ? true : error(`:param is too young! Must be older than ${minAge}`);
+        }
         // check if age is >
         else if (o.startsWith(">")) {
             const minAge = Number(o.slice(1));
             return age > minAge ? true : error(`:param is too young! Must be older than ${minAge}`);
+        }
+        // check if age is <=
+        else if (o.startsWith("<=")) {
+            const maxAge = Number(o.slice(2));
+            return age <= maxAge ? true : error(`:param is too old! Must be younger than ${maxAge}`);
         }
         // check if age is <
         else if (o.startsWith("<")) {
