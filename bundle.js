@@ -38,7 +38,7 @@ files.push(getGzippedSize(fileEsm));
 // copy index.d.ts to index.esm.d.ts
 
 const folder = __dirname + `/validators`;
-let validatorFolders = ["array", "date", "object", "string", "utils"];
+let validatorFolders = ["array", "date", "object", "string", "utils", "number"];
 
 for (const f of validatorFolders) {
     const from = folder + `/${f}/index.js`;

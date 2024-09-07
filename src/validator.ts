@@ -20,6 +20,7 @@ export declare module AvailableValidators {
         default: any;
         required: boolean;
         typeof: string | string[] | false;
+        type: string | string[] | false;
         exact: string | boolean | number;
         min: number;
         max: number;
