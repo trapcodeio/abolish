@@ -1,5 +1,3 @@
-// noinspection DuplicatedCode
-
 import type {
     $errorRule,
     $errorsRule,
@@ -31,7 +29,6 @@ import {
     CompiledValidator
 } from "./Compiler";
 import { assertType } from "./types-checker";
-import { string } from "joi";
 
 type Job = {
     $name: string | false;

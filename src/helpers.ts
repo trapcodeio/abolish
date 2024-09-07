@@ -1,4 +1,5 @@
-import type { $skipRule, AbolishInlineValidator } from "./types";
+import type { $skipRule, AbolishInlineValidator, AbolishRule } from "./types";
+import type { AbolishRuleTyped } from "./functions";
 
 /**
  * $inLine object generator
@@ -46,3 +47,37 @@ export function skipIfNotDefined(rule: string | Record<string, any> | any[]) {
  * Optional - alias for skipIfNotDefined
  */
 export const optional = skipIfNotDefined;
+
+/**
+ * Required helper function.
+ * @example
+ * required("string")
+ * // is same as
+ * ["required", "string"]
+ */
+export function required(rule: AbolishRule): AbolishRuleTyped {
+    if (typeof rule === "string") {
+        // add `required` to rule
+        return "required|" + rule;
+    } else if (Array.isArray(rule)) {
+        // add `required` to rule
+        return ["required", ...rule];
+    } else if (typeof rule === "object") {
+        // add `required` to rule
+        return { required: true, ...rule };
+    } else {
+        throw new Error("Required: Invalid Rule");
+    }
+}
+
+/**
+ * Required helper function for typed rules.
+ * @param rule
+ * @example
+ * requiredT("string")
+ * // is same as
+ * ["required", "string"]
+ */
+export function requiredT(rule: AbolishRuleTyped): AbolishRuleTyped {
+    return required(rule);
+}
