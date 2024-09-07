@@ -2,9 +2,9 @@
  * Note:
  * Only functions related to Abolish Should be added here.
  */
-import { AbolishSchema } from "./types";
-import { Abolish } from "../index";
-import { AbolishSchemaTyped } from "./functions";
+import type { AbolishSchema } from "./types";
+import Abolish from "./Abolish";
+import type { AbolishSchemaTyped } from "./functions";
 
 /**
  * Compile a schema object.

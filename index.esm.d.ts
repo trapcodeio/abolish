@@ -8,4 +8,6 @@ import Abolish from "./src/Abolish";
 import { Schema, Rule } from "./src/functions";
 import type { AV } from "./src/validator";
 
+// Export
+export * from "./src/shortcuts";
 export { Abolish, Rule, Schema, AV };
