@@ -848,11 +848,7 @@ class Abolish {
      * @param rules
      * @param abolish
      */
-    static attempt<V = any>(
-        variable: V,
-        rules: AbolishRule | AbolishCompiled,
-        abolish?: typeof Abolish
-    ): V {
+    static attempt<V = any>(variable: V, rules: AbolishRule | AbolishCompiled): V {
         return new this().attempt(variable, rules);
     }
 
