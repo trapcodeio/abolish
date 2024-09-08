@@ -13,6 +13,6 @@ dev
 !bundle.js
 !japaFile.js
 *.d.ts
-!index.esm.d.ts
+!esm.d.ts
 !validators/validators.d.ts
 *.log

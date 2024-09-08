@@ -5,7 +5,7 @@ const zlib = require("zlib");
 const files = [];
 
 es.buildSync({
-    entryPoints: ["./index.js"],
+    entryPoints: ["./index.ts"],
     format: "iife",
     outfile: "./browser.min.js",
     target: "es6",
@@ -17,9 +17,9 @@ es.buildSync({
 });
 
 es.buildSync({
-    entryPoints: ["./index.js"],
+    entryPoints: ["./index.ts"],
     format: "esm",
-    outfile: "./index.esm-bundled.js",
+    outfile: "./esm.js",
     // target: "es2020",
     bundle: true,
     legalComments: "none",
@@ -28,11 +28,14 @@ es.buildSync({
     external: ["joi", "yup"]
 });
 
+// copy `index.d.ts` to `index.esm.d.ts`
+fs.copyFileSync(__dirname + "/index.d.ts", __dirname + "/esm.d.ts");
+
 // log the file size of bundled file `./browser.js`
 const file = __dirname + "/browser.min.js";
 files.push(getGzippedSize(file));
 
-const fileEsm = __dirname + "/index.esm-bundled.js";
+const fileEsm = __dirname + "/esm.js";
 files.push(getGzippedSize(fileEsm));
 
 // copy index.d.ts to index.esm.d.ts
@@ -41,7 +44,7 @@ const folder = __dirname + `/validators`;
 let validatorFolders = ["array", "date", "object", "string", "utils", "number"];
 
 for (const f of validatorFolders) {
-    const from = folder + `/${f}/index.js`;
+    const from = folder + `/${f}/index.ts`;
     const to = folder + `/${f}/index.min.js`;
     const ff = f[0].toUpperCase() + f.slice(1);
     const name = `Abolish${ff}Validators`;
