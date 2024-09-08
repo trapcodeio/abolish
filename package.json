@@ -1,6 +1,6 @@
 {
   "name": "abolish",
-  "version": "6.7.3",
+  "version": "6.8.0",
   "description": "A javascript object validator.",
   "main": "index.js",
   "module": "esm.js",
@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "lodash": "^4.17.21"
-
   },
   "devDependencies": {
     "@trapcode/benchmark": "^0.1.3",
