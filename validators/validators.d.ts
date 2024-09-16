@@ -10,6 +10,10 @@ import "./array/notInArray";
 // Dates
 import "./date/age";
 
+// Numbers
+import "./number/gt";
+import "./number/lt";
+
 // Objects
 import "./object/objectValues";
 import "./object/objectValuesAsync";

@@ -38,7 +38,9 @@ export function Rule(rules: AbolishRule): any {
 }
 
 export type AbolishRuleTyped = string | AV | Array<string | AV>;
-export type AbolishSchemaTyped = Record<string, AbolishRuleTyped>;
+export type AbolishSchemaTyped = Record<string, AbolishRuleTyped> & {
+    $strict?: boolean | string[];
+};
 
 /**
  * Typed version of Rule
