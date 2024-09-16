@@ -5,7 +5,6 @@ import { AbolishCompiled } from "../src/Compiler";
 import { SuperKeys } from "../src/Abolish";
 
 let schema = SchemaTyped({
-    $strict: true,
     $: "required",
     name: RuleTyped([
         "typeof:string|minLength:3",
