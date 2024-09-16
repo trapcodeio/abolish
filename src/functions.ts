@@ -1,6 +1,7 @@
 import StringToRules from "./StringToRules";
 import type { AbolishRule, AbolishSchema } from "./types";
 import type { AV } from "./validator";
+import { string } from "joi";
 
 /**
  * Converts an array of rules (string | object)[] to one object rule
@@ -38,8 +39,11 @@ export function Rule(rules: AbolishRule): any {
 }
 
 export type AbolishRuleTyped = string | AV | Array<string | AV>;
-export type AbolishSchemaTyped = Record<string, AbolishRuleTyped> & {
-    $strict?: boolean | string[];
+export type AbolishSchemaTyped = Record<string, AbolishRuleTyped>;
+export type AbolishSchemaTypedSuper = {
+    $strict?: string[] | boolean;
+    $include?: string[];
+    [key: string]: AbolishRuleTyped | boolean | undefined;
 };
 
 /**
@@ -95,6 +99,6 @@ export function Schema(rules: AbolishSchema) {
  * @param rules
  * @constructor
  */
-export function SchemaTyped(rules: AbolishSchemaTyped) {
+export function SchemaTyped(rules: AbolishSchemaTyped | AbolishSchemaTypedSuper) {
     return Schema(rules as any) as AbolishSchemaTyped;
 }
