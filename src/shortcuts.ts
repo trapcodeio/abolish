@@ -4,7 +4,7 @@
  */
 import type { AbolishSchema } from "./types";
 import Abolish from "./Abolish";
-import type { AbolishSchemaTyped } from "./functions";
+import { AbolishSchemaTyped, AbolishSchemaTypedSuper } from "./functions";
 
 /**
  * Compile a schema object.
@@ -31,8 +31,11 @@ export function compileRule(rule: any, abolish?: typeof Abolish) {
  * @param schema
  * @param abolish
  */
-export function compileSchemaT(schema: AbolishSchemaTyped, abolish?: typeof Abolish) {
-    return compileSchema(schema, abolish);
+export function compileSchemaT(
+    schema: AbolishSchemaTyped | AbolishSchemaTypedSuper,
+    abolish?: typeof Abolish
+) {
+    return compileSchema(schema as AbolishSchemaTyped, abolish);
 }
 
 /**
