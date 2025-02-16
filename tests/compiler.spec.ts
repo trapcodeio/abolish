@@ -1,5 +1,6 @@
 import { Abolish } from "../index";
 import { AbolishSchemaTyped, SchemaTyped, RuleTyped } from "../src/functions";
+// @ts-ignore
 import test from "japa";
 import { AbolishCompiled } from "../src/Compiler";
 import { SuperKeys } from "../src/Abolish";
